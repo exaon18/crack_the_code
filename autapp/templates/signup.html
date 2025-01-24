@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Chiwe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
+            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(46, 213, 115, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+        }
+
+        @keyframes shootingStars {
+            0% { transform: translateX(0) translateY(0); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translateX(-500px) translateY(500px); opacity: 0; }
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: shootingStars 3s linear infinite;
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 50%;
+            transform: translate(50%, -50%);
+            width: 30px;
+            height: 1px;
+            background: linear-gradient(to left, rgba(46, 213, 115, 0), rgba(46, 213, 115, 0.7));
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background-color: #1a1a1a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2eD573;
+            animation: pulse 2s infinite ease-in-out;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            margin-top: 80px;
+            padding: 20px;
+            background-color: rgba(26, 26, 26, 0.8);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(46, 213, 115, 0.1);
+            border: 1px solid #2eD573;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2eD573;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            background-color: #1a1a1a;
+            border: 1px solid #2eD573;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.5);
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 10px;
+            background: #2eD573;
+            color: #0a0a0a;
+            font-weight: bold;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #25a65b;
+            box-shadow: 0 4px 20px rgba(46, 213, 115, 0.9);
+        }
+
+        .login-link {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #2eD573;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (min-width: 768px) {
+            .header {
+                padding: 1rem 2rem;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .container {
+                margin-top: 120px;
+                padding: 32px;
+            }
+
+            h1 {
+                font-size: 36px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            input {
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 12px;
+            }
+
+            .login-link {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="{% url 'index' %}" class="logo">C</a>
+    </header>
+
+    <div class="container">
+        {% if messages %}
+         <ul class="messages"> 
+            {% for message in messages %} 
+            <li class="{{ message.tags }}">{{ message }}</li> 
+            {% endfor %} 
+        </ul> 
+        {% endif %}
+        <h1>Sign Up</h1>
+        <form id="signup-form" method="POST" action="{% url 'signup' %}" >
+          {% csrf_token %}
+            <div class="form-group">
+                <label for="first-name">First Name</label>
+                <input type="text" id="first-name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="last-name">Last Name</label>
+                <input type="text" id="last-name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password1" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="password2" required>
+            </div>
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Log in</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add shooting stars
+            function createShootingStar() {
+                const star = document.createElement('div');
+                star.classList.add('shooting-star');
+                star.style.top = `${Math.random() * window.innerHeight}px`;
+                star.style.right = '0px';
+                document.body.appendChild(star);
+
+                setTimeout(() => {
+                    star.remove();
+                }, 3000);
+            }
+
+            setInterval(createShootingStar, 2000);
+
+            // Form validation
+            const form = document.getElementById('signup-form');
+            form.addEventListener('submit', (e) => {
+               
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (password !== confirmPassword) {
+                    alert('Passwords do not match');
+                    return;
+                }
+
+                // Here you would typically send the form data to your server
+                console.log('Form submitted');
+            });
+        });
+    </script>
+</body>
+</html>
