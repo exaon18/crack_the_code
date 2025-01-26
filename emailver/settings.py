@@ -32,16 +32,13 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'autapp',
-    'games',
-    'channels',
-    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'payments'
+    
 ]
 CHANNEL_LAYERS = {
     "default": {
@@ -133,11 +130,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL='/dashboard'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_HOST_USER = "chiweVerify@gmail.com"
-EMAIL_HOST_PASSWORD = "emxehlcasdevobzu"
-EMAIL_PORT= 587
+EMAIL_HOST_PASSWORD = "vwcpzdzshcxilrwm"
+EMAIL_PORT = 587
+EMAIL_TIMEOUT = 30
+
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = False

@@ -6,6 +6,12 @@
     <title>log in to chiwwe</title>
 </head>
 <body>
+    <div>
+        <ul>{%for msg in messages%}
+            <li>{{msg}}</li>
+            {%endfor%}
+        </ul>
+    </div>
     <p>chiwe login</p>
     <form method="post">
         {% csrf_token %}

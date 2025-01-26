@@ -6,8 +6,8 @@ urlpatterns = [
     path('signup', views.signup, name='signup'),
     path('login', views.login_view, name='login'),
     path('dashboard', views.dashboard, name='dashboard'),
-    path('activate/<str:user>', views.activate, name='activate'),
-    path('join_game', views.join_game, name='join_game'),
+    path('verify/<str:user>', views.verify, name='verify'),
+    
 ]
 from django.conf.urls import handler404
 from django.shortcuts import render
