@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,6 +32,9 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'autapp',
+    'channels',
+    'daphne',
+    'Games',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -118,6 +121,8 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Static files (CSS, JavaScript, Images)
@@ -137,7 +142,7 @@ EMAIL_HOST_USER = "chiweVerify@gmail.com"
 EMAIL_HOST_PASSWORD = "vwcpzdzshcxilrwm"
 EMAIL_PORT = 587
 EMAIL_TIMEOUT = 30
-
+AUTH_USER_MODEL = 'autapp.MyUser'
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = False
@@ -146,8 +151,3 @@ AUTHENTICATION_BACKENDS = [
     # Add other authentication backends if you have any
 ]
 
-AUTH_USER_MODEL = 'autapp.MyUser'
-TELEBIRR_APP_ID = 'c4182ef8-9249-458a-985e-06d191f4d505'
-TELEBIRR_APP_KEY = 'your_app_key'
-TELEBIRR_NOTIFY_URL = 'https://yourdomain.com/payments/notification/'
-TELEBIRR_RETURN_URL = 'https://yourdomain.com/payments/confirmation/'

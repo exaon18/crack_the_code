@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiwe - Crack the Code</title>
+    <style>
+        :root {
+            --primary: #2ed573;
+            --primary-dark: #25a85c;
+            --background: #000000;
+            --surface: #1a1a1a;
+            --surface-dark: #141414;
+            --text: #ffffff;
+            --text-secondary: #a0aec0;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            width: 45px;
+            height: 45px;
+            background-color: var(--surface);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+            border: 2px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .nav-toggle span {
+            display: block;
+            width: 25px;
+            height: 2px;
+            background-color: var(--primary);
+            transition: 0.3s;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(46, 213, 115, 0.1);
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .username {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .balance {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .user-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .user-photo:hover {
+            transform: scale(1.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 7rem 1rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .game-options {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-option {
+            background-color: transparent;
+            color: var(--text);
+            border: 2px solid var(--primary);
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-option:hover {
+            background-color: rgba(46, 213, 115, 0.1);
+        }
+
+        .game-option.selected {
+            background-color: rgba(46, 213, 115, 0.2);
+            border-color: var(--primary-dark);
+        }
+
+        .join-form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: var(--surface);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .join-form h3 {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .join-form h3 span {
+            color: var(--primary);
+            font-size: 1.2em;
+        }
+
+        .join-form input[type="hidden"] {
+            display: none;
+        }
+
+        .join-form button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .join-form button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .game-status {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+
+        #gameInfo {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--surface);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #countdown {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        #gameBoard {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+            background-color: var(--surface);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+        }
+
+        #turnIndicator {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+
+        .game-tables {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            padding: 2rem;
+            background: #1a1a1a;
+            border-radius: 12px;
+        }
+
+        .game-table-container {
+            background: transparent;
+            padding: 1rem;
+            box-shadow: none;
+        }
+
+        .game-table-container.your-guesses,
+        .game-table-container.opponent-guesses {
+            width: 100%;
+        }
+
+        .game-table-container h4 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        .game-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+
+        .game-table th {
+            color: var(--primary);
+            font-weight: 500;
+            padding: 1rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+        }
+
+        .game-table td {
+            background: #141414;
+            padding: 1rem;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .guess-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .guess-box {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+            text-align: center;
+            background: transparent;
+            color: var(--text);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+        }
+
+        #guessButton {
+            background: #2ed573;
+            color: #000;
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        #turnIndicator.your-turn {
+            background-color: var(--primary);
+            color: var(--background);
+        }
+
+        #turnIndicator.opponent-turn {
+            background-color: var(--surface-dark);
+            color: var(--text-secondary);
+        }
+
+        .game-tables {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .game-table-container {
+            background-color: var(--surface-dark);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-table-container.your-guesses {
+            width: 60%;
+        }
+
+        .game-table-container.opponent-guesses {
+            width: 40%;
+        }
+
+        .game-table-container h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .game-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.5rem;
+        }
+
+        .game-table th, .game-table td {
+            padding: 0.75rem;
+            text-align: center;
+            background-color: var(--surface);
+            border-radius: var(--border-radius);
+        }
+
+        .game-table th {
+            color: var(--primary);
+            font-weight: bold;
+            background-color: transparent;
+        }
+
+        .game-table-body {
+            display: block;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .guess-input-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .guess-box {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            text-align: center;
+            background-color: var(--surface-dark);
+            color: var(--text);
+            border: 2px solid var(--primary);
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+        }
+
+        .guess-box:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--primary);
+        }
+
+        #guessButton {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            background-color: var(--primary);
+            color: var(--background);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        #guessButton:hover {
+            background-color: var(--primary-dark);
+        }
+
+        #guessButton:disabled {
+            background-color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        #guessButton.your-turn {
+            animation: glow 1.5s infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 5px var(--primary);
+            }
+            to {
+                box-shadow: 0 0 20px var(--primary);
+            }
+        }
+
+        .searching-animation {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .searching-animation div {
+            position: absolute;
+            top: 33px;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .searching-animation div:nth-child(1) {
+            left: 8px;
+            animation: searching-animation1 0.6s infinite;
+        }
+
+        .searching-animation div:nth-child(2) {
+            left: 8px;
+            animation: searching-animation2 0.6s infinite;
+        }
+
+        .searching-animation div:nth-child(3) {
+            left: 32px;
+            animation: searching-animation2 0.6s infinite;
+        }
+
+        .searching-animation div:nth-child(4) {
+            left: 56px;
+            animation: searching-animation3 0.6s infinite;
+        }
+
+        @keyframes searching-animation1 {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes searching-animation3 {
+            0% { transform: scale(1); }
+            100% { transform: scale(0); }
+        }
+
+        @keyframes searching-animation2 {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(24px, 0); }
+        }
+
+        #gameInfo h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        #gameInfo .player-name {
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                background: var(--surface);
+                padding: 1rem;
+                border-bottom: 1px solid var(--primary);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .user-details span {
+                font-size: 0.8rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .game-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .game-option {
+                width: 100%;
+                text-align: center;
+            }
+
+            .guess-input-container {
+                flex-wrap: wrap;
+            }
+
+            .guess-box {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .game-tables {
+                flex-direction: column;
+            }
+
+            .game-table-container.your-guesses,
+            .game-table-container.opponent-guesses {
+                width: 100%;
+            }
+        }
+        .popup {
+    display: none; /* Ensure it's hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    text-align: center;
+}
+
+.popup-content {
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.popup button {
+    margin-top: 10px;
+    padding: 10px 15px;
+    border: none;
+    background: #2ed573;
+    color: black;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.popup button:hover {
+    background: #25a85c;
+}
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">C</div>
+            <div class="nav-toggle" onclick="toggleNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <nav class="nav-links" id="nav-links">
+                <a href="{% url 'dashboard' %}" class="nav-link">Home</a>
+                <a href="#" class="nav-link">Deposit</a>
+                <a href="#" class="nav-link">Leaderboard</a>
+                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+            </nav>
+            <div class="user-info">
+                <div class="user-details">
+                    <span class="username">{{user.username}}</span>
+                    <span class="balance"><strong>{{ballance}}</strong>$</span>
+                </div>
+                <a href="{% url 'profile' %}"><img src="https://via.placeholder.com/40" alt="User Photo" class="user-photo"></a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <h2 class="section-title">Crack the Code</h2>
+            <div id="gameSetup">
+                <div class="game-options">
+                    <button class="game-option" onclick="selectAmount(50)">50 birr</button>
+                    <button class="game-option" onclick="selectAmount(100)">100 birr</button>
+                    <button class="game-option" onclick="selectAmount(500)">500 birr</button>
+                </div>
+                <form id="joinForm" class="join-form" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="amountInput" name="amount" value="">
+                    <h3>Selected Amount: <span id="selectedAmount">0</span> birr</h3>
+                    <button type="submit">Join Game</button>
+                </form>
+            </div>
+            <div id="gameStatus" class="game-status" style="display: none;">
+                <p>Searching for opponent</p>
+                <div class="searching-animation">
+                    <div></div><div></div><div></div><div></div>
+                </div>
+            </div>
+            <div id="gameInfo" style="display: none;">
+                <h3>Match: <span id="player1" class="player-name"></span> vs <span id="player2" class="player-name"></span></h3>
+                <p id="betInfo"></p>
+                <div id="countdown"></div>
+            </div>
+            <div id="gameBoard" style="display: none;">
+                <p id="turnIndicator">Waiting for game to start...</p>
+                <div class="game-tables">
+                    <div class="game-table-container your-guesses">
+                        <h4 id="player-username"></h4>
+                        <table id="player-table" class="game-table">
+                            <thead>
+                                <tr>
+                                    <th>Guess</th>
+                                    <th>Position</th>
+                                    <th>Correct</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    <div class="game-table-container opponent-guesses">
+                        <h4 id="opponent-username"></h4>
+                        <table id="opponent-table" class="game-table">
+                            <thead>
+                                <tr>
+                                    
+                                    <th>Position</th>
+                                    <th>Correct</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="guess-input-container">
+                    <input type="text" class="guess-box" maxlength="1" pattern="\d" inputmode="numeric">
+                    <input type="text" class="guess-box" maxlength="1" pattern="\d" inputmode="numeric">
+                    <input type="text" class="guess-box" maxlength="1" pattern="\d" inputmode="numeric">
+                    <input type="text" class="guess-box" maxlength="1" pattern="\d" inputmode="numeric">
+                </div>
+                <button id="guessButton" onclick="sendGuess()">Submit Guess</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="gameOverPopup" class="popup">
+        <div class="popup-content">
+            <h2 id="gameOverMessage"></h2>
+            <button onclick="closeGameOverPopup()">Play Again</button>
+            <button onclick="returnToLobby()">Return to Lobby</button>
+        </div>
+    </div>
+
+    <div id="leaveGamePopup" class="popup">
+        <div class="popup-content">
+            <h2>Are you sure you want to leave the game?</h2>
+            <p>You may lose your current progress.</p>
+            <button onclick="confirmLeaveGame()">Yes, Leave Game</button>
+            <button onclick="cancelLeaveGame()">No, Stay in Game</button>
+        </div>
+    </div>
+
+    <script>
+        let socket;
+        let isYourTurn = false;
+        let currentUsername = '{{user.username}}';
+
+        function toggleNav() {
+            const navLinks = document.getElementById('nav-links');
+            navLinks.classList.toggle('active');
+        }
+
+        function selectAmount(amount) {
+            document.getElementById('amountInput').value = amount;
+            document.getElementById('selectedAmount').textContent = amount;
+            
+            document.querySelectorAll('.game-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            event.target.classList.add('selected');
+        }
+
+        document.getElementById('joinForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                });
+
+                const data = await response.json();
+                console.log(data);
+                if (data.proceed) {
+                    socket = new WebSocket(`ws://127.0.0.1:8000/ws/ctc/${data.amount}/`);
+                    document.getElementById('gameSetup').style.display = 'none';
+                    document.getElementById('gameStatus').style.display = 'block';
+
+                    socket.onopen = () => {
+                        console.log('WebSocket connection established');
+                    };
+
+                    socket.onmessage = (event) => {
+                        console.log('WebSocket message:', event.data);
+                        const gameData = JSON.parse(event.data);
+                        handleGameMessage(gameData);
+                    };
+
+                    socket.onerror = (error) => {
+                        console.error('WebSocket error:', error);
+                        document.getElementById('gameStatus').textContent = 'Error connecting to the game server.';
+                    };
+
+                    socket.onclose = () => {
+                        console.log('WebSocket connection closed');
+                    };
+                } else {
+                    document.getElementById('gameStatus').textContent = 'Unable to join the game. Please try again.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('gameStatus').textContent = 'An error occurred. Please try again later.';
+            }
+        });
+
+        function handleGameMessage(data) {
+            switch (data.type) {
+                case 'start_game':
+                    if (data.players_amount === 2) {
+                        handleGameStart(data);
+                    }
+                    break;
+                case 'turns':
+                    handleTurns(data);
+                    break;
+                case 'OnGame':
+                    updateGameState(data);
+                    break;
+                case 'Game_Over':
+                    handleGameOver(data);
+                    break;
+            }
+        }
+
+        function handleGameStart(data) {
+            document.getElementById('gameStatus').style.display = 'none';
+            document.getElementById('gameInfo').style.display = 'block';
+
+            document.getElementById('player1').textContent = data.player_1;
+            document.getElementById('player2').textContent = data.player_2;
+            document.getElementById('betInfo').textContent = `Bet Amount: ${data.amount} birr | Maximum Jackpot: ${data.amount * 2} birr`;
+
+            document.getElementById('player-username').textContent = currentUsername;
+            document.getElementById('opponent-username').textContent = data.player_1 === currentUsername ? data.player_2 : data.player_1;
+
+            let countdown = 5;
+            const countdownElement = document.getElementById('countdown');
+            countdownElement.textContent = countdown;
+
+            const timer = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                if (countdown === 0) {
+                    clearInterval(timer);
+                    document.getElementById('gameInfo').style.display = 'none';
+                    document.getElementById('gameBoard').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        function handleTurns(data) {
+            isYourTurn = data[currentUsername];
+            updateTurnIndicator();
+        }
+
+        function updateTurnIndicator() {
+            const turnIndicator = document.getElementById('turnIndicator');
+            const guessButton = document.getElementById('guessButton');
+            if (isYourTurn) {
+                turnIndicator.textContent = 'Your Turn';
+                turnIndicator.classList.add('your-turn');
+                turnIndicator.classList.remove('opponent-turn');
+                guessButton.classList.add('your-turn');
+            } else {
+                turnIndicator.textContent = "Opponent's Turn";
+                turnIndicator.classList.add('opponent-turn');
+                turnIndicator.classList.remove('your-turn');
+                guessButton.classList.remove('your-turn');
+            }
+            guessButton.disabled = !isYourTurn;
+        }
+
+        function sendGuess() {
+            const guessBoxes = document.querySelectorAll('.guess-box');
+            let guess = '';
+            guessBoxes.forEach(box => {
+                guess += box.value;
+            });
+
+            if (guess.length === 4 && isYourTurn) {
+                socket.send(JSON.stringify({
+                    type: 'guess',
+                    guess: parseInt(guess)
+                }));
+                guessBoxes.forEach(box => box.value = '');
+            }
+        }
+
+        function updateGameState(data) {
+            const isYourMove = data.player === currentUsername;
+            let tbody, row;
+            
+            if (isYourMove) {
+                tbody = document.getElementById('player-table').querySelector('tbody');
+                row = tbody.insertRow(0);
+                row.insertCell(0).textContent = data.guess;
+                row.insertCell(1).textContent = data.position;
+                row.insertCell(2).textContent = data.correct;
+            } else {
+                tbody = document.getElementById('opponent-table').querySelector('tbody');
+                row = tbody.insertRow(0);
+                row.insertCell(0).textContent = data.position;
+                row.insertCell(1).textContent = data.correct;
+            }
+
+            // Maintain maximum of 5 rows
+            while (tbody.children.length > 5) {
+                tbody.removeChild(tbody.lastChild);
+            }
+
+            isYourTurn = !isYourTurn;
+            updateTurnIndicator();
+        }
+
+        function handleGameOver(data) {
+            const popup = document.getElementById('gameOverPopup');
+            const message = document.getElementById('gameOverMessage');
+            
+            message.textContent = data.winner === currentUsername ? 'You Won!' : 'Game Over';
+            popup.style.display = 'flex';
+        }
+
+        function closeGameOverPopup() {
+            document.getElementById('gameOverPopup').style.display = 'block';
+;
+            location.reload();
+        }
+
+        function returnToLobby() {
+            window.location.href = '/lobby';
+        }
+
+        function showLeaveGamePopup() {
+            document.getElementById('leaveGamePopup').style.display = 'block';
+;
+        }
+
+        function confirmLeaveGame() {
+            document.getElementById('leaveGamePopup').style.display = 'block';
+;
+            window.location.href = '/lobby';
+        }
+
+        function cancelLeaveGame() {
+            document.getElementById('leaveGamePopup').style.display = 'block';
+;
+        }
+
+        document.querySelectorAll('.guess-box').forEach((box, index) => {
+            box.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < 3) {
+                        document.querySelectorAll('.guess-box')[index + 1].focus();
+                    } else {
+                        document.getElementById('guessButton').focus();
+                    }
+                }
+            });
+
+            box.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    document.querySelectorAll('.guess-box')[index - 1].focus();
+                }
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            const navLinks = document.getElementById('nav-links');
+            const navToggle = document.querySelector('.nav-toggle');
+            
+            if (!navToggle.contains(event.target) && !navLinks.contains(event.target)) {
+                navLinks.classList.remove('active');
+            }
+        });
+
+        window.onbeforeunload = function() {
+            if (document.getElementById('gameBoard').style.display !== 'none') {
+                return "Are you sure you want to leave the game?";
+            }
+        };
+    </script>
+</body>
+</html>

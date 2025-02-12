@@ -451,6 +451,75 @@
             font-size: 0.9rem;
         }
 
+        .logout-btn {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            margin-left: 1rem;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--text-secondary);
+            color: var(--background);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: var(--surface);
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid var(--primary);
+            border-radius: var(--border-radius);
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.confirm {
+            background-color: var(--primary);
+            color: var(--background);
+        }
+
+        .modal-btn.cancel {
+            background-color: var(--text-secondary);
+            color: var(--background);
+        }
+
+        .modal-btn:hover {
+            opacity: 0.8;
+        }
+
         @media (max-width: 768px) {
             .nav-toggle {
                 display: flex;
@@ -506,6 +575,11 @@
                 grid-template-columns: 1fr;
                 padding: 1rem;
             }
+
+            .logout-btn {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
@@ -519,17 +593,18 @@
                 <span></span>
             </div>
             <nav class="nav-links" id="nav-links">
-                <a href="#" class="nav-link">Home</a>
-                <a href="#" class="nav-link">Games</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Home</a>
+                <a href="#" class="nav-link">Deposit</a>
                 <a href="#" class="nav-link">Leaderboard</a>
-                <a href="#" class="nav-link">Profile</a>
+                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
             </nav>
             <div class="user-info">
                 <div class="user-details">
-                    <span class="username">JohnDoe</span>
-                    <span class="balance">$1,000.00</span>
+                    <span class="username">{{user.username}}</span>
+                    <span class="balance"><strong> {{ballance }}</strong>$</span>
                 </div>
-                <img src="https://via.placeholder.com/40" alt="User Photo" class="user-photo">
+               <a href="{%url 'profile'%}"><img src="https://via.placeholder.com/40" alt="User Photo" class="user-photo"></a> 
+                <button class="logout-btn" onclick="showLogoutWarning()">Log Out</button>
             </div>
         </div>
     </header>
@@ -628,6 +703,17 @@
         </section>
     </main>
 
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="logout()">Yes, Log Out</button>
+                <button class="modal-btn cancel" onclick="closeLogoutWarning()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Create shooting stars effect
         document.addEventListener('DOMContentLoaded', () => {
@@ -682,6 +768,29 @@
                 navLinks.classList.remove('active');
             }
         });
+
+        // Logout warning functionality
+        const logoutModal = document.getElementById('logoutModal');
+
+        function showLogoutWarning() {
+            logoutModal.style.display = 'block';
+        }
+
+        function closeLogoutWarning() {
+            logoutModal.style.display = 'none';
+        }
+
+        function logout() {
+            // Perform logout action here
+            window.location.href = '/logout';  // Replace with your actual logout URL
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == logoutModal) {
+                closeLogoutWarning();
+            }
+        }
     </script>
 </body>
 </html>

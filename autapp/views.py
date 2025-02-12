@@ -1,16 +1,17 @@
 from django.contrib import messages
 from django.shortcuts import render,redirect
 import hashlib
-import time 
-from .models import MyUser
+import time
+
+from .models import MyUser,game,Ballance
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
-from django.contrib.auth import login, authenticate
-from django.http import Http404
+from django.contrib.auth import login, authenticate,logout
+from django.http import Http404, JsonResponse
 from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
@@ -72,6 +73,8 @@ def signup(request):
                                                           password=password,
                                                           token=token)
                         user.is_active=False
+                        user.token=token
+                        print(user.token)
                         user.save()
                         print('user saved')
                         
@@ -79,7 +82,7 @@ def signup(request):
                             send_welcome_email(user, email,token)
                             messages.success(request,'Account created successfully, check your email for verification')
                             print('email sent')
-                            return redirect('verify',user=user.username)
+                            return redirect('verify',username=user.username)
                         except Exception as e:
                             print(e)
                             messages.error(request,f'Error sending email: please sign up again')
@@ -97,8 +100,11 @@ def verify(request, username):
         raise Http404
     if request.method == 'POST':
         token = request.POST['token']
+        print(user.token)
         if user.token == token:
             user.is_active = True
+            ballance=   Ballance.objects.create(user=user,ballance=0.00)
+            ballance.save()
             user.save()
             login(request, user)
             messages.success(request, 'Account activated successfully.')
@@ -126,5 +132,41 @@ def login_view(request):
 def dashboard(request):
     username=request.user.username
     user=MyUser.objects.get(username=username)
+    ballance=Ballance.objects.get(user=user).ballance
+    return render(request,'dashboard.html',{'user':user,'ballance':ballance})
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        user = request.user
+        first_name=request.POST['first_name']
+        last_name=request.POST['last_name']
+        username=request.POST['username']
+        if MyUser.objects.filter(username=username).exists():
+            messages.error(request,'Username already exists, try another one!')
+        else:
+            if len(first_name)>200 or len(last_name)>200:
+                messages.error(request,"First name and last name must be less than 200 characters")
+            else:
+                user_obj=MyUser.objects.get(username=user.username)
+                user_obj.first_name=first_name
+                user_obj.last_name=last_name
+                user_obj.username=username  
+            
     
-    return render(request,'dashboard.html',{'user':user,})
+        try:
+            user_obj.save()
+            messages.success(request, 'Profile updated successfully.')
+            return redirect('profile')
+        except Exception as e:
+            return render(request,'profile.html')
+    user_file=MyUser.objects.get(username=request.user.username)
+    user_status = game.objects.get(user=user_file)
+    ballance=Ballance.objects.get(user=user_file).ballance
+    return render(request, 'profile.html', {'user': request.user, 'stat': user_status,'ballance':ballance})
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'you have been logged out!')
+    return redirect('login')
