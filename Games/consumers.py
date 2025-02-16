@@ -97,7 +97,13 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         self.timer.start()
 
         # 🔥 Send one message to update the frontend timer
-        self.send(json.dumps({"type": "turns", "timer": time_limit}))
+        async_to_sync(self.channel_layer.group_send)(
+            self.room,
+            {
+                "type": "timer_limit",
+                "timer": time_limit
+            }
+        )
 
 
     def create_new_room(self, room_list, amount):
@@ -175,7 +181,9 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
             )
             self.start_turn_timer()
             print(f"Room with {amount}: {room_list}")
-
+    def timer_limit(self, event):
+        print(event)
+        self.send(json.dumps(event))
     def start_game(self, event):
         
         print("Game started and timer started")
@@ -297,3 +305,5 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
             self.room,
             self.channel_name
         )
+        if self.timer:
+            self.timer.cancel()

@@ -31,136 +31,10 @@
             overflow-x: hidden;
         }
 
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
-        }
-
-        .logo {
-            width: 45px;
-            height: 45px;
-            background-color: var(--surface);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
-            border: 2px solid rgba(46, 213, 115, 0.3);
-        }
-
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 6px;
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .nav-toggle span {
-            display: block;
-            width: 25px;
-            height: 2px;
-            background-color: var(--primary);
-            transition: 0.3s;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--primary);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(46, 213, 115, 0.1);
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .username {
-            font-weight: 600;
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .balance {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .user-photo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            transition: transform 0.3s ease;
-        }
-
-        .user-photo:hover {
-            transform: scale(1.1);
-        }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 7rem 1rem 2rem;
+            padding: 2rem 1rem;
         }
 
         .section {
@@ -296,7 +170,6 @@
             margin-bottom: 2rem;
             text-align: center;
         }
-
 
         .game-tables {
             display: grid;
@@ -561,30 +434,6 @@
         }
 
         @media (max-width: 768px) {
-            .nav-toggle {
-                display: flex;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                flex-direction: column;
-                background: var(--surface);
-                padding: 1rem;
-                border-bottom: 1px solid var(--primary);
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .user-details span {
-                font-size: 0.8rem;
-            }
-
             .section-title {
                 font-size: 1.8rem;
             }
@@ -619,68 +468,72 @@
             }
         }
         .popup {
-    display: none; /* Ensure it's hidden by default */
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding: 20px;
-    border-radius: 8px;
-    z-index: 1000;
-    text-align: center;
-}
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            text-align: center;
+        }
 
-.popup-content {
-    padding: 20px;
-    background: #1a1a1a;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
-}
+        .popup-content {
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+        }
 
-.popup button {
-    margin-top: 10px;
-    padding: 10px 15px;
-    border: none;
-    background: #2ed573;
-    color: black;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        .popup button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            background: #2ed573;
+            color: black;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-.popup button:hover {
-    background: #25a85c;
-}
+        .popup button:hover {
+            background: #25a85c;
+        }
 
+        /* Updated styles for countdown timer */
+        .countdown-timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+        }
+
+        .timer-circle {
+            fill: none;
+            stroke: #2ed573;
+            stroke-width: 5;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">C</div>
-            <div class="nav-toggle" onclick="toggleNav()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <nav class="nav-links" id="nav-links">
-                <a href="{% url 'dashboard' %}" class="nav-link">Home</a>
-                <a href="#" class="nav-link">Deposit</a>
-                <a href="#" class="nav-link">Leaderboard</a>
-                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
-            </nav>
-            <div class="user-info">
-                <div class="user-details">
-                    <span class="username">{{user.username}}</span>
-                    <span class="balance"><strong>{{ballance}}</strong>$</span>
-                </div>
-                <a href="{% url 'profile' %}"><img src="https://via.placeholder.com/40" alt="User Photo" class="user-photo"></a>
-            </div>
-        </div>
-    </header>
-
     <main class="container">
         <section class="section">
             <h2 class="section-title">Crack the Code</h2>
@@ -729,7 +582,6 @@
                         <table id="opponent-table" class="game-table">
                             <thead>
                                 <tr>
-                                    
                                     <th>Position</th>
                                     <th>Correct</th>
                                 </tr>
@@ -766,15 +618,20 @@
         </div>
     </div>
 
+    <!-- Updated countdown timer element -->
+    <div id="countdownTimer" class="countdown-timer" style="display: none;">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+            <circle class="timer-circle" cx="50" cy="50" r="45"/>
+        </svg>
+        <div id="timerText" class="timer-text"></div>
+    </div>
+
     <script>
         let socket;
         let isYourTurn = false;
         let currentUsername = '{{user.username}}';
-
-        function toggleNav() {
-            const navLinks = document.getElementById('nav-links');
-            navLinks.classList.toggle('active');
-        }
+        let countdownInterval;
+        let timerDuration = 30; // Default timer duration in seconds
 
         function selectAmount(amount) {
             document.getElementById('amountInput').value = amount;
@@ -851,6 +708,9 @@
                 case 'Game_Over':
                     handleGameOver(data);
                     break;
+                case 'timer_limit':
+                    timerDuration = data.timer;
+                    break;
             }
         }
 
@@ -876,6 +736,7 @@
                     clearInterval(timer);
                     document.getElementById('gameInfo').style.display = 'none';
                     document.getElementById('gameBoard').style.display = 'block';
+                    startCountdown(timerDuration);
                 }
             }, 1000);
         }
@@ -953,8 +814,7 @@
         }
 
         function closeGameOverPopup() {
-            document.getElementById('gameOverPopup').style.display = 'block';
-;
+            document.getElementById('gameOverPopup').style.display = 'none';
             location.reload();
         }
 
@@ -963,19 +823,16 @@
         }
 
         function showLeaveGamePopup() {
-            document.getElementById('leaveGamePopup').style.display = 'block';
-;
+            document.getElementById('leaveGamePopup').style.display = 'flex';
         }
 
         function confirmLeaveGame() {
-            document.getElementById('leaveGamePopup').style.display = 'block';
-;
+            document.getElementById('leaveGamePopup').style.display = 'none';
             window.location.href = '/lobby';
         }
 
         function cancelLeaveGame() {
-            document.getElementById('leaveGamePopup').style.display = 'block';
-;
+            document.getElementById('leaveGamePopup').style.display = 'none';
         }
 
         document.querySelectorAll('.guess-box').forEach((box, index) => {
@@ -996,20 +853,40 @@
             });
         });
 
-        document.addEventListener('click', (event) => {
-            const navLinks = document.getElementById('nav-links');
-            const navToggle = document.querySelector('.nav-toggle');
-            
-            if (!navToggle.contains(event.target) && !navLinks.contains(event.target)) {
-                navLinks.classList.remove('active');
-            }
-        });
-
         window.onbeforeunload = function() {
             if (document.getElementById('gameBoard').style.display !== 'none') {
                 return "Are you sure you want to leave the game?";
             }
         };
+
+        function startCountdown(duration) {
+            const timerCircle = document.querySelector('.timer-circle');
+            const timerText = document.getElementById('timerText');
+            const countdownTimer = document.getElementById('countdownTimer');
+            let timeLeft = duration;
+
+            countdownTimer.style.display = 'block';
+
+            const circumference = 2 * Math.PI * 45;
+            timerCircle.style.strokeDasharray = circumference;
+            timerCircle.style.strokeDashoffset = 0;
+
+            clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerText.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                const offset = circumference * (1 - timeLeft / duration);
+                timerCircle.style.strokeDashoffset = offset;
+
+                if (timeLeft === 0) {
+                    timeLeft = duration; // Reset the timer
+                } else {
+                    timeLeft--;
+                }
+            }, 1000);
+        }
     </script>
 </body>
 </html>
