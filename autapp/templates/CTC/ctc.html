@@ -708,9 +708,7 @@
                 case 'Game_Over':
                     handleGameOver(data);
                     break;
-                case 'timer_limit':
-                    timerDuration = data.timer;
-                    break;
+                
             }
         }
 
@@ -736,7 +734,7 @@
                     clearInterval(timer);
                     document.getElementById('gameInfo').style.display = 'none';
                     document.getElementById('gameBoard').style.display = 'block';
-                    startCountdown(timerDuration);
+                    
                 }
             }, 1000);
         }
@@ -859,34 +857,7 @@
             }
         };
 
-        function startCountdown(duration) {
-            const timerCircle = document.querySelector('.timer-circle');
-            const timerText = document.getElementById('timerText');
-            const countdownTimer = document.getElementById('countdownTimer');
-            let timeLeft = duration;
-
-            countdownTimer.style.display = 'block';
-
-            const circumference = 2 * Math.PI * 45;
-            timerCircle.style.strokeDasharray = circumference;
-            timerCircle.style.strokeDashoffset = 0;
-
-            clearInterval(countdownInterval);
-            countdownInterval = setInterval(() => {
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                timerText.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-
-                const offset = circumference * (1 - timeLeft / duration);
-                timerCircle.style.strokeDashoffset = offset;
-
-                if (timeLeft === 0) {
-                    timeLeft = duration; // Reset the timer
-                } else {
-                    timeLeft--;
-                }
-            }, 1000);
-        }
+        
     </script>
 </body>
 </html>
