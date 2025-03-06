@@ -1,3 +1,2 @@
-from django.test import TestCase
-
-# Create your tests here.
+print(100-100*2.5/100)
+print(100*2.5/100)

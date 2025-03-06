@@ -3,7 +3,7 @@ from django.shortcuts import render,redirect
 import hashlib
 import time
 
-from .models import MyUser,game,Ballance
+from .models import MyUser,Ballance,GameHistory
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -42,7 +42,9 @@ def generate_unique_number(username):
 
     # Ensure the number is 6 digits by padding with zeros if necessary
     return str(unique_number).zfill(6)
+
 def index(request):
+    
     return render(request,'index.html')
 def signup(request):
     if request.method == 'POST':
@@ -57,38 +59,66 @@ def signup(request):
                 messages.error(request,'Password must be at least 6 characters long')
                 return render(request,'signup.html')
             else:
-                if MyUser.objects.filter(username=username).exists():
-                    messages.error(request,'Username already exists, try another one!')
-                    return render(request,'signup.html')
-                else:
-                    if MyUser.objects.filter(email=email).exists():
-                        messages.error(request,'Email already exists')
+                if MyUser.objects.get(usename=username) == None:
+                    if MyUser.objects.filter(username=username).exists():
+                        messages.error(request,'Username already exists, try another one!')
                         return render(request,'signup.html')
                     else:
-                        token = generate_unique_number(username)
-                        user = MyUser.objects.create_user(username=username,
-                                                          first_name=firstname,
-                                                          last_name=lastname,
-                                                          email=email,
-                                                          password=password,
-                                                          token=token)
-                        user.is_active=False
-                        user.token=token
-                        print(user.token)
-                        user.save()
-                        print('user saved')
+                        if MyUser.objects.filter(email=email).exists():
+                            messages.error(request,'Email already exists')
+                            return render(request,'signup.html')
                         
-                        try:
-                            send_welcome_email(user, email,token)
-                            messages.success(request,'Account created successfully, check your email for verification')
-                            print('email sent')
-                            return redirect('verify',username=user.username)
-                        except Exception as e:
-                            print(e)
-                            messages.error(request,f'Error sending email: please sign up again')
-                            user.delete()
-                            return render(request, 'signup.html')
-                        
+                        else:
+                            token = generate_unique_number(username)
+                            user = MyUser.objects.create_user(username=username,
+                                                            first_name=firstname,
+                                                            last_name=lastname,
+                                                            email=email,
+                                                            password=password,
+                                                            token=token)
+                            user.is_active=False
+                            user.token=token
+                            print(user.token)
+                            user.save()
+                            print('user saved')
+                            
+                            try:
+                                send_welcome_email(user, email,token)
+                                messages.success(request,'Account created successfully, check your email for verification')
+                                print('email sent')
+                                return redirect('verify',username=user.username)
+                            except Exception as e:
+                                print(e)
+                                messages.error(request,f'Error sending email: please sign up again')
+                                user.delete()
+                                return render(request, 'signup.html')
+                elif MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username).is_active==False:
+
+                    token = generate_unique_number(username)
+                    MyUser.objects.get(username=username).delete()
+                    print("user deleted")
+                    user = MyUser.objects.create_user(username=username,
+                                                            first_name=firstname,
+                                                            last_name=lastname,
+                                                            email=email,
+                                                            password=password,
+                                                            token=token)
+                    user.is_active=False
+                    user.token=token
+                    print(user.token)
+                    user.save()
+                    print('user saved')
+                    
+                    try:
+                        send_welcome_email(user, email,token)
+                        messages.success(request,'Account created successfully, check your email for verification')
+                        print('email sent')
+                        return redirect('verify',username=user.username)
+                    except Exception as e:
+                        print(e)
+                        messages.error(request,f'Error sending email: please sign up again')
+                        user.delete()
+
                         
                         
     return render(request,'signup.html')
@@ -96,14 +126,15 @@ def signup(request):
 
 def verify(request, username):
     user = get_object_or_404(MyUser, username=username)
-    if user.is_active:
+    if user.is_active: 
         raise Http404
     if request.method == 'POST':
         token = request.POST['token']
         print(user.token)
         if user.token == token:
             user.is_active = True
-            ballance=   Ballance.objects.create(user=user,ballance=0.00)
+            ballance=Ballance.objects.create(user=user,ballance=0.00)
+            GameHistory.objects.create(user=user,TotalPlayed=0,TotalWin=0,Totaloss=0,TotalEarning=0.00,)
             ballance.save()
             user.save()
             login(request, user)
@@ -112,20 +143,22 @@ def verify(request, username):
         else:
             messages.error(request, 'Invalid token')
             return render(request, 'activate.html', {'user': user})
+    
     return render(request, 'activate.html', {'user': user})
 
 def login_view(request):
     if request.method == 'POST':
-        username=request.POST['username']
-        password=request.POST['password']
-        user=authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('dashboard')
-            
-        else:
-            messages.error(request,'Invalid credentials')
-            return render(request, 'login.html', )
+            username=request.POST['username']
+            password=request.POST['password']
+            user=authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                
+                return redirect('dashboard')
+                
+            else:
+                messages.error(request,'Invalid credentials')
+                return render(request, 'login.html', )
     else:
         return render(request, 'login.html')
 @login_required
@@ -142,7 +175,22 @@ def profile(request):
         last_name=request.POST['last_name']
         username=request.POST['username']
         if MyUser.objects.filter(username=username).exists():
-            messages.error(request,'Username already exists, try another one!')
+            if request.user.username != username:
+                messages.error(request,'Username already exists, try another one!')
+            else:
+                if len(first_name)>200 or len(last_name)>200:
+                    messages.error(request,"First name and last name must be less than 200 characters")
+                else:
+                    user_obj=MyUser.objects.get(username=user.username)
+                    user_obj.first_name=first_name
+                    user_obj.last_name=last_name
+                    user_obj.username=username  
+            try:
+                user_obj.save()
+                messages.success(request, 'Profile updated successfully.')
+                return redirect('profile')
+            except Exception as e:
+                return render(request,'profile.html')
         else:
             if len(first_name)>200 or len(last_name)>200:
                 messages.error(request,"First name and last name must be less than 200 characters")
@@ -151,8 +199,6 @@ def profile(request):
                 user_obj.first_name=first_name
                 user_obj.last_name=last_name
                 user_obj.username=username  
-            
-    
         try:
             user_obj.save()
             messages.success(request, 'Profile updated successfully.')
@@ -160,13 +206,19 @@ def profile(request):
         except Exception as e:
             return render(request,'profile.html')
     user_file=MyUser.objects.get(username=request.user.username)
-    user_status = game.objects.get(user=user_file)
-    ballance=Ballance.objects.get(user=user_file).ballance
-    return render(request, 'profile.html', {'user': request.user, 'stat': user_status,'ballance':ballance})
+    Game_Stat = GameHistory.objects.get(user=user_file)
+    ballance=Ballance.objects.get(user=user_file)
+    print(f"total earning {Game_Stat.TotalEarning}") 
+    print(f"total played {Game_Stat.TotalPlayed}")
+    print(f"total won {Game_Stat.TotalWin}")
+    print(f"total loss {Game_Stat.Totaloss}")
 
+    return render(request, 'profile.html', {'user': request.user, 'stat': Game_Stat,'ballance':ballance})
 
 @login_required
 def logout_view(request):
-    logout(request)
+    user=MyUser.objects.get(username=request.user.username)
+    user.is_logged_in=False
+    logout(request) 
     messages.success(request, 'you have been logged out!')
     return redirect('login')

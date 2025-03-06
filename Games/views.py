@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from autapp.models import MyUser,game,Ballance
+from autapp.models import MyUser,Ballance
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, JsonResponse
 from django.contrib import messages
@@ -14,12 +14,12 @@ def ctc(request):
 
     if request.method =='POST':
         amount=int(request.POST["amount"])
-        if amount == 50 or amount == 100 or amount ==500:
+        if amount == 25 or amount == 50 or amount ==100:
             print('sucess')
             if Ballance.objects.get(user=user).ballance >=amount:
                 print(Ballance.objects.get(user=user).ballance)
                 messages.success(request,"balance verified, proceeding to the game")
-                return JsonResponse({"proceed":True,"message":"balance verified, proceeding to the game","amount":amount})
+                return JsonResponse({"proceed":True,"message":"balance verified, proceeding to the game","amount":amount, "type": "searching"})
             else:
                 print("hey")
                 return JsonResponse({"proceed":False,"message":"insufficient balance"})

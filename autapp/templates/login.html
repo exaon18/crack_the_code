@@ -26,6 +26,35 @@
             100% { transform: translateX(-500px) translateY(500px); opacity: 0; }
         }
 
+        /* Loading animation */
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Message animations */
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -87,6 +116,7 @@
             color: var(--primary);
             animation: pulse 2s infinite ease-in-out;
             text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+            text-decoration: none;
         }
 
         .container {
@@ -98,6 +128,32 @@
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(46, 213, 115, 0.1);
             border: 1px solid var(--primary);
+        }
+
+        .messages-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .message {
+            background: rgba(46, 213, 115, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--text);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            text-align: center;
+            backdrop-filter: blur(8px);
+            animation: slideIn 0.3s ease forwards;
+        }
+
+        .message.hiding {
+            animation: slideOut 0.3s ease forwards;
         }
 
         h1 {
@@ -148,11 +204,31 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
+            position: relative;
         }
 
         .btn:hover {
             background: var(--primary-dark);
             box-shadow: 0 4px 20px rgba(46, 213, 115, 0.9);
+        }
+
+        .btn.loading {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--background);
+            border-radius: 50%;
+            border-right-color: transparent;
+            animation: rotate 0.8s linear infinite;
         }
 
         .signup-link {
@@ -215,8 +291,14 @@
 </head>
 <body>
     <header class="header">
-        <a href="#" class="logo">C</a>
+        <a href="{% url 'index' %}" class="logo">C</a>
     </header>
+
+    <div class="messages-container">
+        {% for msg in messages %}
+        <div class="message">{{msg}}</div>
+        {% endfor %}
+    </div>
 
     <div class="container">
         <h1>Login</h1>
@@ -233,7 +315,7 @@
             <button type="submit" class="btn">Log In</button>
         </form>
         <div class="signup-link">
-        Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
+            Don't have an account? <a href="{% url 'signup' %}">Sign up</a>
         </div>
     </div>
 
@@ -254,10 +336,40 @@
 
             setInterval(createShootingStar, 2000);
 
-            // Form submission
-           
+            // Handle messages auto-dismiss
+            const messages = document.querySelectorAll('.message');
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.classList.add('hiding');
+                    setTimeout(() => {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+
+            // Enhanced form submission with loading state
+            const form = document.getElementById('login-form');
+            const submitButton = form.querySelector('button[type="submit"]');
+            let isSubmitting = false;
+
+            form.addEventListener('submit', async (e) => {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Start loading state
+                isSubmitting = true;
+                submitButton.classList.add('loading');
                 
-            
+                // Let the form submit naturally - this is key for Django CSRF
+                // Don't prevent default here, let Django handle the submission
+                
+                // Prevent double submission
+                setTimeout(() => {
+                    submitButton.disabled = true;
+                }, 0);
+            });
         });
     </script>
 </body>

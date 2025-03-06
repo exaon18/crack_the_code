@@ -34,17 +34,17 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1rem;
         }
 
         .section {
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
         }
 
         .section-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
             color: var(--primary);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
             position: relative;
             padding-bottom: 0.5rem;
@@ -65,20 +65,22 @@
         .game-options {
             display: flex;
             justify-content: center;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .game-option {
             background-color: transparent;
             color: var(--text);
             border: 2px solid var(--primary);
-            padding: 1rem 2rem;
+            padding: 0.75rem 1.5rem;
             border-radius: var(--border-radius);
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: 100px;
         }
 
         .game-option:hover {
@@ -94,7 +96,7 @@
             max-width: 400px;
             margin: 0 auto;
             background-color: var(--surface);
-            padding: 2rem;
+            padding: 1.5rem;
             border-radius: var(--border-radius);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
@@ -103,6 +105,7 @@
             color: var(--text-secondary);
             margin-bottom: 1rem;
             text-align: center;
+            font-size: 1rem;
         }
 
         .join-form h3 span {
@@ -133,15 +136,15 @@
 
         .game-status {
             text-align: center;
-            margin-top: 2rem;
-            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
             color: var(--text-secondary);
         }
 
         #gameInfo {
             display: none;
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             padding: 1rem;
             background-color: var(--surface);
             border-radius: var(--border-radius);
@@ -149,54 +152,52 @@
         }
 
         #countdown {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: var(--primary);
-            margin: 1rem 0;
+            margin: 0.75rem 0;
         }
 
         #gameBoard {
             display: none;
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             background-color: var(--surface);
-            padding: 2rem;
+            padding: 1rem;
             border-radius: var(--border-radius);
         }
 
         #turnIndicator {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             color: var(--text-secondary);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
         }
 
         .game-tables {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin: 2rem auto;
-            max-width: 1200px;
-            padding: 2rem;
-            background: #1a1a1a;
-            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin: 1.5rem auto;
+            max-width: 100%;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: var(--border-radius);
         }
 
         .game-table-container {
             background: transparent;
-            padding: 1rem;
+            padding: 0.75rem;
             box-shadow: none;
-        }
-
-        .game-table-container.your-guesses,
-        .game-table-container.opponent-guesses {
             width: 100%;
         }
 
         .game-table-container h4 {
             color: var(--primary);
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
             text-align: center;
         }
 
@@ -204,49 +205,58 @@
             width: 100%;
             border-collapse: separate;
             border-spacing: 0 0.5rem;
+            font-size: 0.9rem;
         }
 
         .game-table th {
             color: var(--primary);
             font-weight: 500;
-            padding: 1rem;
-            font-size: 1rem;
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
         }
 
         .game-table td {
-            background: #141414;
-            padding: 1rem;
+            background: var(--surface-dark);
+            padding: 0.75rem 0.5rem;
             text-align: center;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
         }
 
         .guess-input-container {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
         }
 
         .guess-box {
-            width: 60px;
-            height: 60px;
-            font-size: 1.8rem;
+            width: 45px;
+            height: 45px;
+            font-size: 1.5rem;
             text-align: center;
             background: transparent;
             color: var(--text);
             border: 2px solid var(--primary);
-            border-radius: 8px;
+            border-radius: var(--border-radius);
         }
 
         #guessButton {
-            background: #2ed573;
-            color: #000;
-            padding: 0.75rem 2rem;
+            background: var(--primary);
+            color: var(--background);
+            padding: 0.75rem 1.5rem;
             font-size: 1rem;
             font-weight: 600;
-            border-radius: 8px;
+            border-radius: var(--border-radius);
             margin-top: 1rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        #guessButton:disabled {
+            background-color: var(--text-secondary);
+            cursor: not-allowed;
         }
 
         #turnIndicator.your-turn {
@@ -259,115 +269,10 @@
             color: var(--text-secondary);
         }
 
-        .game-tables {
-            display: flex;
-            justify-content: space-between;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .game-table-container {
-            background-color: var(--surface-dark);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .game-table-container.your-guesses {
-            width: 60%;
-        }
-
-        .game-table-container.opponent-guesses {
-            width: 40%;
-        }
-
-        .game-table-container h4 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-size: 1.2rem;
-        }
-
-        .game-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 0.5rem;
-        }
-
-        .game-table th, .game-table td {
-            padding: 0.75rem;
-            text-align: center;
-            background-color: var(--surface);
-            border-radius: var(--border-radius);
-        }
-
-        .game-table th {
-            color: var(--primary);
-            font-weight: bold;
-            background-color: transparent;
-        }
-
         .game-table-body {
             display: block;
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
-        }
-
-        .guess-input-container {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .guess-box {
-            width: 50px;
-            height: 50px;
-            font-size: 1.5rem;
-            text-align: center;
-            background-color: var(--surface-dark);
-            color: var(--text);
-            border: 2px solid var(--primary);
-            border-radius: var(--border-radius);
-            transition: all 0.3s ease;
-        }
-
-        .guess-box:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px var(--primary);
-        }
-
-        #guessButton {
-            padding: 0.5rem 1rem;
-            font-size: 1rem;
-            background-color: var(--primary);
-            color: var(--background);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-
-        #guessButton:hover {
-            background-color: var(--primary-dark);
-        }
-
-        #guessButton:disabled {
-            background-color: var(--text-secondary);
-            cursor: not-allowed;
-        }
-
-        #guessButton.your-turn {
-            animation: glow 1.5s infinite alternate;
-        }
-
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px var(--primary);
-            }
-            to {
-                box-shadow: 0 0 20px var(--primary);
-            }
         }
 
         .searching-animation {
@@ -423,9 +328,9 @@
         }
 
         #gameInfo h3 {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: var(--primary);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         #gameInfo .player-name {
@@ -433,88 +338,77 @@
             color: var(--text);
         }
 
-        @media (max-width: 768px) {
-            .section-title {
-                font-size: 1.8rem;
-            }
-
-            .game-options {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .game-option {
-                width: 100%;
-                text-align: center;
-            }
-
-            .guess-input-container {
-                flex-wrap: wrap;
-            }
-
-            .guess-box {
-                width: 40px;
-                height: 40px;
-                font-size: 1.2rem;
-            }
-
-            .game-tables {
-                flex-direction: column;
-            }
-
-            .game-table-container.your-guesses,
-            .game-table-container.opponent-guesses {
-                width: 100%;
-            }
-        }
+        /* Popup styles - IMPROVED FOR MOBILE */
         .popup {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
             z-index: 1000;
-            text-align: center;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
         }
 
         .popup-content {
-            padding: 20px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            background: rgba(23, 25, 35, 0.95);
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin: 0 auto;
+        }
+
+        .popup h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
         }
 
         .popup button {
-            margin-top: 10px;
-            padding: 10px 15px;
-            border: none;
-            background: #2ed573;
-            color: black;
+            background: var(--surface);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 0.75rem 1.25rem;
+            margin: 0.5rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
             font-weight: bold;
-            border-radius: 5px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
         }
 
         .popup button:hover {
-            background: #25a85c;
+            background: var(--primary);
+            color: var(--background);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
         }
 
-        /* Updated styles for countdown timer */
+        /* Countdown timer */
         .countdown-timer {
             position: fixed;
             top: 20px;
             right: 20px;
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
+            display: none;
+            z-index: 900;
         }
 
         .timer-circle {
             fill: none;
-            stroke: #2ed573;
+            stroke: var(--primary);
             stroke-width: 5;
             stroke-linecap: round;
             transform: rotate(-90deg);
@@ -531,6 +425,437 @@
             font-weight: bold;
             color: var(--primary);
         }
+
+        /* Message display */
+        #messageDisplay {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(46, 213, 115, 0.9);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+            z-index: 1000;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .timer-pulse {
+            animation: pulse 1s infinite;
+        }
+
+        /* Error alert */
+        .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: rgba(23, 25, 35, 0.9);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            color: var(--text);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            z-index: 1000;
+            width: 90%;
+            max-width: 350px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            animation: errorPopup 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .error-alert h3 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .error-alert p {
+            margin: 0.5rem 0;
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .error-alert .countdown {
+            margin-top: 1rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.5);
+        }
+
+        .error-alert .redirect-text {
+            margin-top: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 100%;
+            transition: width 3s linear;
+        }
+
+        @keyframes errorPopup {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Game status */
+        .game-status {
+            position: relative;
+            background: rgba(46, 213, 115, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .game-status p {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* Game info */
+        #gameInfo {
+            background: rgba(23, 25, 35, 0.9);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            padding: 1.5rem 1rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #gameInfo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scanline 2s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        #countdown {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.5);
+            animation: countdownPulse 1s ease-in-out infinite;
+            margin: 1.5rem 0;
+        }
+
+        @keyframes countdownPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Leave warning popups */
+        .leave-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 1rem;
+        }
+
+        .leave-warning-content {
+            background: rgba(23, 25, 35, 0.95);
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            width: 100%;
+            max-width: 350px;
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .leave-warning.game-leave .leave-warning-content {
+            border-color: #ff4444;
+        }
+
+        .leave-warning h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+        }
+
+        .leave-warning.game-leave h2 {
+            color: #ff4444;
+            text-shadow: 0 0 10px rgba(255, 68, 68, 0.3);
+        }
+
+        .leave-warning p {
+            color: var(--text);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .leave-warning-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .leave-warning-btn {
+            padding: 0.75rem 1.25rem;
+            border: 2px solid var(--primary);
+            background: var(--surface);
+            color: var(--primary);
+            border-radius: var(--border-radius);
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .leave-warning.game-leave .leave-warning-btn {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .leave-warning-btn:hover {
+            background: var(--primary);
+            color: var(--background);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .leave-warning.game-leave .leave-warning-btn:hover {
+            background: #ff4444;
+            box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
+        }
+
+        .leave-warning-btn.stay {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .leave-warning-btn.stay:hover {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        .leave-warning.game-leave .leave-warning-btn.stay {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .leave-warning.game-leave .leave-warning-btn.stay:hover {
+            background: var(--text);
+            color: var(--background);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Game over popup */
+        #gameOverPopup .popup-content {
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(23, 25, 35, 0.95);
+            border: 2px solid var(--primary);
+            padding: 2rem 1.5rem;
+        }
+
+        #gameOverPopup h2 {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #gameOverPopup.winner h2 {
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.4);
+        }
+
+        #gameOverPopup.loser h2 {
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255, 68, 68, 0.4);
+        }
+
+        .trophy-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .winning-amount {
+            font-size: 1.25rem;
+            margin: 0.75rem 0;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Media queries for responsive design */
+        @media (min-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .game-options {
+                flex-direction: row;
+                gap: 2rem;
+            }
+
+            .game-option {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+            }
+
+            .join-form {
+                padding: 2rem;
+            }
+
+            .join-form h3 {
+                font-size: 1.2rem;
+            }
+
+            .game-tables {
+                flex-direction: row;
+                padding: 2rem;
+            }
+
+            .game-table-container {
+                padding: 1rem;
+            }
+
+            .game-table th, .game-table td {
+                padding: 1rem;
+                font-size: 1rem;
+            }
+
+            .guess-box {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            #countdown {
+                font-size: 6rem;
+            }
+
+            .popup h2 {
+                font-size: 2.5rem;
+            }
+
+            .popup button {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                min-width: 150px;
+            }
+
+            .countdown-timer {
+                width: 100px;
+                height: 100px;
+            }
+
+            .leave-warning-content, .popup-content {
+                max-width: 500px;
+                padding: 2.5rem;
+            }
+
+            .leave-warning h2 {
+                font-size: 2rem;
+            }
+
+            .leave-warning p {
+                font-size: 1.2rem;
+            }
+
+            .leave-warning-btn {
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                min-width: 150px;
+            }
+
+            .trophy-icon {
+                font-size: 4rem;
+            }
+
+            .winning-amount {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -539,9 +864,9 @@
             <h2 class="section-title">Crack the Code</h2>
             <div id="gameSetup">
                 <div class="game-options">
+                    <button class="game-option" onclick="selectAmount(25)">25 birr</button>
                     <button class="game-option" onclick="selectAmount(50)">50 birr</button>
                     <button class="game-option" onclick="selectAmount(100)">100 birr</button>
-                    <button class="game-option" onclick="selectAmount(500)">500 birr</button>
                 </div>
                 <form id="joinForm" class="join-form" method="post">
                     {% csrf_token %}
@@ -557,7 +882,8 @@
                 </div>
             </div>
             <div id="gameInfo" style="display: none;">
-                <h3>Match: <span id="player1" class="player-name"></span> vs <span id="player2" class="player-name"></span></h3>
+                <h3>Match: 
+                    <span id="player1" class="player-name"></span> vs <span id="player2" class="player-name"></span></h3>
                 <p id="betInfo"></p>
                 <div id="countdown"></div>
             </div>
@@ -601,263 +927,598 @@
         </section>
     </main>
 
+    <!-- Game Over Popup -->
     <div id="gameOverPopup" class="popup">
         <div class="popup-content">
             <h2 id="gameOverMessage"></h2>
+            <div class="trophy-icon" id="trophyIcon"></div>
+            <p id="winningAmount" class="winning-amount"></p>
             <button onclick="closeGameOverPopup()">Play Again</button>
             <button onclick="returnToLobby()">Return to Lobby</button>
         </div>
     </div>
 
-    <div id="leaveGamePopup" class="popup">
-        <div class="popup-content">
-            <h2>Are you sure you want to leave the game?</h2>
-            <p>You may lose your current progress.</p>
-            <button onclick="confirmLeaveGame()">Yes, Leave Game</button>
-            <button onclick="cancelLeaveGame()">No, Stay in Game</button>
+    <!-- Leave Game Warning Popups -->
+    <div id="searchLeaveWarning" class="leave-warning">
+        <div class="leave-warning-content">
+            <h2>Leaving the Search?</h2>
+            <p>Are you sure you want to stop searching for an opponent?</p>
+            <div class="leave-warning-buttons">
+                <button class="leave-warning-btn" onclick="confirmLeaveSearch()">Yes, Leave</button>
+                <button class="  onclick="confirmLeaveSearch()">Yes, Leave</button>
+                <button class="leave-warning-btn stay" onclick="cancelLeave()">Stay</button>
+            </div>
         </div>
     </div>
 
-    <!-- Updated countdown timer element -->
-    <div id="countdownTimer" class="countdown-timer" style="display: none;">
+    <div id="gameLeaveWarning" class="leave-warning game-leave">
+        <div class="leave-warning-content">
+            <h2>⚠️ Warning!</h2>
+            <p>Leaving the game will result in:</p>
+            <p>• Loss of your bet money<br>• Automatic game loss<br>• Opponent wins by default</p>
+            <div class="leave-warning-buttons">
+                <button class="leave-warning-btn" onclick="confirmLeaveGame()">Leave Anyway</button>
+                <button class="leave-warning-btn stay" onclick="cancelLeave()">Stay in Game</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Countdown timer element -->
+    <div id="countdownTimer" class="countdown-timer">
         <svg width="100" height="100" viewBox="0 0 100 100">
             <circle class="timer-circle" cx="50" cy="50" r="45"/>
         </svg>
         <div id="timerText" class="timer-text"></div>
     </div>
 
+    <!-- Message display element -->
+    <div id="messageDisplay"></div>
+
     <script>
         let socket;
-        let isYourTurn = false;
-        let currentUsername = '{{user.username}}';
-        let countdownInterval;
-        let timerDuration = 30; // Default timer duration in seconds
 
-        function selectAmount(amount) {
-            document.getElementById('amountInput').value = amount;
-            document.getElementById('selectedAmount').textContent = amount;
-            
-            document.querySelectorAll('.game-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-            
-            event.target.classList.add('selected');
-        }
+let isYourTurn = false
+const currentUsername = "{{user.username}}"
+let countdownInterval
+let timerDuration = 30
+let isSearching = false
+let isInGame = false
+let attemptingToLeave = false
 
-        document.getElementById('joinForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const form = e.target;
-            const formData = new FormData(form);
+function handleGameMessage(data) {
+  switch (data.type) {
+    case "start_game":
+      if (data.players_amount === 2) {
+        handleGameStart(data)
+      }
+      break
+    case "searching":
+      isSearching = true
+      break
+    case "turns":
+      handleTurns(data)
+      break
+    case "OnGame":
+      updateGameState(data)
+      break
+    case "Forced":
+      updateGameState(data)
+      break
+    case "Game_Over":
+      handleGameOver(data)
+      break
+    case "timer_limit":
+      handleTimerLimit(data)
+      break
+  }
+}
 
-            try {
-                const response = await fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-                    }
-                });
+function displayMessage(message) {
+  const messageDisplay = document.getElementById("messageDisplay")
+  messageDisplay.textContent = message
+  messageDisplay.style.display = "block"
+  setTimeout(() => {
+    messageDisplay.style.display = "none"
+  }, 4000)
+}
 
-                const data = await response.json();
-                console.log(data);
-                if (data.proceed) {
-                    socket = new WebSocket(`ws://127.0.0.1:8000/ws/ctc/${data.amount}/`);
-                    document.getElementById('gameSetup').style.display = 'none';
-                    document.getElementById('gameStatus').style.display = 'block';
+function sendGuess(forcedGuess = null) {
+  let guess
 
-                    socket.onopen = () => {
-                        console.log('WebSocket connection established');
-                    };
+  if (forcedGuess) {
+    guess = forcedGuess
+  } else {
+    const guessBoxes = document.querySelectorAll(".guess-box")
+    guess = ""
+    guessBoxes.forEach((box) => {
+      guess += box.value
+    })
+    guess = guess.padStart(4, "0") // Pad with leading zeros if necessary
+  }
 
-                    socket.onmessage = (event) => {
-                        console.log('WebSocket message:', event.data);
-                        const gameData = JSON.parse(event.data);
-                        handleGameMessage(gameData);
-                    };
+  if ((guess.length === 4 || forcedGuess) && isYourTurn) {
+    socket.send(
+      JSON.stringify({
+        type: "guess",
+        guess: guess,
+      }),
+    )
 
-                    socket.onerror = (error) => {
-                        console.error('WebSocket error:', error);
-                        document.getElementById('gameStatus').textContent = 'Error connecting to the game server.';
-                    };
+    if (!forcedGuess) {
+      document.querySelectorAll(".guess-box").forEach((box) => (box.value = ""))
+    }
+  }
+}
 
-                    socket.onclose = () => {
-                        console.log('WebSocket connection closed');
-                    };
-                } else {
-                    document.getElementById('gameStatus').textContent = 'Unable to join the game. Please try again.';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('gameStatus').textContent = 'An error occurred. Please try again later.';
-            }
-        });
+document.addEventListener("DOMContentLoaded", () => {
+  history.pushState(null, null, location.href)
 
-        function handleGameMessage(data) {
-            switch (data.type) {
-                case 'start_game':
-                    if (data.players_amount === 2) {
-                        handleGameStart(data);
-                    }
-                    break;
-                case 'turns':
-                    handleTurns(data);
-                    break;
-                case 'OnGame':
-                    updateGameState(data);
-                    break;
-                case 'Game_Over':
-                    handleGameOver(data);
-                    break;
-                
-            }
-        }
+  window.onpopstate = (event) => {
+    history.pushState(null, null, location.href)
+    handleBackButton()
+  }
 
-        function handleGameStart(data) {
-            document.getElementById('gameStatus').style.display = 'none';
-            document.getElementById('gameInfo').style.display = 'block';
+  window.onbeforeunload = (e) => {
+    if (isSearching || isInGame) {
+      e.preventDefault()
+      e.returnValue = ""
+      showLeaveWarning()
+      return ""
+    }
+  }
+})
 
-            document.getElementById('player1').textContent = data.player_1;
-            document.getElementById('player2').textContent = data.player_2;
-            document.getElementById('betInfo').textContent = `Bet Amount: ${data.amount} birr | Maximum Jackpot: ${data.amount * 2} birr`;
+function handleBackButton() {
+  if (isSearching || isInGame) {
+    showLeaveWarning()
+  }
+}
 
-            document.getElementById('player-username').textContent = currentUsername;
-            document.getElementById('opponent-username').textContent = data.player_1 === currentUsername ? data.player_2 : data.player_1;
+function showLeaveWarning() {
+  const warningElement = isSearching
+    ? document.getElementById("searchLeaveWarning")
+    : document.getElementById("gameLeaveWarning")
+  warningElement.style.display = "flex"
+}
 
-            let countdown = 5;
-            const countdownElement = document.getElementById('countdown');
-            countdownElement.textContent = countdown;
+function cancelLeave() {
+  document.getElementById("searchLeaveWarning").style.display = "none"
+  document.getElementById("gameLeaveWarning").style.display = "none"
+}
 
-            const timer = setInterval(() => {
-                countdown--;
-                countdownElement.textContent = countdown;
-                if (countdown === 0) {
-                    clearInterval(timer);
-                    document.getElementById('gameInfo').style.display = 'none';
-                    document.getElementById('gameBoard').style.display = 'block';
-                    
-                }
-            }, 1000);
-        }
+function confirmLeaveSearch() {
+  attemptingToLeave = true
+  isSearching = false
+  window.location.href = "/dashboard"
+}
 
-        function handleTurns(data) {
-            isYourTurn = data[currentUsername];
-            updateTurnIndicator();
-        }
+function confirmLeaveGame() {
+  attemptingToLeave = true
+  isInGame = false
+  window.location.href = "/dashboard"
+}
 
-        function updateTurnIndicator() {
-            const turnIndicator = document.getElementById('turnIndicator');
-            const guessButton = document.getElementById('guessButton');
-            if (isYourTurn) {
-                turnIndicator.textContent = 'Your Turn';
-                turnIndicator.classList.add('your-turn');
-                turnIndicator.classList.remove('opponent-turn');
-                guessButton.classList.add('your-turn');
-            } else {
-                turnIndicator.textContent = "Opponent's Turn";
-                turnIndicator.classList.add('opponent-turn');
-                turnIndicator.classList.remove('your-turn');
-                guessButton.classList.remove('your-turn');
-            }
-            guessButton.disabled = !isYourTurn;
-        }
+document.querySelectorAll(".guess-box").forEach((box, index) => {
+  box.addEventListener("input", function (e) {
+    // Allow '0' as a valid input
+    this.value = this.value.replace(/[^0-9]/g, "")
 
-        function sendGuess() {
-            const guessBoxes = document.querySelectorAll('.guess-box');
-            let guess = '';
-            guessBoxes.forEach(box => {
-                guess += box.value;
-            });
+    if (this.value.length === 1) {
+      if (index < 3) {
+        document.querySelectorAll(".guess-box")[index + 1].focus()
+      } else {
+        document.getElementById("guessButton").focus()
+      }
+    }
+  })
 
-            if (guess.length === 4 && isYourTurn) {
-                socket.send(JSON.stringify({
-                    type: 'guess',
-                    guess: parseInt(guess)
-                }));
-                guessBoxes.forEach(box => box.value = '');
-            }
-        }
+  box.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      if (isYourTurn) sendGuess()
+    }
+    if (e.key === "Backspace" && this.value.length === 0 && index > 0) {
+      document.querySelectorAll(".guess-box")[index - 1].focus()
+    }
+  })
+})
 
-        function updateGameState(data) {
-            const isYourMove = data.player === currentUsername;
-            let tbody, row;
-            
-            if (isYourMove) {
-                tbody = document.getElementById('player-table').querySelector('tbody');
-                row = tbody.insertRow(0);
-                row.insertCell(0).textContent = data.guess;
-                row.insertCell(1).textContent = data.position;
-                row.insertCell(2).textContent = data.correct;
-            } else {
-                tbody = document.getElementById('opponent-table').querySelector('tbody');
-                row = tbody.insertRow(0);
-                row.insertCell(0).textContent = data.position;
-                row.insertCell(1).textContent = data.correct;
-            }
+function handleGameStart(data) {
+  document.getElementById("searchLeaveWarning").style.display = "none"
+  document.getElementById("gameStatus").style.display = "none"
+  document.getElementById("gameInfo").style.display = "block"
 
-            // Maintain maximum of 5 rows
-            while (tbody.children.length > 5) {
-                tbody.removeChild(tbody.lastChild);
-            }
+  document.getElementById("player1").textContent = data.player_1
+  document.getElementById("player2").textContent = data.player_2
+  document.getElementById("betInfo").textContent =
+    `Bet Amount: ${data.amount} birr | Maximum Jackpot: ${data.amount * 2} birr`
 
-            isYourTurn = !isYourTurn;
-            updateTurnIndicator();
-        }
+  document.getElementById("player-username").textContent = currentUsername
+  document.getElementById("opponent-username").textContent =
+    data.player_1 === currentUsername ? data.player_2 : data.player_1
 
-        function handleGameOver(data) {
-            const popup = document.getElementById('gameOverPopup');
-            const message = document.getElementById('gameOverMessage');
-            
-            message.textContent = data.winner === currentUsername ? 'You Won!' : 'Game Over';
-            popup.style.display = 'flex';
-        }
+  let countdown = 5
+  const countdownElement = document.getElementById("countdown")
+  countdownElement.textContent = countdown
 
-        function closeGameOverPopup() {
-            document.getElementById('gameOverPopup').style.display = 'none';
-            location.reload();
-        }
+  isSearching = false
+  isInGame = true
 
-        function returnToLobby() {
-            window.location.href = '/lobby';
-        }
+  // Hide the timer during the 5-second countdown
+  document.getElementById("countdownTimer").style.display = "none"
 
-        function showLeaveGamePopup() {
-            document.getElementById('leaveGamePopup').style.display = 'flex';
-        }
+  const timer = setInterval(() => {
+    countdown--
+    countdownElement.textContent = countdown
+    if (countdown === 0) {
+      clearInterval(timer)
+      document.getElementById("gameInfo").style.display = "none"
+      document.getElementById("gameBoard").style.display = "block"
 
-        function confirmLeaveGame() {
-            document.getElementById('leaveGamePopup').style.display = 'none';
-            window.location.href = '/lobby';
-        }
+      // Show the timer and start it if it's your turn
+      if (isYourTurn) {
+        document.getElementById("countdownTimer").style.display = "block"
+        startTimer()
+      }
+    }
+  }, 1000)
+}
 
-        function cancelLeaveGame() {
-            document.getElementById('leaveGamePopup').style.display = 'none';
-        }
+function handleTurns(data) {
+  isYourTurn = data[currentUsername]
+  updateTurnIndicator()
+  if (isYourTurn) {
+    document.getElementById("countdownTimer").style.display = "block"
+    startTimer()
+  } else {
+    stopTimer()
+  }
+}
 
-        document.querySelectorAll('.guess-box').forEach((box, index) => {
-            box.addEventListener('input', function() {
-                if (this.value.length === 1) {
-                    if (index < 3) {
-                        document.querySelectorAll('.guess-box')[index + 1].focus();
-                    } else {
-                        document.getElementById('guessButton').focus();
-                    }
-                }
-            });
+function handleTimerLimit(data) {
+  timerDuration = data.timer
+  if (isYourTurn) {
+    startTimer()
+  }
+}
 
-            box.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
-                    document.querySelectorAll('.guess-box')[index - 1].focus();
-                }
-            });
-        });
+function updateTurnIndicator() {
+  const turnIndicator = document.getElementById("turnIndicator")
+  const guessButton = document.getElementById("guessButton")
+  if (isYourTurn) {
+    turnIndicator.textContent = "Your Turn"
+    turnIndicator.classList.add("your-turn")
+    turnIndicator.classList.remove("opponent-turn")
+    guessButton.classList.add("your-turn")
+  } else {
+    turnIndicator.textContent = "Opponent's Turn"
+    turnIndicator.classList.add("opponent-turn")
+    turnIndicator.classList.remove("your-turn")
+    guessButton.classList.remove("your-turn")
+  }
+  guessButton.disabled = !isYourTurn
+}
 
-        window.onbeforeunload = function() {
-            if (document.getElementById('gameBoard').style.display !== 'none') {
-                return "Are you sure you want to leave the game?";
-            }
-        };
+function startTimer() {
+  const timerElement = document.getElementById("countdownTimer")
+  const timerCircle = timerElement.querySelector(".timer-circle")
+  const timerText = document.getElementById("timerText")
+  let timeLeft = timerDuration
 
-        
+  timerElement.style.display = "block"
+  const circumference = 2 * Math.PI * 45
+  timerCircle.style.strokeDasharray = circumference
+
+  clearInterval(countdownInterval)
+  countdownInterval = setInterval(() => {
+    timeLeft--
+    const dashoffset = circumference * (1 - timeLeft / timerDuration)
+    timerCircle.style.strokeDashoffset = dashoffset
+    timerText.textContent = timeLeft
+
+    if (timeLeft <= 0) {
+      stopTimer()
+    } else if (timeLeft <= 5) {
+      timerElement.classList.add("timer-pulse")
+    } else {
+      timerElement.classList.remove("timer-pulse")
+    }
+  }, 1000)
+}
+
+function stopTimer() {
+  clearInterval(countdownInterval)
+  document.getElementById("countdownTimer").style.display = "none"
+  document.getElementById("countdownTimer").classList.remove("timer-pulse")
+}
+
+function updateGameState(data) {
+  const isYourMove = data.player === currentUsername
+  let tbody, row
+  if (data.type == "OnGame") {
+    if (isYourMove) {
+      tbody = document.getElementById("player-table").querySelector("tbody")
+      row = tbody.insertRow(0)
+      row.insertCell(0).textContent = data.guess
+      row.insertCell(1).textContent = data.position
+      row.insertCell(2).textContent = data.correct
+    } else {
+      tbody = document.getElementById("opponent-table").querySelector("tbody")
+      row = tbody.insertRow(0)
+      row.insertCell(0).textContent = data.position
+      row.insertCell(1).textContent = data.correct
+    }
+
+    while (tbody.children.length > 5) {
+      tbody.removeChild(tbody.lastChild)
+    }
+  }
+  isYourTurn = !isYourTurn
+  updateTurnIndicator()
+
+  if (isYourTurn) {
+    document.getElementById("countdownTimer").style.display = "block"
+    startTimer()
+  } else {
+    stopTimer()
+  }
+
+  if (data.message) {
+    displayMessage(data.message)
+  }
+}
+
+function handleGameOver(data) {
+  isInGame = false
+
+  const popup = document.getElementById("gameOverPopup")
+  const message = document.getElementById("gameOverMessage")
+  const trophyIcon = document.getElementById("trophyIcon")
+  const winningAmount = document.getElementById("winningAmount")
+
+  if (data.winner === currentUsername) {
+    popup.classList.add("winner")
+    popup.classList.remove("loser")
+    message.innerHTML = "🏆 You Won! 🏆"
+    trophyIcon.innerHTML = "🏆"
+    winningAmount.textContent = `You won ${data.winningAmount} birr!`
+  } else {
+    popup.classList.add("loser")
+    popup.classList.remove("winner")
+    message.innerHTML = "❌ Game Over ❌"
+    trophyIcon.innerHTML = "😢"
+    winningAmount.textContent = `You lost ${data.betAmount} birr.`
+  }
+
+  popup.style.display = "flex"
+}
+
+function closeGameOverPopup() {
+  document.getElementById("gameOverPopup").style.display = "none"
+  location.reload()
+}
+
+function returnToLobby() {
+  attemptingToLeave = true
+  window.location.href = "/dashboard"
+}
+
+function selectAmount(amount) {
+  document.getElementById("amountInput").value = amount
+  document.getElementById("selectedAmount").textContent = amount
+
+  document.querySelectorAll(".game-option").forEach((option) => {
+    option.classList.remove("selected")
+  })
+
+  event.target.classList.add("selected")
+}
+
+document.getElementById("joinForm").addEventListener("submit", async (e) => {
+  e.preventDefault()
+  const form = e.target
+  const formData = new FormData(form)
+
+  try {
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
+    const contentType = response.headers.get("content-type")
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      const data = await response.json()
+      console.log(data)
+      handleJoinResponse(data)
+    } else {
+      const text = await response.text()
+      console.log("Non-JSON response:", text)
+      displayMessage("Unexpected server response. Please try again.")
+    }
+  } catch (error) {
+    console.error("Error:", error)
+    displayMessage("An error occurred. Please try again later.")
+  }
+})
+
+function handleJoinResponse(data) {
+  if (!data.proceed) {
+    if (data.message === "insufficient balance") {
+      showInsufficientBalanceError()
+    } else {
+      displayMessage(data.message || "Unable to join the game. Please try again.")
+    }
+    return
+  }
+
+  socket = new WebSocket(`wss://vhlz5hd3-8000.uks1.devtunnels.ms/wss/ctc/${data.amount}/`)
+  document.getElementById("gameSetup").style.display = "none"
+  document.getElementById("gameStatus").style.display = "block"
+  isSearching = true
+
+  socket.onopen = () => {
+    console.log("WebSocket connection established")
+  }
+
+  socket.onmessage = (event) => {
+    console.log("WebSocket message:", event.data)
+    const gameData = JSON.parse(event.data)
+    handleGameMessage(gameData)
+  }
+
+  socket.onerror = (error) => {
+    console.error("WebSocket error:", error)
+    document.getElementById("gameStatus").textContent = "Error connecting to the game server. Please refresh the Game "
+    isSearching = false
+  }
+
+  socket.onclose = () => {
+    console.log("WebSocket connection closed")
+    isSearching = false
+    if (isInGame) {
+      isInGame = false
+    }
+  }
+}
+
+function showInsufficientBalanceError() {
+  const overlay = document.createElement("div")
+  overlay.className = "error-overlay"
+  document.body.appendChild(overlay)
+
+  const errorAlert = document.createElement("div")
+  errorAlert.className = "error-alert"
+
+  errorAlert.innerHTML = `
+        <h3>Insufficient Balance</h3>
+        <p>You don't have enough balance to join this game.</p>
+        <div class="countdown pulse">3</div>
+        <p class="redirect-text">Redirecting you to the dashboard...</p>
+        <div class="progress-bar">
+            <div class="progress-bar-fill"></div>
+        </div>
+    `
+
+  document.body.appendChild(errorAlert)
+
+  requestAnimationFrame(() => {
+    overlay.style.opacity = "1"
+  })
+
+  requestAnimationFrame(() => {
+    const progressFill = errorAlert.querySelector(".progress-bar-fill")
+    if (progressFill) {
+      progressFill.style.width = "0"
+    }
+  })
+
+  document.querySelectorAll(".game-option").forEach((button) => {
+    button.disabled = true
+  })
+
+  const submitButton = document.querySelector("#joinForm button")
+  if (submitButton) {
+    submitButton.disabled = true
+  }
+
+  let countdown = 3
+  const countdownElement = errorAlert.querySelector(".countdown")
+
+  const countdownInterval = setInterval(() => {
+    countdown--
+    if (countdownElement) {
+      countdownElement.textContent = countdown
+    }
+
+    if (countdown <= 0) {
+      clearInterval(countdownInterval)
+      attemptingToLeave = true
+      window.location.href = "/dashboard"
+    }
+  }, 1000)
+}
+
+// Initialize the page
+document.addEventListener("DOMContentLoaded", () => {
+  setProfileInitial()
+  setInterval(createShootingStar, 2000)
+
+  // Add smooth scrolling for internal links
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", function (e) {
+      e.preventDefault()
+      document.querySelector(this.getAttribute("href")).scrollIntoView({
+        behavior: "smooth",
+      })
+    })
+  })
+})
+
+// Set initial for profile picture
+function setProfileInitial() {
+  const username = document.getElementById("username").textContent
+  const initial = username.charAt(0).toUpperCase()
+  document.getElementById("profilePicture").textContent = initial
+}
+
+// Create shooting stars
+function createShootingStar() {
+  const star = document.createElement("div")
+  star.classList.add("shooting-star")
+  star.style.top = `${Math.random() * window.innerHeight}px`
+  star.style.right = "0px"
+  document.body.appendChild(star)
+
+  setTimeout(() => {
+    star.remove()
+  }, 3000)
+}
+
+// Handle form submission
+document.getElementById("editProfileForm").addEventListener("submit", (e) => {
+  e.preventDefault()
+  // Here you would typically send the form data to the server
+  // For this example, we'll just show a success message
+  showPopup("Profile updated successfully!")
+  toggleEditForm()
+})
+
+// Toggle edit profile form
+function toggleEditForm() {
+  const form = document.getElementById("editProfileForm")
+  const btn = document.querySelector(".edit-profile-btn")
+  if (form.style.display === "none" || form.style.display === "") {
+    form.style.display = "block"
+    btn.textContent = "Cancel"
+  } else {
+    form.style.display = "none"
+    btn.textContent = "Edit Profile"
+  }
+}
+
+// Show popup
+function showPopup(message) {
+  const popup = document.getElementById("popup")
+  const popupMessage = document.getElementById("popupMessage")
+  popupMessage.textContent = message
+  popup.style.display = "block"
+}
+
+// Close popup
+function closePopup() {
+  const popup = document.getElementById("popup")
+  popup.style.display = "none"
+}
+
+
+
     </script>
 </body>
 </html>

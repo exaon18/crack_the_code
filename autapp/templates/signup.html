@@ -18,6 +18,12 @@
             100% { transform: translateX(-500px) translateY(500px); opacity: 0; }
         }
 
+        /* Loading button animation */
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -100,6 +106,18 @@
             text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
         }
 
+        /* New styles for side-by-side inputs */
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
         .form-group {
             margin-bottom: 15px;
         }
@@ -127,6 +145,7 @@
             box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.5);
         }
 
+        /* Updated button styles with loading state */
         .btn {
             display: inline-block;
             width: 100%;
@@ -140,11 +159,31 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 16px;
+            position: relative;
         }
 
         .btn:hover {
             background: #25a65b;
             box-shadow: 0 4px 20px rgba(46, 213, 115, 0.9);
+        }
+
+        .btn.loading {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid #0a0a0a;
+            border-radius: 50%;
+            border-right-color: transparent;
+            animation: rotate 0.8s linear infinite;
         }
 
         .login-link {
@@ -221,13 +260,16 @@
         <h1>Sign Up</h1>
         <form id="signup-form" method="POST" action="{% url 'signup' %}" >
           {% csrf_token %}
-            <div class="form-group">
-                <label for="first-name">First Name</label>
-                <input type="text" id="first-name" name="first_name" required>
-            </div>
-            <div class="form-group">
-                <label for="last-name">Last Name</label>
-                <input type="text" id="last-name" name="last_name" required>
+            <!-- Modified to put first and last name side by side -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input type="text" id="first-name" name="first_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input type="text" id="last-name" name="last_name" required>
+                </div>
             </div>
             <div class="form-group">
                 <label for="username">Username</label>
@@ -269,10 +311,16 @@
 
             setInterval(createShootingStar, 2000);
 
-            // Form validation
+            // Enhanced form handling with loading state
             const form = document.getElementById('signup-form');
-            form.addEventListener('submit', (e) => {
-               
+            const submitButton = form.querySelector('button[type="submit"]');
+            let isSubmitting = false;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (isSubmitting) return;
+
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirm-password').value;
 
@@ -281,8 +329,28 @@
                     return;
                 }
 
-                // Here you would typically send the form data to your server
-                console.log('Form submitted');
+                // Start loading state
+                isSubmitting = true;
+                submitButton.classList.add('loading');
+
+                try {
+                    // Submit the form
+                    await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-CSRFToken': form.querySelector('[name="csrfmiddlewaretoken"]').value
+                        }
+                    });
+
+                    // Form submitted successfully
+                    form.submit();
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Reset loading state on error
+                    isSubmitting = false;
+                    submitButton.classList.remove('loading');
+                }
             });
         });
     </script>
