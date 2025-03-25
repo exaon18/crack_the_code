@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Withdraw Funds - Chiwe</title>
+<style>
+    :root {
+        --primary: #2eD573;
+        --primary-dark: #25a65b;
+        --background: #0f0f13;
+        --card-bg: #1a1a22;
+        --card-border: #2b2b36;
+        --text: #ffffff;
+        --text-secondary: #a0aec0;
+        --error: #ff5757;
+        --input-bg: #16161e;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+
+    .backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 50%, rgba(46, 213, 115, 0.03) 0%, rgba(15, 15, 19, 0) 50%);
+        z-index: -1;
+    }
+
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: rgba(15, 15, 19, 0.8);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        border-bottom: 1px solid rgba(43, 43, 54, 0.3);
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .logo-icon {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: var(--background);
+        box-shadow: 0 2px 10px rgba(46, 213, 115, 0.2);
+    }
+
+    .logo-text {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: var(--text);
+    }
+
+    .container {
+        width: 100%;
+        max-width: 550px;
+        margin: 100px auto 40px;
+        padding: 0 20px;
+    }
+
+    .card {
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        border: 1px solid var(--card-border);
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        padding: 24px 30px;
+        border-bottom: 1px solid var(--card-border);
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+
+    .card-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .payment-method {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        padding: 16px;
+        border-radius: 12px;
+        background-color: rgba(46, 213, 115, 0.05);
+        border: 1px solid rgba(46, 213, 115, 0.1);
+        margin-bottom: 24px;
+    }
+
+    .payment-method-logo {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        border-radius: 8px;
+        background-color: white;
+        padding: 8px;
+    }
+
+    .payment-method-info {
+        flex: 1;
+    }
+
+    .payment-method-name {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 4px;
+    }
+
+    .payment-method-description {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text);
+        font-size: 0.95rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 16px;
+        background-color: var(--input-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.1);
+    }
+
+    .form-hint {
+        margin-top: 6px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .otp-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .otp-input {
+        flex: 1;
+        width: 100%;
+        height: 56px;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 600;
+        background-color: var(--input-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        color: var(--text);
+        transition: all 0.2s ease;
+    }
+
+    .otp-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.1);
+    }
+
+    .otp-action {
+        text-align: right;
+    }
+
+    .otp-link {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: opacity 0.2s ease;
+    }
+
+    .otp-link:hover {
+        opacity: 0.8;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: var(--background);
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(46, 213, 115, 0.2);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+    }
+
+    .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: translateY(0);
+        box-shadow: none;
+    }
+
+    .btn::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn:hover::after {
+        left: 100%;
+    }
+
+    .error-message {
+        background-color: rgba(255, 87, 87, 0.1);
+        border-left: 3px solid var(--error);
+        color: var(--error);
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+        display: none;
+    }
+
+    .error-message.show {
+        display: block;
+        animation: fadeInDown 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 15, 19, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .loader {
+        position: relative;
+        width: 60px;
+        height: 60px;
+    }
+
+    .loader-circle {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        border-top-color: var(--primary);
+        animation: spin 1.2s linear infinite;
+    }
+
+    .loader-circle:nth-child(2) {
+        width: 80%;
+        height: 80%;
+        top: 10%;
+        left: 10%;
+        border-top-color: transparent;
+        border-right-color: var(--primary);
+        animation: spin 1.5s linear infinite reverse;
+    }
+
+    .loader-circle:nth-child(3) {
+        width: 60%;
+        height: 60%;
+        top: 20%;
+        left: 20%;
+        border-top-color: transparent;
+        border-bottom-color: var(--primary);
+        animation: spin 1.7s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .loader-text {
+        margin-top: 24px;
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    /* Success message */
+    .success-message {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.95);
+        background-color: var(--card-bg);
+        border-radius: 16px;
+        padding: 40px;
+        text-align: center;
+        z-index: 2001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        border: 1px solid var(--card-border);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 450px;
+        width: 90%;
+    }
+
+    .success-message.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+        background-color: rgba(46, 213, 115, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .success-icon::before,
+    .success-icon::after {
+        content: '';
+        position: absolute;
+        background-color: var(--primary);
+    }
+
+    .success-icon::before {
+        width: 4px;
+        height: 30px;
+        transform: rotate(45deg) translate(10px, 5px);
+    }
+
+    .success-icon::after {
+        width: 4px;
+        height: 15px;
+        transform: rotate(-45deg) translate(-5px, 10px);
+    }
+
+    .success-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 16px;
+    }
+
+    .success-description {
+        color: var(--text-secondary);
+        margin-bottom: 32px;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .success-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        color: var(--background);
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .success-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(46, 213, 115, 0.2);
+    }
+
+    /* Toast notification styles */
+    .toast-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(23, 25, 35, 0.95);
+        border-left: 4px solid var(--error);
+        color: var(--text);
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        z-index: 2500;
+        max-width: 350px;
+        backdrop-filter: blur(10px);
+        transform: translateX(120%);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .toast-notification.success {
+        border-left-color: var(--primary);
+    }
+
+    .toast-notification.error {
+        border-left-color: var(--error);
+    }
+
+    .toast-notification.show {
+        transform: translateX(0);
+    }
+
+    .toast-title {
+        font-weight: 600;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .toast-title.success {
+        color: var(--primary);
+    }
+
+    .toast-title.error {
+        color: var(--error);
+    }
+
+    .toast-message {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background: var(--error);
+        width: 100%;
+        transform-origin: left;
+        animation: progress 5s linear forwards;
+    }
+
+    .toast-notification.success .toast-progress {
+        background: var(--primary);
+    }
+
+    @keyframes progress {
+        to { transform: scaleX(0); }
+    }
+
+    .otp-info {
+        background-color: rgba(46, 213, 115, 0.1);
+        border-left: 3px solid var(--primary);
+        color: var(--text);
+        padding: 12px 16px;
+        border-radius: 6px;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+    }
+
+    /* New styles for error alert */
+    .error-alert {
+        background-color: rgba(255, 87, 87, 0.05);
+        border: 1px solid rgba(255, 87, 87, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        animation: fadeInUp 0.4s ease-out forwards;
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .error-alert::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background-color: var(--error);
+    }
+
+    .error-alert-title {
+        color: var(--error);
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .error-alert-message {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 0 16px;
+            margin-top: 80px;
+        }
+
+        .card-header, .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+        }
+
+        .otp-input {
+            height: 48px;
+            font-size: 1rem;
+        }
+
+        .success-message {
+            padding: 30px;
+        }
+
+        .toast-notification {
+            left: 20px;
+            right: 20px;
+            max-width: calc(100% - 40px);
+        }
+    }
+</style>
+</head>
+<body>
+<div class="backdrop"></div>
+
+<header class="header">
+    <div class="logo">
+        <div class="logo-icon">C</div>
+        <div class="logo-text">Chiwe</div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">Withdraw Funds</h1>
+            <p class="card-subtitle">Complete the form below to withdraw your funds</p>
+        </div>
+        <div class="card-body">
+            <div id="response-alert" style="display: none;">
+                <!-- This will be populated dynamically -->
+            </div>
+            
+            <div class="otp-info">
+                <strong>OTP Sent!</strong> A 6-digit verification code has been sent to your email. Please check your inbox and enter the code below.
+            </div>
+
+            <div class="payment-method">
+                <img src="https://play-lh.googleusercontent.com/Qr_v5YlQKGXXAOlUrMVRTitGGEj8VF7iyROWs2Ov7zZKgYGwOzbWtxDkR5_cPgO72w" alt="Telebirr Logo" class="payment-method-logo">
+                <div class="payment-method-info">
+                    <div class="payment-method-name">Telebirr</div>
+                    <div class="payment-method-description">Currently the only available withdrawal method</div>
+                </div>
+            </div>
+
+            <form id="withdrawal-form" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="amount" class="form-label">Amount (Birr)</label>
+                    <input type="number" id="amount" name="amount" class="form-control" placeholder="Enter amount to withdraw" required min="25">
+                    <div class="form-hint">Minimum withdrawal amount: 25 Birr</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number" class="form-label">Phone Number</label>
+                    <input type="tel" id="phone_number" name="phone_number" class="form-control" placeholder="Enter your Telebirr phone number" required pattern="[0-9]{9,10}">
+                    <div class="form-hint">Enter your Telebirr registered phone number (e.g., 9xxxxxxxx)</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Enter 6-Digit OTP Code</label>
+                    <div class="otp-container">
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                    </div>
+                    <input type="hidden" id="token" name="token" value="">
+                    <div class="otp-action">
+                        <a href="/withdraw" class="otp-link">Resend OTP</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="withdraw-btn">Withdraw Funds</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="loader">
+        <div class="loader-circle"></div>
+        <div class="loader-circle"></div>
+        <div class="loader-circle"></div>
+    </div>
+    <div class="loader-text">Processing withdrawal...</div>
+</div>
+
+<!-- Success message -->
+<div class="success-message" id="success-message">
+    <div class="success-icon"></div>
+    <h2 class="success-title">Withdrawal Successful</h2>
+    <p class="success-description" id="success-description">Your withdrawal request has been processed successfully. The funds will be transferred to your Telebirr account shortly.</p>
+    <div class="success-btn" id="continue-btn">Back to Dashboard</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('withdrawal-form');
+        const amountInput = document.getElementById('amount');
+        const phoneInput = document.getElementById('phone_number');
+        const otpInputs = document.querySelectorAll('.otp-input');
+        const tokenInput = document.getElementById('token');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const successMessage = document.getElementById('success-message');
+        const successDescription = document.getElementById('success-description');
+        const continueBtn = document.getElementById('continue-btn');
+        const responseAlert = document.getElementById('response-alert');
+        const withdrawBtn = document.getElementById('withdraw-btn');
+
+        // Handle OTP input navigation
+        otpInputs.forEach((input, index) => {
+            // Auto-focus first input on page load
+            if (index === 0) {
+                setTimeout(() => input.focus(), 500);
+            }
+
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1) {
+                    if (index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    } else {
+                        input.blur(); // Remove focus from the last input
+                        // Combine OTP values into the hidden token field
+                        updateTokenValue();
+                    }
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+
+            // Add paste functionality for the entire code
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').trim();
+                
+                if (/^\d+$/.test(pastedData) && pastedData.length <= otpInputs.length) {
+                    // Clear all inputs first
+                    otpInputs.forEach(input => input.value = '');
+                    
+                    // Fill inputs with pasted data
+                    for (let i = 0; i < pastedData.length; i++) {
+                        if (i < otpInputs.length) {
+                            otpInputs[i].value = pastedData[i];
+                        }
+                    }
+                    
+                    // Focus on the next empty input or blur the last one
+                    const nextEmptyIndex = Math.min(pastedData.length, otpInputs.length - 1);
+                    if (nextEmptyIndex < otpInputs.length) {
+                        otpInputs[nextEmptyIndex].focus();
+                    } else {
+                        otpInputs[otpInputs.length - 1].blur();
+                        // Combine OTP values into the hidden token field
+                        updateTokenValue();
+                    }
+                }
+            });
+        });
+
+        // Function to update the hidden token input with combined OTP values
+        function updateTokenValue() {
+            const otpValue = Array.from(otpInputs).map(input => input.value).join('');
+            tokenInput.value = otpValue;
+        }
+
+        // Show toast notification
+        function showToast(title, message, type = 'error', duration = 5000) {
+            // Remove any existing toasts
+            const existingToasts = document.querySelectorAll('.toast-notification');
+            existingToasts.forEach(toast => {
+                document.body.removeChild(toast);
+            });
+            
+            // Create toast elements
+            const toast = document.createElement('div');
+            toast.className = `toast-notification ${type}`;
+            
+            toast.innerHTML = `
+                <div class="toast-title ${type}">${title}</div>
+                <div class="toast-message">${message}</div>
+                <div class="toast-progress"></div>
+            `;
+            
+            // Add to DOM
+            document.body.appendChild(toast);
+            
+            // Show toast with a slight delay for animation
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            // Auto remove after duration
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, duration);
+            
+            // Add click to dismiss
+            toast.addEventListener('click', () => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            });
+        }
+
+        // Function to show response alert
+        function showResponseAlert(message, isError = true) {
+            responseAlert.innerHTML = `
+                <div class="error-alert">
+                    <div class="error-alert-title">${isError ? 'Error' : 'Notice'}</div>
+                    <div class="error-alert-message">${message}</div>
+                </div>
+            `;
+            responseAlert.style.display = 'block';
+            
+            // Scroll to the alert
+            responseAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Form submission with AJAX
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Client-side validation before submitting the form
+            const amount = parseFloat(amountInput.value);
+            if (isNaN(amount) || amount < 25) {
+                showToast('Error', 'Withdrawal amount must be greater than 25 birr', 'error');
+                amountInput.focus();
+                return;
+            }
+            
+            // Validate phone number
+            const phoneNumber = phoneInput.value.trim();
+            if (!phoneNumber || !/^[0-9]{9,10}$/.test(phoneNumber)) {
+                showToast('Error', 'Please enter a valid Telebirr phone number', 'error');
+                phoneInput.focus();
+                return;
+            }
+            
+            // Validate OTP
+            const allOtpFilled = Array.from(otpInputs).every(input => input.value.length === 1);
+            if (!allOtpFilled) {
+                showToast('Error', 'Please enter the complete 6-digit OTP', 'error');
+                otpInputs[0].focus();
+                return;
+            }
+            
+            // Update token value before submission
+            updateTokenValue();
+            
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+            
+            // Disable the submit button to prevent multiple submissions
+            withdrawBtn.disabled = true;
+            
+            // Get the form data
+            const formData = new FormData(form);
+            
+            // Get the CSRF token from the form
+            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+            
+            // Make the AJAX request
+            fetch(form.action || window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide loading overlay
+                loadingOverlay.classList.remove('active');
+                
+                // Re-enable the submit button
+                withdrawBtn.disabled = false;
+                
+                // Clear any existing alerts
+                responseAlert.style.display = 'none';
+                
+                if (data.success === true) {
+                    // Show success message
+                    successDescription.textContent = data.message || 'Your withdrawal request has been processed successfully. The funds will be transferred to your Telebirr account shortly.';
+                    successMessage.classList.add('active');
+                } else {
+                    // Show error message
+                    showResponseAlert(data.message || 'An error occurred while processing your withdrawal request.', true);
+                    
+                    // Also show as toast for better visibility
+                    showToast('Error', data.message || 'An error occurred while processing your withdrawal request.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                // Hide loading overlay
+                loadingOverlay.classList.remove('active');
+                
+                // Re-enable the submit button
+                withdrawBtn.disabled = false;
+                
+                // Show generic error message
+                showResponseAlert('A network error occurred. Please try again later.', true);
+                showToast('Error', 'A network error occurred. Please try again later.', 'error');
+            });
+        });
+
+        // Amount input validation
+        amountInput.addEventListener('input', (e) => {
+            let value = e.target.value;
+            
+            // Remove non-numeric characters except decimal point
+            value = value.replace(/[^\d.]/g, '');
+            
+            // Ensure only one decimal point
+            const decimalCount = (value.match(/\./g) || []).length;
+            if (decimalCount > 1) {
+                value = value.replace(/\.(?=.*\.)/g, '');
+            }
+            
+            e.target.value = value;
+        });
+
+        // Phone number input validation
+        phoneInput.addEventListener('input', (e) => {
+            let value = e.target.value;
+            
+            // Remove non-numeric characters
+            value = value.replace(/\D/g, '');
+            
+            // Limit to 10 digits
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+            }
+            
+            e.target.value = value;
+        });
+
+        // Continue button action
+        continueBtn.addEventListener('click', () => {
+            window.location.href = '/dashboard';
+        });
+
+        // Function to clear response alerts
+        function clearAlerts() {
+            responseAlert.style.display = 'none';
+        }
+
+        // Clear alerts when user starts typing in any field
+        const allInputs = [amountInput, phoneInput, ...otpInputs];
+        allInputs.forEach(input => {
+            input.addEventListener('focus', clearAlerts);
+        });
+    });
+</script>
+</body>
+</html>

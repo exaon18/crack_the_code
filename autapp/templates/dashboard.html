@@ -3,117 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chiwe Dashboard</title>
+    <title>Chiwe - Crack the Code</title>
     <style>
         :root {
-            --primary: #2eD573;
+            --primary: #2ed573;
             --primary-dark: #25a85c;
-            --background: #0a0a0a;
-            --surface: #1a1a1a;
-            --surface-dark: #141414;
+            --primary-glow: rgba(46, 213, 115, 0.4);
+            --background: #0f0f13;
+            --surface: #1a1a22;
+            --surface-dark: #14141a;
             --text: #ffffff;
             --text-secondary: #a0aec0;
+            --danger: #ff4757;
+            --warning: #ffa502;
+            --success: #2ed573;
             --border-radius: 12px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(46, 213, 115, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
-        }
-
-        @keyframes shootingStars {
-            0% { transform: translateX(0) translateY(0); opacity: 1; }
-            70% { opacity: 1; }
-            100% { transform: translateX(-500px) translateY(500px); opacity: 0; }
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --glow: 0 0 15px var(--primary-glow);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
 
         body {
-            font-family: 'Segoe UI', 'Arial', sans-serif;
             background-color: var(--background);
             color: var(--text);
             min-height: 100vh;
             line-height: 1.6;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(46, 213, 115, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(46, 213, 115, 0.05) 0%, transparent 50%);
         }
 
-        .shooting-star {
+        /* Animated background elements */
+        .bg-elements {
             position: fixed;
-            width: 4px;
-            height: 4px;
-            background-color: var(--text);
-            border-radius: 50%;
-            animation: shootingStars 3s linear infinite;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bg-element {
+            position: absolute;
+            background: linear-gradient(45deg, var(--primary-glow), transparent);
+            border-radius: 50%;
+            filter: blur(40px);
+            opacity: 0.1;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        .bg-element:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bg-element:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            top: 60%;
+            left: 80%;
+            animation-delay: 5s;
+        }
+
+        .bg-element:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            top: 80%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, -30px); }
+        }
+
+        /* Shooting stars container - fixed position to avoid layout shifts */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Shooting stars */
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: shootingStar 3s linear forwards;
+            opacity: 0;
         }
 
         .shooting-star::before {
             content: '';
             position: absolute;
-            top: 50%;
-            right: 50%;
-            transform: translate(50%, -50%);
-            width: 30px;
+            top: 0;
+            left: 0;
+            width: 100px;
             height: 1px;
-            background: linear-gradient(to left, rgba(46, 213, 115, 0), rgba(46, 213, 115, 0.7));
+            background: linear-gradient(90deg, var(--primary), transparent);
+            transform: translateX(-100%);
         }
 
+        @keyframes shootingStar {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) rotate(315deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(100vw + 100px), calc(100vh + 100px)) rotate(315deg);
+            }
+        }
+
+        /* HEADER STYLES */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background-color: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+            background: rgba(15, 15, 19, 0.95);
             z-index: 1000;
-            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.1);
         }
 
         .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 2rem;
         }
 
-        .logo {
-            width: 45px;
-            height: 45px;
-            background-color: var(--surface);
+        /* IMPROVED DESKTOP NAVIGATION */
+        .desktop-nav {
+            display: none;
+        }
+
+        @media (min-width: 769px) {
+            .desktop-nav {
+                display: flex;
+                gap: 2rem;
+                align-items: center;
+            }
+
+            .desktop-nav .nav-link {
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                position: relative;
+                padding: 0.5rem 0;
+            }
+
+            /* FIXED: Desktop nav links hover/active states */
+            .desktop-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background-color: var(--primary);
+                transition: width 0.3s ease;
+            }
+
+            .desktop-nav .nav-link:hover {
+                color: var(--primary);
+            }
+
+            .desktop-nav .nav-link:hover::after {
+                width: 100%;
+            }
+
+            .desktop-nav .nav-link.active {
+                color: var(--primary);
+            }
+
+            .desktop-nav .nav-link.active::after {
+                width: 100%;
+            }
+        }
+
+        /* RESTORED USER PROFILE STYLING */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
+            background: var(--surface);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary);
-            animation: pulse 2s infinite ease-in-out;
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
-            border: 2px solid rgba(46, 213, 115, 0.3);
+            font-size: 1.2rem;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
         }
 
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .username {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .balance {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* COMPLETELY REDESIGNED NAVIGATION TOGGLE */
         .nav-toggle {
-            display: none;
+            display: flex;
             flex-direction: column;
             gap: 6px;
-            cursor: pointer;
-            padding: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer !important;
+            padding: 5px;
+            z-index: 9999;
+            position: relative;
         }
 
         .nav-toggle span {
@@ -121,88 +269,181 @@
             width: 25px;
             height: 2px;
             background-color: var(--primary);
-            transition: 0.3s;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
             transition: all 0.3s ease;
-            position: relative;
-            padding: 0.5rem 0;
         }
 
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
+        .nav-toggle.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .nav-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .nav-toggle.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* COMPLETELY REDESIGNED NAVIGATION MENU */
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 85%;
+            max-width: 320px;
+            height: 100vh;
+            background: var(--surface);
+            z-index: 9998;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            transition: left 0.3s ease;
+        }
+
+        .nav-menu.active {
             left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary);
-            transition: width 0.3s ease;
         }
 
-        .nav-link:hover {
-            color: var(--primary);
+        /* SIMPLIFIED NAVIGATION HEADER */
+        .nav-header {
+            padding: 2rem 1.5rem;
+            background: var(--surface-dark);
+            border-bottom: 1px solid var(--primary);
         }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .user-info {
+        .user-profile-large {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(46, 213, 115, 0.1);
         }
 
-        .user-details {
+        .user-avatar-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .user-details-large {
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: 0.3rem;
         }
 
-        .username {
-            font-weight: 600;
-            color: var(--primary);
+        .user-details-large .username {
+            font-size: 1.1rem;
+        }
+
+        .user-details-large .balance {
             font-size: 0.9rem;
         }
 
-        .balance {
-            font-size: 0.8rem;
+        /* SIMPLIFIED NAVIGATION LINKS */
+        .nav-links {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* FIXED: Mobile nav links */
+        .nav-menu .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
             color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            background: var(--surface-dark);
         }
 
-        .user-photo {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            transition: transform 0.3s ease;
+        .nav-menu .nav-link:hover, .nav-menu .nav-link.active {
+            background: var(--primary);
+            color: var(--background);
         }
 
-        .user-photo:hover {
-            transform: scale(1.1);
+        .nav-icon {
+            font-size: 1.2rem;
         }
 
+        /* SIMPLIFIED LOGOUT BUTTON */
+        .logout-btn {
+            margin-top: auto;
+            margin: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            border-radius: var(--border-radius);
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+            pointer-events: auto !important;
+        }
+
+        .logout-btn:hover {
+            background: var(--danger);
+            color: var(--text);
+        }
+
+        /* SIMPLIFIED OVERLAY */
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9997;
+            display: none;
+        }
+
+        .nav-overlay.active {
+            display: block;
+        }
+
+        /* SIMPLIFIED LOGO */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Main container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 7rem 1rem 2rem;
         }
 
+        /* Section styles */
         .section {
             margin-bottom: 4rem;
         }
@@ -213,7 +454,7 @@
             margin-bottom: 2rem;
             text-align: center;
             position: relative;
-            padding-bottom: 0.5rem;
+            padding-bottom: 0.75rem;
         }
 
         .section-title::after {
@@ -228,266 +469,323 @@
             border-radius: 3px;
         }
 
+        /* Game grid */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
-            justify-items: center;
         }
 
         .game-card {
-            width: 100%;
-            max-width: 350px;
-            aspect-ratio: 3/4;
-            perspective: 1000px;
-            cursor: pointer;
-        }
-
-        .card-inner {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            border-radius: var(--border-radius);
-        }
-
-        .game-card:hover .card-inner {
-            transform: translateY(-10px);
-        }
-
-        .game-card.flipped .card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .card-front,
-        .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            border-radius: var(--border-radius);
             background: var(--surface);
-            border: 1px solid rgba(46, 213, 115, 0.2);
+            border-radius: var(--border-radius);
             overflow: hidden;
-        }
-
-        .card-front {
-            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(46, 213, 115, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(145deg, var(--surface), var(--surface-dark));
         }
 
-        .card-back {
-            transform: rotateY(180deg);
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            background: linear-gradient(145deg, var(--surface-dark), var(--surface));
-            overflow-y: hidden;
-        }
-
-        .game-image-wrapper {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid var(--primary);
-            box-shadow: 0 0 20px rgba(46, 213, 115, 0.3);
-            margin-bottom: 1.5rem;
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--glow);
+            border-color: var(--primary);
         }
 
         .game-image {
             width: 100%;
-            height: 100%;
+            height: 200px;
             object-fit: cover;
-            transition: transform 0.3s ease;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.1);
+            transition: all 0.5s ease;
         }
 
         .game-card:hover .game-image {
-            transform: scale(1.1);
+            transform: scale(1.05);
+        }
+
+        .game-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
 
         .game-title {
             font-size: 1.5rem;
-            font-weight: 600;
             color: var(--primary);
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         .game-description {
             color: var(--text-secondary);
+            margin-bottom: 1rem;
             font-size: 0.9rem;
+            flex-grow: 1;
         }
 
-        .info-btn {
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .game-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .game-badge {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+            background: var(--primary);
+            color: var(--background);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(46, 213, 115, 0.3);
+        }
+
+        .play-btn {
             background: var(--primary);
             color: var(--background);
             border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            z-index: 2;
-        }
-
-        .info-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
-        }
-
-        .card-back h3 {
-            color: var(--primary);
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-        }
-
-        .card-back p {
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        .card-back ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .card-back li {
-            color: var(--text);
-            margin-bottom: 0.75rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .card-back li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--primary);
-        }
-
-        .jackpot {
-            margin-top: auto;
-            padding: 1rem;
-            background: rgba(46, 213, 115, 0.1);
+            padding: 0.75rem 0;
             border-radius: var(--border-radius);
-            border: 1px solid rgba(46, 213, 115, 0.2);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto !important;
         }
 
+        .play-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+        }
+
+        .play-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Welcome section */
         .welcome-section {
             text-align: center;
-            margin-bottom: 4rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            margin-bottom: 3rem;
         }
 
         .welcome-title {
             font-size: 2.5rem;
             color: var(--primary);
             margin-bottom: 1rem;
-            text-shadow: 0 0 20px rgba(46, 213, 115, 0.3);
-            animation: float 6s ease-in-out infinite;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
         }
 
         .welcome-subtitle {
             color: var(--text-secondary);
-            font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
         }
 
+        /* Stats grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin-bottom: 4rem;
-            padding: 2rem;
-            background: linear-gradient(145deg, rgba(26, 26, 26, 0.6), rgba(20, 20, 20, 0.8));
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(46, 213, 115, 0.1);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
         .stat-card {
-            text-align: center;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.03);
+            background: var(--surface);
             border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
             border: 1px solid rgba(46, 213, 115, 0.1);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--glow);
+            border-color: var(--primary);
         }
 
-        .stat-value {
+        .stat-card .stat-value {
             font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
             margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
         }
 
-        .stat-label {
-            color: var(--text-secondary);
+        .stat-card .stat-label {
             font-size: 0.9rem;
         }
 
-        .logout-btn {
-            background-color: transparent;
-            color: var(--text-secondary);
-            border: 1px solid var(--text-secondary);
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            margin-left: 1rem;
-        }
-
-        .logout-btn:hover {
-            background-color: var(--text-secondary);
-            color: var(--background);
-        }
-
-        .modal {
-            display: none;
+        /* Loading overlay */
+        .loading-overlay {
             position: fixed;
-            z-index: 1001;
-            left: 0;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-            backdrop-filter: blur(5px);
+            background: rgba(15, 15, 19, 0.9);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .loading-spinner::before,
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+        }
+
+        .loading-spinner::before {
+            animation: spin 1.5s linear infinite;
+            z-index: 2;
+        }
+
+        .loading-spinner::after {
+            border: 4px solid rgba(46, 213, 115, 0.1);
+            z-index: 1;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 15, 19, 0.8);
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
         }
 
         .modal-content {
-            background-color: var(--surface);
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid var(--primary);
+            background: var(--surface);
             border-radius: var(--border-radius);
-            width: 300px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal-text {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
             text-align: center;
         }
 
@@ -495,302 +793,751 @@
             display: flex;
             justify-content: center;
             gap: 1rem;
-            margin-top: 1rem;
         }
 
         .modal-btn {
-            padding: 0.5rem 1rem;
-            border: none;
+            padding: 0.75rem 1.5rem;
             border-radius: var(--border-radius);
-            cursor: pointer;
+            font-weight: 600;
+            cursor: pointer !important;
             transition: all 0.3s ease;
+            pointer-events: auto !important;
         }
 
-        .modal-btn.confirm {
-            background-color: var(--primary);
+        .modal-btn-primary {
+            background: var(--primary);
             color: var(--background);
+            border: none;
         }
 
-        .modal-btn.cancel {
-            background-color: var(--text-secondary);
+        .modal-btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .modal-btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--text-secondary);
+        }
+
+        .modal-btn-secondary:hover {
+            border-color: var(--text);
+            transform: translateY(-2px);
+        }
+
+        /* New styles for enhanced waiting page */
+        .game-status {
+            position: relative;
+            background: rgba(46, 213, 115, 0.05);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 2rem;
+            border: 1px solid rgba(46, 213, 115, 0.2);
+        }
+
+        .game-status p {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* Enhanced game info styles */
+        #gameInfo {
+            background: rgba(23, 25, 35, 0.9);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #gameInfo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scanline 2s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        #countdown {
+            font-size: 6rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.5);
+            animation: countdownPulse 1s ease-in-out infinite;
+            margin: 2rem 0;
+        }
+
+        @keyframes countdownPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Enhanced game over popup */
+        .popup {
+            background: rgba(0, 0, 0, 0.95);
+        }
+
+        .popup-content {
+            background: rgba(23, 25, 35, 0.95);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            min-width: 300px;
+        }
+
+        .popup h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+        }
+
+        .popup button {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 1rem 2rem;
+            margin: 0.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer !important;
+            transition: all 0.3s ease;
+            pointer-events: auto !important;
+        }
+
+        .popup button:hover {
+            background: var(--primary);
             color: var(--background);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
         }
 
-        .modal-btn:hover {
-            opacity: 0.8;
+        /* Leave confirmation popup */
+        #leaveGamePopup .popup-content {
+            border-color: rgba(255, 99, 71, 0.3);
         }
 
+        #leaveGamePopup h2 {
+            color: tomato;
+            text-shadow: 0 0 10px rgba(255, 99, 71, 0.3);
+        }
+
+        #leaveGamePopup button:first-of-type {
+            border-color: tomato;
+            color: tomato;
+        }
+
+        #leaveGamePopup button:first-of-type:hover {
+            background: tomato;
+            color: var(--background);
+            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
+        }
+
+        /* Enhanced timer styles */
+        .countdown-timer {
+            background: rgba(23, 25, 35, 0.8);
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 0 20px rgba(46, 213, 115, 0.2);
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 10;
+        }
+
+        .timer-circle {
+            stroke-width: 8;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 4px rgba(46, 213, 115, 0.5));
+            pointer-events: auto !important;
+        }
+
+        .timer-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.5);
+            pointer-events: auto !important;
+        }
+
+        /* Responsive styles - Improved for mobile */
         @media (max-width: 768px) {
+            .header-content {
+                padding: 0.75rem 1rem;
+                position: relative;
+            }
+
             .nav-toggle {
                 display: flex;
             }
 
-            .nav-links {
+            .logo {
+                font-size: 1.3rem;
+            }
+
+            .user-details {
+                font-size: 0.85rem;
+            }
+
+            .username {
+                font-size: 0.85rem;
+            }
+
+            .balance {
+                font-size: 0.75rem;
+            }
+
+            .user-avatar {
+                width: 38px;
+                height: 38px;
+                font-size: 1.2rem;
+                border-width: 2px;
+            }
+
+            .desktop-nav {
                 display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                flex-direction: column;
-                background: var(--surface);
-                padding: 1rem;
-                border-bottom: 1px solid var(--primary);
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .user-details span {
-                font-size: 0.8rem;
             }
 
             .section-title {
-                font-size: 1.8rem;
+                font-size: 1.75rem;
+                margin-bottom: 1.5rem;
             }
 
             .welcome-title {
-                font-size: 2rem;
+                font-size: 1.75rem;
             }
 
             .welcome-subtitle {
+                font-size: 0.95rem;
+                padding: 0 0.5rem;
+            }
+
+            .container {
+                padding-top: 5rem;
+            }
+
+            .game-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+                gap: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .stat-card .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .game-stats {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                justify-content: space-around;
+            }
+
+            .game-stat {
+                min-width: 30%;
+            }
+
+            .loading-text {
                 font-size: 1rem;
                 padding: 0 1rem;
             }
 
-            .game-grid {
-                gap: 1rem;
+            .loading-progress {
+                width: 80%;
+                max-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-content {
+                padding: 0.5rem 0.75rem;
             }
 
-            .game-card {
-                max-width: 300px;
+            .logo {
+                font-size: 1.3rem;
             }
 
-            .game-image-wrapper {
-                width: 150px;
-                height: 150px;
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 1rem;
             }
 
             .stats-grid {
                 grid-template-columns: 1fr;
-                padding: 1rem;
             }
 
-            .logout-btn {
-                margin-left: 0;
-                margin-top: 1rem;
+            .welcome-title {
+                font-size: 1.5rem;
             }
+
+            .welcome-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .game-title {
+                font-size: 1.3rem;
+            }
+
+            .game-content {
+                padding: 1.25rem;
+            }
+
+            .game-badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.6rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                width: 95%;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+
+            .loading-spinner {
+                width: 60px;
+                height: 60px;
+            }
+        }
+
+        /* CRITICAL FIX: Force clickability for all interactive elements */
+        .nav-menu, 
+        .nav-menu .nav-link, 
+        .nav-menu .logout-btn,
+        .nav-menu .user-profile-large,
+        .play-btn,
+        .modal-btn,
+        .nav-toggle {
+            pointer-events: auto !important;
+            cursor: pointer !important;
+        }
+
+        /* Ensure time elements are clickable */
+        .time-element,
+        .countdown-timer,
+        .timer-text,
+        .timer-circle {
+            pointer-events: auto !important;
+            position: relative;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
+    <!-- Background elements -->
+    <div class="bg-elements">
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+        <div class="bg-element"></div>
+    </div>
+
+    <!-- Dedicated container for shooting stars to prevent layout shifts -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- HEADER -->
     <header class="header">
         <div class="header-content">
-            <div class="logo">Chiwe</div>
-            <div class="nav-toggle" onclick="toggleNav()">
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle Menu">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
-            <nav class="nav-links" id="nav-links">
-                <a href="{% url 'dashboard' %}" class="nav-link">Home</a>
+            </button>
+            
+            <a href="#" class="logo">
+                <span class="logo-icon">🔐</span>
+                <span>Chiwe</span>
+            </a>
+            
+            <!-- Desktop Navigation - Added for PC version -->
+            <nav class="desktop-nav">
+                <a href="{%url 'dashboard'%}" class="nav-link active">Home</a>
                 <a href="#" class="nav-link">Deposit</a>
                 <a href="#" class="nav-link">Leaderboard</a>
-                <a href="{% url 'profile' %}" class="nav-link">Profile</a>
+                <a href="{%url 'profile'%}" class="nav-link">Profile</a>
             </nav>
-            <div class="user-info">
-                <div class="user-details">
-                    <span class="username">{{user.username}}</span>
-                    <span class="balance"><strong> {{ballance }}</strong>$</span>
+            
+            <div class="user-profile">
+                <div class="user-avatar">
+                    👑
                 </div>
-               <a href="{%url 'profile'%}" class="user-photo">  👨‍🏫</a> 
-                <button class="logout-btn" onclick="showLogoutWarning()">Log Out</button>
+                <div class="user-details">
+                    <span class="username"><a href="{%url 'profile'%}">{{user.username}}</a></span>
+                    <span class="balance">{{ballance}} birr</span>
+                </div>
             </div>
         </div>
     </header>
 
+    <!-- NAVIGATION MENU -->
+    <nav class="nav-menu" id="navMenu">
+        <div class="nav-header">
+            <div class="user-profile-large">
+                <div class="user-avatar-large">
+                    👑
+                </div>
+                <div class="user-details-large">
+                    <span class="username">{{user.username}}</span>
+                    <span class="balance">Balance: {{ballance}} birr</span>
+                </div>
+            </div>
+        </div>
+        <div class="nav-links">
+            <a href="{%url 'dashboard'%}" class="nav-link active">
+                <span class="nav-icon">🏠</span>
+                Home
+            </a>
+            <a href="monitary/withdraw" class="nav-link">
+                <span class="nav-icon">💰</span>
+                Withdraw
+            </a>
+            <a href="#" class="nav-link">
+                <span class="nav-icon">🏆</span>
+                Leaderboard
+            </a>
+            <a href="/profile" class="nav-link">
+                <span class="nav-icon">👤</span>
+                Profile
+            </a>
+        </div>
+        <button class="logout-btn" id="logoutBtn">
+            <span class="nav-icon">🚪</span>
+            Log Out
+        </button>
+    </nav>
+
+    <!-- OVERLAY -->
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Main content -->
     <main class="container">
+        <!-- Games section -->
         <section class="section">
-            <h2 class="section-title">Games to Play</h2>
+            <h2 class="section-title">Available Games</h2>
             <div class="game-grid">
-                <div class="game-card" id="ctc-card">
-                    <button class="info-btn" onclick="toggleInfo(event, 'ctc-card')">i</button>
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <div class="game-image-wrapper">
-                                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image%20(1)-EscSq5TCqEGuYEcP4KhjyHLVgmZ5cs.png" 
-                                     alt="Crack the Code" 
-                                     class="game-image">
+                <!-- Crack the Code game card -->
+                <div class="game-card" data-game="ctc">
+                    <span class="game-badge">Popular</span>
+                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image%20(1)-EscSq5TCqEGuYEcP4KhjyHLVgmZ5cs.png" 
+                         alt="Crack the Code" 
+                         class="game-image">
+                    <div class="game-content">
+                        <h3 class="game-title">Crack the Code</h3>
+                        <p class="game-description">
+                            Test your deduction skills in this strategic number guessing game. 
+                            Break your opponent's secret code before they crack yours!
+                        </p>
+                        <div class="game-stats">
+                            <div class="game-stat">
+                                <div class="stat-value">500+</div>
+                                <div class="stat-label">Players</div>
                             </div>
-                            <div>
-                                <h2 class="game-title">Crack the Code</h2>
-                                <p class="game-description">Test your guessing skills!</p>
+                            <div class="game-stat">
+                                <div class="stat-value">25-100</div>
+                                <div class="stat-label">Bet Range</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">2x</div>
+                                <div class="stat-label">Max Win</div>
                             </div>
                         </div>
-                        <div class="card-back">
-                            <h3>How to Play CTC</h3>
-                            <p>In Crack the Code, players engage in a thrilling battle of wits:</p>
-                            <ul>
-                                <li>Set your secret 4-digit code</li>
-                                <li>Take turns guessing your opponent's code</li>
-                                <li>Receive hints after each guess</li>
-                                <li>First to crack the code wins!</li>
-                            </ul>
-                            <div class="jackpot">
-                                <p style="margin: 0;">Current Jackpot: $500</p>
-                            </div>
-                        </div>
+                        <button class="play-btn">Play Now</button>
                     </div>
                 </div>
-                <div class="game-card" id="roolet-card">
-                    <button class="info-btn" onclick="toggleInfo(event, 'roolet-card')">i</button>
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <div class="game-image-wrapper">
-                                <img src="/placeholder.svg?height=200&width=200" 
-                                     alt="Roolet" 
-                                     class="game-image">
+
+                <!-- Roolet game card -->
+                <div class="game-card" data-game="roolet">
+                    <img src="/placeholder.svg?height=200&width=200" 
+                         alt="Roolet" 
+                         class="game-image">
+                    <div class="game-content">
+                        <h3 class="game-title">Bingo</h3>
+                        <p class="game-description">
+                            Place your bets and test your luck in this classic game of chance.
+                            Choose your numbers wisely and win up to 10x your stake!
+                        </p>
+                        <div class="game-stats">
+                            <div class="game-stat">
+                                <div class="stat-value">320</div>
+                                <div class="stat-label">Players</div>
                             </div>
-                            <div>
-                                <h2 class="game-title">Roolet</h2>
-                                <p class="game-description">Bet and win big!</p>
+                            <div class="game-stat">
+                                <div class="stat-value">25-100</div>
+                                <div class="stat-label">Bet Range</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">10x</div>
+                                <div class="stat-label">Max Win</div>
                             </div>
                         </div>
-                        <div class="card-back">
-                            <h3>How to Play Roolet</h3>
-                            <p>Try your luck in our exciting Roolet game:</p>
-                            <ul>
-                                <li>Place your bet (min: $10)</li>
-                                <li>Choose your lucky numbers</li>
-                                <li>Win up to 10x your stake!</li>
-                            </ul>
-                            <div class="jackpot">
-                                <p style="margin: 0;">Maximum win: $10,000</p>
+                        <button class="play-btn">Play Now</button>
+                    </div>
+                </div>
+
+                <!-- Coming soon game card -->
+                <div class="game-card">
+                    <span class="game-badge">Coming Soon</span>
+                    <img src="/placeholder.svg?height=200&width=200" 
+                         alt="Mystery Game" 
+                         class="game-image">
+                    <div class="game-content">
+                        <h3 class="game-title">Mystery Game</h3>
+                        <p class="game-description">
+                            A new exciting game is coming soon to Chiwe Gaming.
+                            Stay tuned for more details and be the first to play!
+                        </p>
+                        <div class="game-stats">
+                            <div class="game-stat">
+                                <div class="stat-value">--</div>
+                                <div class="stat-label">Players</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">--</div>
+                                <div class="stat-label">Bet Range</div>
+                            </div>
+                            <div class="game-stat">
+                                <div class="stat-value">--</div>
+                                <div class="stat-label">Max Win</div>
                             </div>
                         </div>
+                        <button class="play-btn" disabled style="background-color: var(--text-secondary); cursor: not-allowed;">Coming Soon</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="section">
-            <div class="welcome-section">
-                <h1 class="welcome-title">Ready to Test Your Skills?</h1>
-                <p class="welcome-subtitle">
-                    Join thousands of players pushing their limits in strategic thinking and quick decision-making. 
-                    Whether you're a code breaker or a calculated risk-taker, your next win awaits.
-                </p>
-            </div>
+        <!-- Welcome section -->
+        <section class="welcome-section">
+            <h1 class="welcome-title">Welcome to Chiwe Gaming</h1>
+            <p class="welcome-subtitle">
+                Test your skills, challenge opponents, and win big in our collection of strategic games.
+                Whether you're a code breaker or a calculated risk-taker, your next win awaits.
+            </p>
+        </section>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">$247K</div>
-                    <div class="stat-label">Total Prizes Won</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">12.5K</div>
-                    <div class="stat-label">Active Players</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">98%</div>
-                    <div class="stat-label">Player Satisfaction</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">24/7</div>
-                    <div class="stat-label">Live Support</div>
-                </div>
+        <!-- Stats section -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">$247K</div>
+                <div class="stat-label">Total Prizes Won</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12.5K</div>
+                <div class="stat-label">Active Players</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">98%</div>
+                <div class="stat-label">Player Satisfaction</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">Live Support</div>
             </div>
         </section>
     </main>
 
-    <div id="logoutModal" class="modal">
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Loading Crack the Code...</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loadingProgressBar"></div>
+        </div>
+    </div>
+
+    <!-- Logout confirmation modal -->
+    <div class="modal" id="logoutModal">
         <div class="modal-content">
-            <h2>Confirm Logout</h2>
-            <p>Are you sure you want to log out?</p>
+            <h3 class="modal-title">Confirm Logout</h3>
+            <p class="modal-text">Are you sure you want to log out from your account?</p>
             <div class="modal-buttons">
-                <button class="modal-btn confirm" onclick="logout()">Yes, Log Out</button>
-                <button class="modal-btn cancel" onclick="closeLogoutWarning()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirmLogoutBtn">Yes, Log Out</button>
+                <button class="modal-btn modal-btn-secondary" id="cancelLogoutBtn">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
         // Create shooting stars effect
-        document.addEventListener('DOMContentLoaded', () => {
-            function createShootingStar() {
-                const star = document.createElement('div');
-                star.classList.add('shooting-star');
-                star.style.top = `${Math.random() * window.innerHeight}px`;
-                star.style.right = '0px';
-                document.body.appendChild(star);
+        function createShootingStar() {
+            const starsContainer = document.getElementById('starsContainer');
+            const star = document.createElement('div');
+            star.classList.add('shooting-star');
+            
+            // Random position
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight / 3;
+            
+            star.style.top = `${startY}px`;
+            star.style.left = `${startX}px`;
+            
+            starsContainer.appendChild(star);
+            
+            // Remove after animation completes
+            setTimeout(() => {
+                star.remove();
+            }, 3000);
+        }
+        
+        // Create shooting stars periodically
+        setInterval(createShootingStar, 2000);
+        
+        // SIMPLIFIED NAVIGATION TOGGLE
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+            const navOverlay = document.getElementById('navOverlay');
 
-                setTimeout(() => {
-                    star.remove();
-                }, 3000);
+            // Toggle menu function
+            function toggleMenu() {
+                navMenu.classList.toggle('active');
+                navOverlay.classList.toggle('active');
+                navToggle.classList.toggle('active');
             }
 
-            setInterval(createShootingStar, 2000);
-        });
+            // Toggle button click
+            navToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMenu();
+            });
 
-        // Toggle mobile navigation
-        function toggleNav() {
-            const navLinks = document.getElementById('nav-links');
-            navLinks.classList.toggle('active');
-        }
+            // Overlay click
+            navOverlay.addEventListener('click', function() {
+                toggleMenu();
+            });
 
-        // Handle card flip
-        function toggleInfo(event, cardId) {
-            event.stopPropagation();
-            const card = document.getElementById(cardId);
-            card.classList.toggle('flipped');
-        }
+            // Prevent clicks inside menu from closing it
+            navMenu.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
 
-        // Handle card click navigation
-        document.querySelectorAll('.game-card').forEach(card => {
-            card.addEventListener('click', (event) => {
-                if (!event.target.classList.contains('info-btn')) {
-                    const gameName = card.querySelector('.game-title').textContent.toLowerCase();
-                    if (gameName.includes('crack the code')) {
-                        window.location.href = '/games/ctc';
-                    } else if (gameName.includes('roolet')) {
-                        window.location.href = '{}';
+            // Individual link clicks
+            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 769) {
+                        toggleMenu();
                     }
-                }
+                });
+            });
+
+            // Logout button click
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleMenu();
+                document.getElementById('logoutModal').classList.add('active');
+            });
+            
+            // Modal buttons
+            const logoutModal = document.getElementById('logoutModal');
+            const confirmLogoutBtn = document.getElementById('confirmLogoutBtn');
+            const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+            
+            cancelLogoutBtn.addEventListener('click', () => {
+                logoutModal.classList.remove('active');
+            });
+            
+            confirmLogoutBtn.addEventListener('click', () => {
+                // Perform logout action
+                window.location.href = '/logout';
+            });
+            
+            // Game card click handler with loading animation
+            const gameCards = document.querySelectorAll('.game-card');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const loadingText = document.getElementById('loadingText');
+            const loadingProgressBar = document.getElementById('loadingProgressBar');
+            
+            gameCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't trigger if clicking on the disabled button
+                    if (e.target.disabled) return;
+                    
+                    const gameName = card.getAttribute('data-game');
+                    if (!gameName) return; // Skip for coming soon games
+                    
+                    // Show loading overlay
+                    loadingOverlay.classList.add('active');
+                    
+                    // Set loading text based on game
+                    loadingText.textContent = `Loading ${card.querySelector('.game-title').textContent}...`;
+                    
+                    // Animate progress bar
+                    loadingProgressBar.style.width = '0%';
+                    
+                    let progress = 0;
+                    const progressInterval = setInterval(() => {
+                        progress += Math.random() * 15;
+                        if (progress > 100) progress = 100;
+                        
+                        loadingProgressBar.style.width = `${progress}%`;
+                        
+                        if (progress === 100) {
+                            clearInterval(progressInterval);
+                            
+                            // Redirect after a short delay
+                            setTimeout(() => {
+                                if (gameName === 'ctc') {
+                                    window.location.href = '/games/ctc';
+                                } else if (gameName === 'roolet') {
+                                    window.location.href = '/games/roolet';
+                                }
+                            }, 500);
+                        }
+                    }, 300);
+                });
+            });
+
+            // Force all interactive elements to be clickable
+            const allInteractiveElements = document.querySelectorAll('a, button, .nav-link, .logout-btn, .play-btn');
+            allInteractiveElements.forEach(el => {
+                el.style.pointerEvents = 'auto';
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
             });
         });
-
-        // Close mobile nav when clicking outside
-        document.addEventListener('click', (event) => {
-            const navLinks = document.getElementById('nav-links');
-            const navToggle = document.querySelector('.nav-toggle');
-            
-            if (!navToggle.contains(event.target) && !navLinks.contains(event.target)) {
-                navLinks.classList.remove('active');
-            }
-        });
-
-        // Logout warning functionality
-        const logoutModal = document.getElementById('logoutModal');
-
-        function showLogoutWarning() {
-            logoutModal.style.display = 'block';
-        }
-
-        function closeLogoutWarning() {
-            logoutModal.style.display = 'none';
-        }
-
-        function logout() {
-            // Perform logout action here
-            window.location.href = '/logout';  // Replace with your actual logout URL
-        }
-
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            if (event.target == logoutModal) {
-                closeLogoutWarning();
-            }
-        }
     </script>
 </body>
 </html>

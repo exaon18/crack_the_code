@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiwe - Admin Withdrawal Approval</title>
+    <style>
+        :root {
+            --primary: #2ed573; /* Chiwe green */
+            --primary-light: #7bed9f;
+            --primary-dark: #26ae60;
+            --secondary: #1e272e;
+            --background: #121212;
+            --card-bg: #1e1e1e;
+            --text: #f1f2f6;
+            --text-secondary: #a4b0be;
+            --accent: #ffa502;
+            --success: #2ed573;
+            --warning: #ffa502;
+            --danger: #ff4757;
+            --border-radius: 10px;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(46, 213, 115, 0.1);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1.2rem;
+            background: var(--card-bg);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: rgba(46, 213, 115, 0.1);
+            color: var(--text);
+        }
+
+        .tab-button.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+            background: rgba(46, 213, 115, 0.1);
+        }
+
+        /* Content sections */
+        .tab-content {
+            display: none;
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(46, 213, 115, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .tab-content h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Table styles */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.1);
+        }
+
+        .transaction-table th {
+            background-color: rgba(46, 213, 115, 0.1);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .transaction-table tr {
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .transaction-table tr:hover {
+            background-color: rgba(46, 213, 115, 0.1);
+        }
+
+        .transaction-table .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-approved {
+            background-color: rgba(46, 213, 115, 0.2);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: rgba(255, 165, 2, 0.2);
+            color: var(--warning);
+        }
+
+        .status-rejected {
+            background-color: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            transform: translateY(-20px);
+            transition: var(--transition);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.2);
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--danger);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: rgba(30, 30, 30, 0.8);
+            color: var(--text);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232ed573' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--background);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: "";
+            position: absolute;
+            width: 1.2rem;
+            height: 1.2rem;
+            border: 2px solid var(--background);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Confirmation popup */
+        .confirm-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            z-index: 1100;
+            max-width: 400px;
+            width: 90%;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+        }
+
+        .confirm-popup.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .confirm-popup h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .confirm-popup p {
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .confirm-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(46, 213, 115, 0.1);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #ff5f6d;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            color: var(--primary-light);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .transaction-table {
+                font-size: 0.9rem;
+            }
+            
+            .transaction-table th,
+            .transaction-table td {
+                padding: 0.8rem 0.5rem;
+            }
+            
+            .responsive-table {
+                overflow-x: auto;
+            }
+        }
+
+        /* Glassmorphism effects */
+        .glass-effect {
+            background: rgba(30, 30, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(46, 213, 115, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Chiwe Withdrawal Management</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="pending">Pending Transactions</button>
+            <button class="tab-button" data-tab="approved">Approved Transactions</button>
+            <button class="tab-button" data-tab="rejected">Rejected Transactions</button>
+        </div>
+
+        <!-- Pending Transactions -->
+        <div id="pending" class="tab-content active">
+            <h2>Pending Withdrawal Requests</h2>
+            <div class="responsive-table">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Phone Number</th>
+                            <th>Amount</th>
+                            <th>Requested Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingTransactionsTable">
+                        {% for data in Pdata %}
+                        <tr data-username="{{ data.user.username }}" data-phone="{{ data.phone_number }}" data-amount="{{ data.amount }}" data-date="{{ data.requestedAt|date:'Y-m-d H:i' }}" data-id="{{ data.id }}">
+                            <td>{{ data.user.username }}</td>
+                            <td>{{ data.phone_number }}</td>
+                            <td>${{ data.amount }}</td>
+                            <td>{{ data.requestedAt|date:'Y-m-d H:i' }}</td>
+                            <td><span class="status status-pending">{{ data.status }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <i>📭</i>
+                                    <p>No pending transactions found</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Approved Transactions -->
+        <div id="approved" class="tab-content">
+            <h2>Approved Withdrawals</h2>
+            <div class="responsive-table">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Phone Number</th>
+                            <th>Amount</th>
+                            <th>Requested Date</th>
+                            <th>Approved Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if Adata %}
+                            {% for transaction in Adata %}
+                            <tr>
+                                <td>{{ transaction.user.username }}</td>
+                                <td>{{ transaction.phone_number }}</td>
+                                <td>${{ transaction.amount }}</td>
+                                <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
+                                <td>{{ transaction.approvedAt|date:'Y-m-d H:i' }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i>✅</i>
+                                        <p>No approved transactions found</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Rejected Transactions -->
+        <div id="rejected" class="tab-content">
+            <h2>Rejected Withdrawals</h2>
+            <div class="responsive-table">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Phone Number</th>
+                            <th>Amount</th>
+                            <th>Requested Date</th>
+                            <th>Rejected Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if Rdata %}
+                            {% for transaction in Rdata %}
+                            <tr>
+                                <td>{{ transaction.user.username }}</td>
+                                <td>{{ transaction.phone_number }}</td>
+                                <td>${{ transaction.amount }}</td>
+                                <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
+                                <td>{{ transaction.rejectedAt|date:'Y-m-d H:i' }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i>❌</i>
+                                        <p>No rejected transactions found</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Modal -->
+    <div class="modal-overlay" id="transactionModal">
+        <div class="modal glass-effect">
+            <div class="modal-header">
+                <h2>Process Withdrawal</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <!-- Important: No action attribute in the form to prevent auto-submission -->
+            <form id="withdrawalForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="transactionId" name="transaction_id">
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="text" id="phoneNumber" name="phone_number" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="text" id="amount" name="amount" class="form-control" readonly>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="adminres" class="form-control" required>
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approve</option>
+                        <option value="Rejected">Reject</option>
+                    </select>
+                </div>
+                
+                <button type="button" id="submitBtn" class="btn btn-primary">Update Status</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirmation Popup -->
+    <div class="confirm-popup glass-effect" id="confirmPopup">
+        <h3>Confirm Action</h3>
+        <p id="confirmMessage">Are you sure you want to approve this withdrawal?</p>
+        <div class="confirm-actions">
+            <button id="cancelAction" class="btn btn-outline">Cancel</button>
+            <button id="confirmAction" class="btn btn-primary">Yes, Proceed</button>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabId = button.getAttribute('data-tab');
+                
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Add active class to current button and content
+                button.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Modal functionality
+        const transactionModal = document.getElementById('transactionModal');
+        const closeModalBtn = document.getElementById('closeModal');
+        const pendingTransactionsTable = document.getElementById('pendingTransactionsTable');
+        const withdrawalForm = document.getElementById('withdrawalForm');
+        const confirmPopup = document.getElementById('confirmPopup');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmActionBtn = document.getElementById('confirmAction');
+        const cancelActionBtn = document.getElementById('cancelAction');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        // Store the current transaction data
+        let currentTransaction = null;
+
+        // Open modal when clicking on a pending transaction
+        if (pendingTransactionsTable) {
+            pendingTransactionsTable.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                if (!row) return;
+                
+                const username = row.getAttribute('data-username');
+                const phone = row.getAttribute('data-phone');
+                const amount = row.getAttribute('data-amount');
+                const id = row.getAttribute('data-id');
+                
+                // Store current transaction data
+                currentTransaction = { id, username, phone, amount };
+                
+                document.getElementById('username').value = username;
+                document.getElementById('phoneNumber').value = phone;
+                document.getElementById('amount').value = amount;
+                document.getElementById('transactionId').value = id;
+                document.getElementById('status').value = 'Pending';
+                
+                transactionModal.classList.add('active');
+            });
+        }
+
+        // Close modal
+        closeModalBtn.addEventListener('click', () => {
+            transactionModal.classList.remove('active');
+            // Clear current transaction when modal is closed
+            currentTransaction = null;
+        });
+
+        // Close modal when clicking outside
+        transactionModal.addEventListener('click', (e) => {
+            if (e.target === transactionModal) {
+                transactionModal.classList.remove('active');
+                // Clear current transaction when modal is closed
+                currentTransaction = null;
+            }
+        });
+
+        // Handle submit button click
+        submitBtn.addEventListener('click', () => {
+            const status = document.getElementById('status').value;
+            const username = document.getElementById('username').value;
+            
+            if (status === 'Approved') {
+                confirmMessage.textContent = `Are you sure you want to APPROVE the withdrawal for ${username}?`;
+                confirmPopup.classList.add('active');
+            } else if (status === 'Rejected') {
+                confirmMessage.textContent = `Are you sure you want to REJECT the withdrawal for ${username}?`;
+                confirmPopup.classList.add('active');
+            } else {
+                // If keeping as pending, just submit the form
+                submitForm();
+            }
+        });
+
+        // Confirm action
+        confirmActionBtn.addEventListener('click', () => {
+            confirmPopup.classList.remove('active');
+            submitForm();
+        });
+
+        // Cancel action
+        cancelActionBtn.addEventListener('click', () => {
+            confirmPopup.classList.remove('active');
+        });
+
+        // Submit form with loading animation - SECURITY FIX
+        function submitForm() {
+            // Only proceed if we have a current transaction
+            if (!currentTransaction) return;
+            
+            // Add loading state to button
+            submitBtn.classList.add('btn-loading');
+            
+            // Get form data
+            const formData = new FormData(withdrawalForm);
+            
+            // Add a flag to indicate this is an explicit submission
+            formData.append('explicit_submission', 'true');
+            
+            // Use fetch API to submit the form programmatically
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Reload the page after successful submission
+                    window.location.reload();
+                } else {
+                    alert('There was an error processing your request. Please try again.');
+                    submitBtn.classList.remove('btn-loading');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error processing your request. Please try again.');
+                submitBtn.classList.remove('btn-loading');
+            });
+        }
+
+        // Prevent accidental page leave
+        window.addEventListener('beforeunload', (e) => {
+            if (transactionModal.classList.contains('active')) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // SECURITY FIX: Prevent form from being submitted on page load/refresh
+        document.addEventListener('DOMContentLoaded', function() {
+            // Change the submit button to type="button" to prevent form submission on Enter key
+            const submitButtons = document.querySelectorAll('form button[type="submit"]');
+            submitButtons.forEach(button => {
+                button.type = 'button';
+            });
+            
+            // Prevent default form submission
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // Forms should only be submitted via our custom submitForm function
+                });
+            });
+        });
+    </script>
+</body>
+</html>

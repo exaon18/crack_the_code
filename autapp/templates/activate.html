@@ -4,53 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activate Your Account - Chiwe</title>
+    {% load static %}
     <style>
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0.7); }
-            50% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(46, 213, 115, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(46, 213, 115, 0); }
+        :root {
+            --primary: #2eD573;
+            --primary-dark: #25a65b;
+            --primary-light: rgba(46, 213, 115, 0.1);
+            --background: #0f0f13;
+            --card-bg: #1a1a22;
+            --card-border: #2b2b36;
+            --text: #ffffff;
+            --text-secondary: #a0aec0;
+            --error: #ff5757;
+            --warning: #ffa502;
+            --info: #55a6ff;
+            --success: #2eD573;
         }
 
-        @keyframes shootingStars {
-            0% { transform: translateX(0) translateY(0); opacity: 1; }
-            70% { opacity: 1; }
-            100% { transform: translateX(-500px) translateY(500px); opacity: 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-            background-color: #0a0a0a;
-            color: #ffffff;
+            background-color: var(--background);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             overflow-x: hidden;
             position: relative;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(46, 213, 115, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(46, 213, 115, 0.03) 0%, transparent 50%);
         }
 
-        .shooting-star {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            animation: shootingStars 3s linear infinite;
+        /* Backdrop effect */
+        .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(46, 213, 115, 0.02) 0%, rgba(15, 15, 19, 0) 50%);
+            z-index: -1;
         }
 
-        .shooting-star::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 50%;
-            transform: translate(50%, -50%);
-            width: 30px;
-            height: 1px;
-            background: linear-gradient(to left, rgba(46, 213, 115, 0), rgba(46, 213, 115, 0.7));
-        }
-
+        /* Header styles */
         .header {
             position: fixed;
             top: 0;
@@ -59,176 +63,990 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.5rem 1rem;
-            background-color: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(5px);
+            padding: 1rem 2rem;
+            background-color: rgba(15, 15, 19, 0.8);
+            backdrop-filter: blur(10px);
             z-index: 1000;
+            border-bottom: 1px solid rgba(43, 43, 54, 0.3);
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
-            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--background);
+            box-shadow: 0 2px 10px rgba(46, 213, 115, 0.2);
+        }
+
+        .logo-text {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text);
+        }
+
+        /* Main container */
+        .container {
+            width: 100%;
+            max-width: 450px;
+            margin: 100px auto 40px;
+            padding: 2.5rem;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Heading styles */
+        .title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.75rem;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+
+        /* OTP input styles */
+        .otp-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            justify-content: center;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            background-color: var(--background);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text);
+            transition: all 0.2s ease;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.1);
+        }
+
+        /* Button styles */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--background);
+            font-weight: 600;
+            font-size: 1rem;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 213, 115, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        /* Loading button state */
+        .btn.loading {
+            background: var(--primary-dark);
+            pointer-events: none;
+        }
+
+        .btn.loading .btn-text {
+            visibility: hidden;
+        }
+
+        .btn.loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(15, 15, 19, 0.3);
+            border-top-color: var(--background);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Resend link styles */
+        .resend-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .resend-link a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .resend-link a:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        /* Alert message styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .alert.show {
+            opacity: 1;
+            max-height: 200px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alert-content {
+            flex-grow: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-message {
+            font-size: 0.9rem;
+        }
+
+        /* Alert types */
+        .alert-error {
+            background-color: rgba(255, 87, 87, 0.1);
+            border-left: 3px solid var(--error);
+        }
+
+        .alert-error .alert-title {
+            color: var(--error);
+        }
+
+        .alert-success {
+            background-color: rgba(46, 213, 115, 0.1);
+            border-left: 3px solid var(--success);
+        }
+
+        .alert-success .alert-title {
+            color: var(--success);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 165, 2, 0.1);
+            border-left: 3px solid var(--warning);
+        }
+
+        .alert-warning .alert-title {
+            color: var(--warning);
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 15, 19, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loader {
+            position: relative;
+            width: 60px;
+            height: 60px;
+        }
+
+        .loader-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            animation: spin-loader 1.2s linear infinite;
+        }
+
+        .loader-circle:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top-color: transparent;
+            border-right-color: var(--primary);
+            animation: spin-loader 1.5s linear infinite reverse;
+        }
+
+        .loader-circle:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-top-color: transparent;
+            border-bottom-color: var(--primary);
+            animation: spin-loader 1.7s linear infinite;
+        }
+
+        @keyframes spin-loader {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            margin-top: 24px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        /* Success message */
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            z-index: 2001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .success-message.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            background-color: rgba(46, 213, 115, 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2eD573;
-            animation: pulse 2s infinite ease-in-out;
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+            position: relative;
         }
 
-        .container {
-            width: 90%;
-            max-width: 400px;
-            margin-top: 80px;
-            padding: 20px;
-            background-color: rgba(26, 26, 26, 0.8);
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(46, 213, 115, 0.1);
-            border: 1px solid #2eD573;
+        .success-icon::before,
+        .success-icon::after {
+            content: '';
+            position: absolute;
+            background-color: var(--primary);
         }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 20px;
-            color: #2eD573;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+        .success-icon::before {
+            width: 4px;
+            height: 30px;
+            transform: rotate(45deg) translate(10px, 5px);
         }
 
-        p {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #a0aec0;
+        .success-icon::after {
+            width: 4px;
+            height: 15px;
+            transform: rotate(-45deg) translate(-5px, 10px);
         }
 
-        .code-input {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 16px;
         }
 
-        .code-input input {
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            font-size: 24px;
-            border: 1px solid #2eD573;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            border-radius: 4px;
+        .success-description {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        .code-input input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(46, 213, 115, 0.5);
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background: #2eD573;
-            color: #0a0a0a;
-            font-weight: bold;
-            text-decoration: none;
-            border: none;
-            border-radius: 4px;
+        .success-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--background);
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+        }
+
+        .success-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 213, 115, 0.2);
+        }
+
+        /* Leave confirmation modal */
+        .leave-confirmation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 15, 19, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .leave-confirmation.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .leave-confirmation-content {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .leave-confirmation.active .leave-confirmation-content {
+            transform: scale(1);
+        }
+
+        .leave-confirmation-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background-color: rgba(255, 165, 2, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--warning);
+            font-size: 30px;
+        }
+
+        .leave-confirmation-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+
+        .leave-confirmation-message {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .leave-confirmation-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .leave-btn {
+            padding: 10px 20px;
+            background-color: rgba(255, 87, 87, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .leave-btn:hover {
+            background-color: var(--error);
+            color: var(--text);
+        }
+
+        .stay-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--background);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stay-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 213, 115, 0.2);
+        }
+
+        /* Shooting stars */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: shootingStar 3s linear forwards;
+            opacity: 0;
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            transform: translateX(-100%);
+        }
+
+        @keyframes shootingStar {
+            0% {
+                opacity: 0;
+                transform: translate(0, 0) rotate(315deg);
+            }
+            10% {
+                opacity: 1;
+            }
+            70% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(100vw + 100px), calc(100vh + 100px)) rotate(315deg);
+            }
+        }
+
+        /* Django messages container */
+        .django-messages-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2500;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .django-message {
+            background: rgba(23, 25, 35, 0.95);
+            border-left: 4px solid var(--primary);
+            color: var(--text);
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            animation: slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .django-message.success {
+            border-left-color: var(--success);
+        }
+
+        .django-message.error {
+            border-left-color: var(--error);
+        }
+
+        .django-message.warning {
+            border-left-color: var(--warning);
+        }
+
+        .django-message.info {
+            border-left-color: var(--info);
+        }
+
+        .message-icon {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 16px;
         }
 
-        .btn:hover {
-            background: #25a65b;
-            box-shadow: 0 4px 20px rgba(46, 213, 115, 0.9);
+        .message-content {
+            margin-left: 30px;
+            font-size: 0.9rem;
         }
 
-        @media (min-width: 768px) {
-            .header {
-                padding: 1rem 2rem;
-            }
+        .message-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
 
-            .logo {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
-            }
+        .message-close:hover {
+            opacity: 1;
+        }
 
+        .message-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary);
+            width: 100%;
+            transform-origin: left;
+            animation: progress 5s linear forwards;
+        }
+
+        .django-message.success .message-progress {
+            background: var(--success);
+        }
+
+        .django-message.error .message-progress {
+            background: var(--error);
+        }
+
+        .django-message.warning .message-progress {
+            background: var(--warning);
+        }
+
+        .django-message.info .message-progress {
+            background: var(--info);
+        }
+
+        @keyframes progress {
+            to { transform: scaleX(0); }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
             .container {
-                margin-top: 120px;
-                padding: 32px;
+                padding: 2rem;
+                margin-top: 80px;
             }
 
-            h1 {
-                font-size: 36px;
+            .title {
+                font-size: 1.5rem;
             }
 
-            .code-input input {
-                width: 50px;
+            .otp-input {
+                width: 40px;
                 height: 50px;
-                font-size: 28px;
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
             }
 
-            .btn {
-                padding: 12px;
+            .otp-input {
+                width: 35px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+
+            .leave-confirmation-buttons {
+                flex-direction: column;
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Backdrop effect -->
+    <div class="backdrop"></div>
+
+    <!-- Dedicated container for shooting stars -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Django Messages Container -->
+    <div class="django-messages-container" id="djangoMessagesContainer">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="django-message {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                    <div class="message-icon">
+                        {% if message.tags == 'success' %}
+                            ✓
+                        {% elif message.tags == 'error' %}
+                            ✕
+                        {% elif message.tags == 'warning' %}
+                            ⚠
+                        {% else %}
+                            ℹ
+                        {% endif %}
+                    </div>
+                    <div class="message-content">{{ message }}</div>
+                    <button class="message-close" aria-label="Close message">×</button>
+                    <div class="message-progress"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Header -->
     <header class="header">
-        <div class="logo">C</div>
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            <div class="logo-text">Chiwe</div>
+        </div>
     </header>
 
+    <!-- Main container -->
     <div class="container">
-        <h1>Activate Your Account</h1>
-        <p>Hello {{user.username}}, please enter the code that was sent to your email</p>
-        <form method="post" id="activation-form">
-            {% csrf_token %}
-            <div class="code-input">
-                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+        <h1 class="title">Activate Your Account</h1>
+        <p class="subtitle">Hello {{ user.username }}, please enter the verification code sent to your email</p>
+
+        <!-- Alert message -->
+        <div class="alert alert-error" id="alert">
+            <div class="alert-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
             </div>
-            <input type="hidden" name="token" id="token-input">
-            <button type="submit" class="btn">Verify</button>
+            <div class="alert-content">
+                <div class="alert-title">Error</div>
+                <div class="alert-message" id="alertMessage"></div>
+            </div>
+        </div>
+
+        <!-- Activation form -->
+        <form id="activationForm" method="post" >
+            {% csrf_token %}
+            <div class="otp-container">
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+                <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+            </div>
+            <input type="hidden" name="token" id="tokenInput">
+            <button type="submit" class="btn" id="verifyBtn">
+                <span class="btn-text">Verify Account</span>
+            </button>
+            
+            <div class="resend-link">
+                Didn't receive the code? <a href="#" id="resendLink">Resend code</a>
+            </div>
         </form>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader">
+            <div class="loader-circle"></div>
+            <div class="loader-circle"></div>
+            <div class="loader-circle"></div>
+        </div>
+        <div class="loader-text">Verifying your account...</div>
+    </div>
+
+    <!-- Success message -->
+    <div class="success-message" id="successMessage">
+        <div class="success-icon"></div>
+        <h2 class="success-title">Account Activated!</h2>
+        <p class="success-description" id="successDescription">Your account has been successfully activated. You can now access all features of Chiwe.</p>
+        <div class="success-btn" id="continueBtn">Continue to Login</div>
+    </div>
+
+    <!-- Leave confirmation modal -->
+    <div class="leave-confirmation" id="leaveConfirmation">
+        <div class="leave-confirmation-content">
+            <div class="leave-confirmation-icon">⚠️</div>
+            <h3 class="leave-confirmation-title">Leave this page?</h3>
+            <p class="leave-confirmation-message">Your verification is in progress. If you leave now, you'll need to start over. Are you sure you want to leave?</p>
+            <div class="leave-confirmation-buttons">
+                <button class="leave-btn" id="leaveBtn">Yes, Leave Page</button>
+                <button class="stay-btn" id="stayBtn">Stay on This Page</button>
+            </div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('activation-form');
-            const inputs = document.querySelectorAll('.code-input input');
-            const tokenInput = document.getElementById('token-input');
+            // DOM elements
+            const form = document.getElementById('activationForm');
+            const inputs = document.querySelectorAll('.otp-input');
+            const tokenInput = document.getElementById('tokenInput');
+            const verifyBtn = document.getElementById('verifyBtn');
+            const alert = document.getElementById('alert');
+            const alertMessage = document.getElementById('alertMessage');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const successMessage = document.getElementById('successMessage');
+            const successDescription = document.getElementById('successDescription');
+            const continueBtn = document.getElementById('continueBtn');
+            const resendLink = document.getElementById('resendLink');
+            const leaveConfirmation = document.getElementById('leaveConfirmation');
+            const leaveBtn = document.getElementById('leaveBtn');
+            const stayBtn = document.getElementById('stayBtn');
+            const starsContainer = document.getElementById('starsContainer');
+            const djangoMessagesContainer = document.getElementById('djangoMessagesContainer');
 
-            // Add shooting stars
+            // Get CSRF token for AJAX requests
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // Create shooting stars effect
             function createShootingStar() {
                 const star = document.createElement('div');
                 star.classList.add('shooting-star');
-                star.style.top = `${Math.random() * window.innerHeight}px`;
-                star.style.right = '0px';
-                document.body.appendChild(star);
-
+                
+                // Random position
+                const startX = Math.random() * window.innerWidth;
+                const startY = Math.random() * window.innerHeight / 3;
+                
+                star.style.top = `${startY}px`;
+                star.style.left = `${startX}px`;
+                
+                starsContainer.appendChild(star);
+                
+                // Remove after animation completes
                 setTimeout(() => {
                     star.remove();
                 }, 3000);
             }
-
+            
+            // Create shooting stars periodically
             setInterval(createShootingStar, 2000);
 
-            // Handle input box navigation
+            // Handle Django messages
+            function setupDjangoMessages() {
+                const messages = document.querySelectorAll('.django-message');
+                
+                messages.forEach(message => {
+                    // Auto-remove after 5 seconds
+                    setTimeout(() => {
+                        message.style.animation = 'slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) reverse forwards';
+                        setTimeout(() => {
+                            message.remove();
+                        }, 300);
+                    }, 5000);
+                    
+                    // Add close button functionality
+                    const closeBtn = message.querySelector('.message-close');
+                    if (closeBtn) {
+                        closeBtn.addEventListener('click', () => {
+                            message.style.animation = 'slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) reverse forwards';
+                            setTimeout(() => {
+                                message.remove();
+                            }, 300);
+                        });
+                    }
+                });
+            }
+            
+            // Initialize Django messages
+            setupDjangoMessages();
+
+            // Show alert message
+            function showAlert(message, type = 'error') {
+                alertMessage.textContent = message;
+                alert.className = `alert alert-${type} show`;
+            }
+
+            // Hide alert message
+            function hideAlert() {
+                alert.className = 'alert alert-error';
+            }
+
+            // Create Django-style message
+            function createDjangoMessage(message, tags = 'info') {
+                const messageEl = document.createElement('div');
+                messageEl.className = `django-message ${tags}`;
+                
+                let icon = 'ℹ';
+                if (tags === 'success') icon = '✓';
+                else if (tags === 'error') icon = '✕';
+                else if (tags === 'warning') icon = '⚠';
+                
+                messageEl.innerHTML = `
+                    <div class="message-icon">${icon}</div>
+                    <div class="message-content">${message}</div>
+                    <button class="message-close" aria-label="Close message">×</button>
+                    <div class="message-progress"></div>
+                `;
+                
+                djangoMessagesContainer.appendChild(messageEl);
+                
+                // Add close button functionality
+                const closeBtn = messageEl.querySelector('.message-close');
+                closeBtn.addEventListener('click', () => {
+                    messageEl.style.animation = 'slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) reverse forwards';
+                    setTimeout(() => {
+                        messageEl.remove();
+                    }, 300);
+                });
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    messageEl.style.animation = 'slideIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) reverse forwards';
+                    setTimeout(() => {
+                        messageEl.remove();
+                    }, 300);
+                }, 5000);
+            }
+
+            // Handle OTP input navigation
             inputs.forEach((input, index) => {
+                // Auto-focus first input on page load
+                if (index === 0) {
+                    setTimeout(() => input.focus(), 500);
+                }
+
                 input.addEventListener('input', (e) => {
                     if (e.target.value.length === 1) {
                         if (index < inputs.length - 1) {
                             inputs[index + 1].focus();
+                        } else {
+                            input.blur(); // Remove focus from the last input
+                            // Combine OTP values into the hidden token field
+                            updateTokenValue();
                         }
                     }
                 });
@@ -238,14 +1056,190 @@
                         inputs[index - 1].focus();
                     }
                 });
+
+                // Add paste functionality for the entire code
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').trim();
+                    
+                    if (/^\d+$/.test(pastedData) && pastedData.length <= inputs.length) {
+                        // Clear all inputs first
+                        inputs.forEach(input => input.value = '');
+                        
+                        // Fill inputs with pasted data
+                        for (let i = 0; i < pastedData.length; i++) {
+                            if (i < inputs.length) {
+                                inputs[i].value = pastedData[i];
+                            }
+                        }
+                        
+                        // Focus on the next empty input or blur the last one
+                        const nextEmptyIndex = Math.min(pastedData.length, inputs.length - 1);
+                        if (nextEmptyIndex < inputs.length) {
+                            inputs[nextEmptyIndex].focus();
+                        } else {
+                            inputs[inputs.length - 1].blur();
+                            // Combine OTP values into the hidden token field
+                            updateTokenValue();
+                        }
+                    }
+                });
             });
 
-            // Combine inputs before form submission
-            form.addEventListener('submit', (e) => {
+            // Function to update the hidden token input with combined OTP values
+            function updateTokenValue() {
+                const otpValue = Array.from(inputs).map(input => input.value).join('');
+                tokenInput.value = otpValue;
+            }
+
+            // Form submission with AJAX for Django
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                const code = Array.from(inputs).map(input => input.value).join('');
-                tokenInput.value = code;
-                form.submit();
+                
+                // Check if all inputs are filled
+                const allFilled = Array.from(inputs).every(input => input.value.length === 1);
+                if (!allFilled) {
+                    showAlert('Please enter all digits of the verification code');
+                    
+                    // Highlight empty inputs
+                    inputs.forEach(input => {
+                        if (!input.value) {
+                            input.style.borderColor = 'var(--error)';
+                            setTimeout(() => {
+                                input.style.borderColor = 'var(--card-border)';
+                            }, 2000);
+                        }
+                    });
+                    return;
+                }
+                
+                // Hide any previous errors
+                hideAlert();
+                
+                // Show loading state on button
+                verifyBtn.classList.add('loading');
+                
+                try {
+                    // Get the token value
+                    const token = tokenInput.value;
+                    
+                    // Create form data for Django
+                    const formData = new FormData(form);
+                    
+                    // Make AJAX request to Django view
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // Handle Django JsonResponse
+                    if (data.Success) {
+                        // Show success message
+                        successDescription.textContent = data.message;
+                        successMessage.classList.add('active');
+                        
+                        // Create Django success message
+                        createDjangoMessage(data.message, 'success');
+                        
+                        // Redirect after 5 seconds
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 5000);
+                    } else {
+                        // Show error message
+                        showAlert(data.message);
+                        createDjangoMessage(data.message, 'error');
+                    }
+                } catch (error) {
+                    showAlert('An error occurred. Please try again.');
+                    createDjangoMessage('An error occurred. Please try again.', 'error');
+                } finally {
+                    // Reset button state
+                    verifyBtn.classList.remove('loading');
+                }
+            });
+
+            // Continue button action
+            continueBtn.addEventListener('click', () => {
+                window.location.href = '/login';
+            });
+
+            // Resend code functionality with Django AJAX
+            resendLink.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                // Disable resend link
+                resendLink.style.pointerEvents = 'none';
+                resendLink.style.opacity = '0.5';
+                
+                try {
+                    // Make AJAX request to Django resend view
+                    const response = await fetch('', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.Success) {
+                        // Create Django success message
+                        createDjangoMessage('A new verification code has been sent to your email.', 'success');
+                        
+                        // Clear inputs for new code
+                        inputs.forEach(input => input.value = '');
+                        inputs[0].focus();
+                    } else {
+                        // Show error message
+                        createDjangoMessage(data.message, 'error');
+                    }
+                } catch (error) {
+                    createDjangoMessage('Failed to resend code. Please try again.', 'error');
+                } finally {
+                    // Re-enable resend link after 30 seconds
+                    setTimeout(() => {
+                        resendLink.style.pointerEvents = 'auto';
+                        resendLink.style.opacity = '1';
+                    }, 30000);
+                }
+            });
+
+            // Leave page confirmation
+            let isSubmitting = false;
+            
+            window.addEventListener('beforeunload', (e) => {
+                // Only show confirmation if form is filled but not submitted
+                const anyFilled = Array.from(inputs).some(input => input.value.length === 1);
+                
+                if (anyFilled && !isSubmitting) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                    
+                    // Show custom confirmation modal
+                    leaveConfirmation.classList.add('active');
+                    
+                    return e.returnValue;
+                }
+            });
+            
+            // Handle leave confirmation buttons
+            leaveBtn.addEventListener('click', () => {
+                isSubmitting = true;
+                window.location.href = '/';
+            });
+            
+            stayBtn.addEventListener('click', () => {
+                leaveConfirmation.classList.remove('active');
             });
         });
     </script>

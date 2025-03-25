@@ -2,7 +2,6 @@ from django.contrib import messages
 from django.shortcuts import render,redirect
 import hashlib
 import time
-
 from .models import MyUser,Ballance,GameHistory
 from django.core.mail import send_mail
 from django.conf import settings
@@ -48,7 +47,7 @@ def index(request):
     return render(request,'index.html')
 def signup(request):
     if request.method == 'POST':
-        username=request.POST['username']
+        username=request.POST['username'].upper()
         firstname=request.POST['first_name']
         lastname=request.POST['last_name']
         email=request.POST['email']
@@ -59,12 +58,12 @@ def signup(request):
                 messages.error(request,'Password must be at least 6 characters long')
                 return render(request,'signup.html')
             else:
-                if MyUser.objects.get(usename=username) == None:
-                    if MyUser.objects.filter(username=username).exists():
+                if MyUser.objects.filter(username=username).exists()== False:
+                    if MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username).is_active:
                         messages.error(request,'Username already exists, try another one!')
                         return render(request,'signup.html')
                     else:
-                        if MyUser.objects.filter(email=email).exists():
+                        if MyUser.objects.filter(email=email).exists() and MyUser.objects.get(email=email).is_active:
                             messages.error(request,'Email already exists')
                             return render(request,'signup.html')
                         
@@ -76,6 +75,9 @@ def signup(request):
                                                             email=email,
                                                             password=password,
                                                             token=token)
+                            print("created")
+                            balance=Ballance.objects.create(user=user,ballance=0.00)
+                            balance.save()
                             user.is_active=False
                             user.token=token
                             print(user.token)
@@ -96,6 +98,9 @@ def signup(request):
 
                     token = generate_unique_number(username)
                     MyUser.objects.get(username=username).delete()
+                    if MyUser.objects.filter(email=email).exists():
+                        MyUser.objects.get(email=email).delete()
+                    
                     print("user deleted")
                     user = MyUser.objects.create_user(username=username,
                                                             first_name=firstname,
@@ -103,6 +108,8 @@ def signup(request):
                                                             email=email,
                                                             password=password,
                                                             token=token)
+                    balance=Ballance.objects.create(user=user,ballance=0.00)                    
+                    balance.save()
                     user.is_active=False
                     user.token=token
                     print(user.token)
@@ -133,22 +140,22 @@ def verify(request, username):
         print(user.token)
         if user.token == token:
             user.is_active = True
-            ballance=Ballance.objects.create(user=user,ballance=0.00)
-            GameHistory.objects.create(user=user,TotalPlayed=0,TotalWin=0,Totaloss=0,TotalEarning=0.00,)
-            ballance.save()
+            user.save()
+            GameHistory.objects.get_or_create(user=user,TotalPlayed=0,TotalWin=0,Totaloss=0,TotalEarning=0.00,)
+            
             user.save()
             login(request, user)
             messages.success(request, 'Account activated successfully.')
-            return redirect('dashboard')  # Redirect to the home page or any other page
+            return JsonResponse({"Success": True, "message":"Account Verified successfully, redirecting you to the login page "})  # Redirect to the home page or any other page
         else:
             messages.error(request, 'Invalid token')
-            return render(request, 'activate.html', {'user': user})
+            return JsonResponse({"success": False, "message":"Invalid token"})
     
     return render(request, 'activate.html', {'user': user})
 
 def login_view(request):
     if request.method == 'POST':
-            username=request.POST['username']
+            username=request.POST['username'].upper()
             password=request.POST['password']
             user=authenticate(request, username=username, password=password)
             if user is not None:
@@ -165,6 +172,7 @@ def login_view(request):
 def dashboard(request):
     username=request.user.username
     user=MyUser.objects.get(username=username)
+    print(user.pendingWithdrwal)
     ballance=Ballance.objects.get(user=user).ballance
     return render(request,'dashboard.html',{'user':user,'ballance':ballance})
 @login_required
@@ -173,7 +181,7 @@ def profile(request):
         user = request.user
         first_name=request.POST['first_name']
         last_name=request.POST['last_name']
-        username=request.POST['username']
+        username=request.POST['username'].upper()
         if MyUser.objects.filter(username=username).exists():
             if request.user.username != username:
                 messages.error(request,'Username already exists, try another one!')
@@ -206,7 +214,11 @@ def profile(request):
         except Exception as e:
             return render(request,'profile.html')
     user_file=MyUser.objects.get(username=request.user.username)
-    Game_Stat = GameHistory.objects.get(user=user_file)
+    Game_Stat, created = GameHistory.objects.get_or_create(
+    user=user_file, 
+    defaults={"TotalEarning": 0.00, "TotalPlayed": 0, "TotalWin": 0, "Totaloss": 0}
+)
+
     ballance=Ballance.objects.get(user=user_file)
     print(f"total earning {Game_Stat.TotalEarning}") 
     print(f"total played {Game_Stat.TotalPlayed}")

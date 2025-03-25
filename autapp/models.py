@@ -6,6 +6,9 @@ class MyUser(AbstractUser):
     groups = models.ManyToManyField(Group, related_name='myuser_set')
     user_permissions = models.ManyToManyField(Permission, related_name='myuser_permissions_set')
     is_logged_in=models.BooleanField(default=False)
+    withdrawalToken=models.IntegerField(null=True)
+    pendingWithdrwal=models.BooleanField(default=False)
+    pendingDeposit=models.BooleanField(default=False)
     points=models.IntegerField(default=0)
     def __str__(self):
         return self.username
