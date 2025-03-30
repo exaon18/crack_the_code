@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.urls import reverse
 from autapp.models import MyUser, Ballance
-from .models import WithdrawalRequest
+from .models import WithdrawalRequest,DepositRequest
 import random
 from django.contrib.auth import authenticate, login
 invalidOtp = False
@@ -145,55 +145,120 @@ def Monitering(request, admin):
         Pdata = WithdrawalRequest.objects.filter(status="Pending")
         Adata = WithdrawalRequest.objects.filter(status="Approved")
         Rdata = WithdrawalRequest.objects.filter(status="Rejected")
+        Adepo=DepositRequest.objects.filter(status="Approved")
+        Rdepo=DepositRequest.objects.filter(status="Rejected")
+        Pdepo=DepositRequest.objects.filter(status="Pending")
 
         print(f"📊 Admin: {admin} - Pending: {Pdata.count()}, Approved: {Adata.count()}, Rejected: {Rdata.count()}")
 
         if request.method == "POST":
+            transactiontype=request.POST["transaction_type"]
+            print(transactiontype)
+            if transactiontype == "withdrawal":
+                print("Withdrawal in")
+                amount = request.POST["amount"]
+                user = request.POST["username"]
+                phoneNumber= request.POST["phone_number"]
+                AdminRES = request.POST["adminres"]
+                
+                print(transactiontype)
             
-            amount = request.POST["amount"]
-            user = request.POST["username"]
-            phoneNumber= request.POST["phone_number"]
-            AdminRES = request.POST["adminres"]
-          
-            try:
-                Player = MyUser.objects.get(username=user)
-                PlayerB = Ballance.objects.get(user=Player)
-                WR = WithdrawalRequest.objects.filter(user=Player, status="Pending")
+                try:
+                    Player = MyUser.objects.get(username=user)
+                    PlayerB = Ballance.objects.get(user=Player)
+                    WR = WithdrawalRequest.objects.filter(user=Player, status="Pending")
 
-                if int(PlayerB.ballance) >= int(amount) and WR.exists() and AdminRES == "Approved":
-                    PlayerB.ballance -= int(amount)
-                    PlayerB.save()
-                    Player.pendingWithdrwal = False
-                    Player.withdrawalToken = None
-                    Player.save()
-                    WR.update(status="Approved")
+                    if int(PlayerB.ballance) >= int(amount) and WR.exists() and AdminRES == "Approved":
+                        PlayerB.ballance -= int(amount)
+                        PlayerB.save()
+                        Player.pendingWithdrwal = False
+                        Player.withdrawalToken = None
+                        Player.save()
+                        WR.update(status="Approved")
+                            
                         
+                        messages.success(request, f"✅ approved {amount} ETB to {user}.")
+                        print(f"✅ Approved transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
+                        return JsonResponse({"success":True,"message":"withdrawal request has been approved"})
+                    elif AdminRES == "Rejected":
+                        WR.update(status="Rejected")
+                        Player.pendingWithdrwal = False
+                        Player.withdrawalToken = None
+                        Player.save()
+                        messages.error(request, f"❌ rejected {amount} ETB to {user}.")
+                        print(f"❌ Rejected transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
+                        return JsonResponse({"success":False, "message":"withdrawal request has been rejected"})
                     
-                    messages.success(request, f"✅ approved {amount} ETB to {user}.")
-                    print(f"✅ Approved transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
-                    return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin})
-                elif AdminRES == "Rejected":
-                    WR.update(status="Rejected")
-                    Player.pendingWithdrwal = False
-                    Player.withdrawalToken = None
-                    Player.save()
-                    messages.error(request, f"❌ rejected {amount} ETB to {user}.")
-                    print(f"❌ Rejected transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
-                    return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin})
-                 
-                else:
-                    print("❌ Invalid transaction attempt. Rendering 'admin.html'.")
-            except MyUser.DoesNotExist:
-                print("❌ User does not exist!")
-            except Ballance.DoesNotExist:
-                print("❌ User has no balance record!")
+                    else:
+                        return JsonResponse({"success":False, "message":"the request is already on pending "})
+                    
+                        
+                except MyUser.DoesNotExist:
+                    print("❌ User does not exist!")
+                except Ballance.DoesNotExist:
+                    print("❌ User has no balance record!")
+            elif transactiontype == "deposit":
+                amount = request.POST["amount"]
+                user = request.POST["username"]
+                phoneNumber= request.POST["phone_number"]
+                AdminRES = request.POST["adminres"]
+                print(transactiontype)
+                try:    
+                    Player = MyUser.objects.get(username=user)
+                    PlayerB = Ballance.objects.get(user=Player)
+                    DR = DepositRequest.objects.filter(user=Player, status="Pending")
+
+                    if AdminRES == "Approved" and DR.exists():
+                        PlayerB.ballance += int(amount)
+                        PlayerB.save()
+                        DR.update(status="Approved")
+                        Player.pendingDeposit = False
+                        Player.save()
+                        messages.success(request, f"✅ approved {amount} ETB to {user}.")
+                        print(f"✅ Approved transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
+                        return JsonResponse({"success":True,"message":"deposit request has been approved"})
+                    elif AdminRES == "Rejected":
+                        DR.update(status="Rejected")
+                        Player.pendingDeposit = False
+                        Player.save()
+                        messages.error(request, f"❌ rejected {amount} ETB to {user}.")
+                        print(f"❌ Rejected transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
+                        return JsonResponse({"success":False, "message":"deposit request has been rejected"})
+                    else:    
+                        return JsonResponse({"success":False, "message":"the request is already on pending "})
+                except MyUser.DoesNotExist:
+                    print("❌ User does not exist!")
+                except Ballance.DoesNotExist:
+                    print("❌ User has no balance record!")
 
         print("Rendering 'admin.html' with current data.")
         
-        return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin})
+        return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin, "Adepo": Adepo, "Rdepo": Rdepo, "Pdepo": Pdepo})
     else:
         print("❌ User is not staff in Monitering. Raising 404.")
         raise Http404
-
+@login_required
 def deposit(request):
-    pass 
+    user = MyUser.objects.get(username=request.user.username)
+     
+    if request.method == "POST":
+        if user.pendingDeposit:
+            return JsonResponse({"status": False, "message": "You already have pending deposit request please wait for that to complete first."})
+        else:
+            amount =float( request.POST["amount"])
+            PhoneNumber= request.POST["phone_number"]
+            ScreenShot= request.FILES.get("screenshot")
+            SenderName = request.POST["name"]
+            if amount>=25 and amount<=1000:
+                user.pendingDeposit = True
+                user.save()
+                depositRequest = DepositRequest.objects.create(user=user, amount=amount, phone_number=PhoneNumber, ScreenShot=ScreenShot, SenderName=SenderName,status="Pending")
+                depositRequest.save()
+                return JsonResponse({"status": True, "message": "Deposit request submitted successfully."})
+
+            
+    else:
+        if user.pendingDeposit:
+            return JsonResponse({"status": False, "message": "You already have pending deposit request please wait for that to complete first."})
+        else:
+            return render(request, "deposit.html")

@@ -47,88 +47,61 @@ def index(request):
     return render(request,'index.html')
 def signup(request):
     if request.method == 'POST':
-        username=request.POST['username'].upper()
-        firstname=request.POST['first_name']
-        lastname=request.POST['last_name']
-        email=request.POST['email']
-        password=request.POST['password1']
-        password2=request.POST['password2']
-        if password == password2:
-            if len(password2)<6:
-                messages.error(request,'Password must be at least 6 characters long')
-                return render(request,'signup.html')
-            else:
-                if MyUser.objects.filter(username=username).exists()== False:
-                    if MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username).is_active:
-                        messages.error(request,'Username already exists, try another one!')
-                        return render(request,'signup.html')
-                    else:
-                        if MyUser.objects.filter(email=email).exists() and MyUser.objects.get(email=email).is_active:
-                            messages.error(request,'Email already exists')
-                            return render(request,'signup.html')
-                        
-                        else:
-                            token = generate_unique_number(username)
-                            user = MyUser.objects.create_user(username=username,
-                                                            first_name=firstname,
-                                                            last_name=lastname,
-                                                            email=email,
-                                                            password=password,
-                                                            token=token)
-                            print("created")
-                            balance=Ballance.objects.create(user=user,ballance=0.00)
-                            balance.save()
-                            user.is_active=False
-                            user.token=token
-                            print(user.token)
-                            user.save()
-                            print('user saved')
-                            
-                            try:
-                                send_welcome_email(user, email,token)
-                                messages.success(request,'Account created successfully, check your email for verification')
-                                print('email sent')
-                                return redirect('verify',username=user.username)
-                            except Exception as e:
-                                print(e)
-                                messages.error(request,f'Error sending email: please sign up again')
-                                user.delete()
-                                return render(request, 'signup.html')
-                elif MyUser.objects.filter(username=username).exists() and MyUser.objects.get(username=username).is_active==False:
+        username = request.POST['username'].upper()
+        firstname = request.POST['first_name']
+        lastname = request.POST['last_name']
+        email = request.POST['email']
+        password = request.POST['password1']
+        password2 = request.POST['password2']
+        
+        if password != password2:
+            messages.error(request, 'Passwords do not match')
+            return render(request, 'signup.html')
+            
+        if len(password) < 6:
+            messages.error(request, 'Password must be at least 6 characters long')
+            return render(request, 'signup.html')
+        
+        # Check for active user conflicts
+        if MyUser.objects.filter(username=username, is_active=True).exists():
+            messages.error(request, 'Username already exists, try another one!')
+            return render(request, 'signup.html')
+        if MyUser.objects.filter(email=email, is_active=True).exists():
+            messages.error(request, 'Email already exists')
+            return render(request, 'signup.html')
+        
+        # If inactive user exists, remove it
+        inactive_user = MyUser.objects.filter(username=username, is_active=False).first()
+        if inactive_user:
+            inactive_user.delete()
+        inactive_email = MyUser.objects.filter(email=email, is_active=False).first()
+        if inactive_email:
+            inactive_email.delete()
+        
+        # Now create the user once
+        token = generate_unique_number(username)
+        user = MyUser.objects.create_user(
+            username=username,
+            first_name=firstname,
+            last_name=lastname,
+            email=email,
+            password=password,
+            token=token
+        )
+        Ballance.objects.create(user=user, ballance=0.00)
+        user.is_active = False  # User needs to verify via email
+        user.save()
+        
+        try:
+            send_welcome_email(user, email, token)
+            messages.success(request, 'Account created successfully, check your email for verification')
+            return redirect('verify', username=user.username)
+        except Exception as e:
+            messages.error(request, f'Error sending email: please sign up again')
+            user.delete()
+            return render(request, 'signup.html')
+    return render(request, 'signup.html')
 
-                    token = generate_unique_number(username)
-                    MyUser.objects.get(username=username).delete()
-                    if MyUser.objects.filter(email=email).exists():
-                        MyUser.objects.get(email=email).delete()
-                    
-                    print("user deleted")
-                    user = MyUser.objects.create_user(username=username,
-                                                            first_name=firstname,
-                                                            last_name=lastname,
-                                                            email=email,
-                                                            password=password,
-                                                            token=token)
-                    balance=Ballance.objects.create(user=user,ballance=0.00)                    
-                    balance.save()
-                    user.is_active=False
-                    user.token=token
-                    print(user.token)
-                    user.save()
-                    print('user saved')
-                    
-                    try:
-                        send_welcome_email(user, email,token)
-                        messages.success(request,'Account created successfully, check your email for verification')
-                        print('email sent')
-                        return redirect('verify',username=user.username)
-                    except Exception as e:
-                        print(e)
-                        messages.error(request,f'Error sending email: please sign up again')
-                        user.delete()
-
-                        
-                        
-    return render(request,'signup.html')
 
 
 def verify(request, username):
