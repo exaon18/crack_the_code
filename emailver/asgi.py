@@ -1,13 +1,17 @@
-# Games/routing.py
-from django.urls import re_path
+import os
+from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack  # Add this
-from Games import consumers,routing
+from channels.auth import AuthMiddlewareStack
+# Set the Django settings module FIRST
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'emailver.settings')
 
+# Initialize Django application BEFORE importing consumers/routing
+django_asgi_app = get_asgi_application()
 
+# Now import WebSocket routes (which may reference models/consumers)
+from Games.routing import websocket_urlpatterns
 
 application = ProtocolTypeRouter({
-    "websocket": AuthMiddlewareStack(  # Wrap with authentication middleware
-        URLRouter(routing.websocket_urlpatterns)
-    ),
+    "http": django_asgi_app,
+    "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
 })
