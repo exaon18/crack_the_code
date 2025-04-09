@@ -243,7 +243,8 @@ def deposit(request):
      
     if request.method == "POST":
         if user.pendingDeposit:
-            return JsonResponse({"status": False, "message": "You already have pending deposit request please wait for that to complete first."})
+            messages.error(request, "You already have a pending deposit request. Please wait for it to be completed.")
+            return redirect("dashboard")
         else:
             amount =float( request.POST["amount"])
             PhoneNumber= request.POST["phone_number"]
@@ -259,6 +260,7 @@ def deposit(request):
             
     else:
         if user.pendingDeposit:
-            return JsonResponse({"status": False, "message": "You already have pending deposit request please wait for that to complete first."})
+            messages.error(request, "You already have a pending deposit request. Please wait for it to be completed.")
+            return render(request, "deposit.html")
         else:
             return render(request, "deposit.html")
