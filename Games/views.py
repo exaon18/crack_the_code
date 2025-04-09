@@ -32,7 +32,7 @@ def ctc(request):
             return JsonResponse({"procced":False})
             
     else:
-        return render(request,'ctc/ctc.html',{"user":user,"ballance":ballance})
+        return render(request,'CTC/ctc.html',{"user":user,"ballance":ballance})
 @login_required
 def bingo(request):
       user=MyUser.objects.get(username=request.user.username)
