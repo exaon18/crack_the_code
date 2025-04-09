@@ -49,6 +49,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1, "https://chiwe.onrender.com"']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
