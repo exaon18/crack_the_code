@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-zr*n+*b1v%xb2squ$mi%t)pjxkuxgr7j+)#io5pac7=0a)8$--
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
-
+DATABASE_URL="postgresql://exaon:AgJ1cSyHOHHhGEP9GzubsiBQDZbbB3oa@dpg-cvsca4s9c44c739uvf2g-a/chiwepsg"
 # Application definition
 
 INSTALLED_APPS = [
@@ -86,11 +87,7 @@ ASGI_APPLICATION = 'emailver.asgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+    'default': dj_database_url.config(default=DATABASE_URL)}
 
 
 # Password validation
