@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-zr*n+*b1v%xb2squ$mi%t)pjxkuxgr7j+)#io5pac7=0a)8$--
 DEBUG = False
 ALLOWED_HOSTS = ['*']
 
-DATABASE_URL="postgresql://postgres:ftgPDsiXofdcOhaNqLKyIMnadpKtCyZE@viaduct.proxy.rlwy.net:26554/railwayg"
+DATABASE_URL="postgresql://postgres:ftgPDsiXofdcOhaNqLKyIMnadpKtCyZE@postgres.railway.internal:5432/railway"
 # Application definition
 
 INSTALLED_APPS = [
