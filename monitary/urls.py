@@ -6,4 +6,5 @@ urlpatterns=[
     path('withdraw/',views.withdraw,name="withdraw"),
     path("Monitering/<str:admin>", views.Monitering, name="Monitering"),
     path("deposit/", views.deposit, name="deposit"),
+    path("depositt/", views.receive_sms, name="depositt"),
 ]

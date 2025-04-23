@@ -10,6 +10,29 @@ from autapp.models import MyUser, Ballance
 from .models import WithdrawalRequest,DepositRequest
 import random
 from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
+
+@csrf_exempt
+@require_POST
+def receive_sms(request):
+    try:
+        data = json.loads(request.body)
+        print(data)  # if app sends JSON
+        sender = data.get('from')
+        message = data.get('message')
+        timestamp = data.get('timestamp')
+    except json.JSONDecodeError:
+        sender = request.POST.get('from')  # if app sends as form
+        message = request.POST.get('message')
+        timestamp = request.POST.get('timestamp')
+
+    # Do something with the SMS data
+    print(f"SMS from {sender}: {message} at {timestamp}")
+    return JsonResponse({'status': 'received'})
+
 invalidOtp = False
 # ✅ Generate a proper 6-digit OTP
 def generate_unique_number():
