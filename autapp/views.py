@@ -14,12 +14,16 @@ from django.http import Http404, JsonResponse
 from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
-def send_welcome_email(user, email,token):
+from django.views.decorators.http import require_POST
+def send_welcome_email(user, email,token,why):
     subject = 'Welcome to Chiwe'
     from_email = settings.DEFAULT_FROM_EMAIL
     to_email = email
     # Render the HTML template with context
-    html_content = render_to_string('otp.html', {'user': user,'token':token})
+    if why=="signup":
+        html_content = render_to_string('otp.html', {'user': user,'token':token})
+    else:
+        html_content = render_to_string('forgot.html', {'user': user,'token':token})
     # Create the email message
     email = EmailMessage(subject, html_content, from_email, [to_email])
     email.content_subtype = 'html'  # Set the content type to HTML
@@ -49,26 +53,22 @@ def signup(request):
     if request.method == 'POST':
         username = request.POST['username'].upper()
         firstname = request.POST['first_name']
-        lastname = request.POST['last_name']
+        
         email = request.POST['email']
         password = request.POST['password1']
         password2 = request.POST['password2']
         
         if password != password2:
-            messages.error(request, 'Passwords do not match')
-            return render(request, 'signup.html')
+            return JsonResponse({"success": False, "message":"Passwords do not match."})
             
         if len(password) < 6:
-            messages.error(request, 'Password must be at least 6 characters long')
-            return render(request, 'signup.html')
+            return JsonResponse({"success": False, "message":"Password must be at least 6 characters."})
         
         # Check for active user conflicts
         if MyUser.objects.filter(username=username, is_active=True).exists():
-            messages.error(request, 'Username already exists, try another one!')
-            return render(request, 'signup.html')
+            return JsonResponse({"success": False, "message":"Username already exists, try another one."})
         if MyUser.objects.filter(email=email, is_active=True).exists():
-            messages.error(request, 'Email already exists')
-            return render(request, 'signup.html')
+            return JsonResponse({"success": False, "message":"Email already exists, try another one."})
         
         # If inactive user exists, remove it
         inactive_user = MyUser.objects.filter(username=username, is_active=False).first()
@@ -83,7 +83,6 @@ def signup(request):
         user = MyUser.objects.create_user(
             username=username,
             first_name=firstname,
-            last_name=lastname,
             email=email,
             password=password,
             token=token
@@ -91,15 +90,15 @@ def signup(request):
         Ballance.objects.create(user=user, ballance=0.00)
         user.is_active = False  # User needs to verify via email
         user.save()
-        
+        print("finished")
         try:
-            send_welcome_email(user, email, token)
-            messages.success(request, 'Account created successfully, check your email for verification')
-            return redirect('verify', username=user.username)
+            send_welcome_email(user, email, token,why="signup")
+            return JsonResponse({"success": True, "message":"OTP has been sent to your email, please check your inbox.","username":username})
         except Exception as e:
+            print(e)
             messages.error(request, f'Error sending email: please sign up again')
             user.delete()
-            return render(request, 'signup.html')
+            return JsonResponse({"success": False, "message":"system is busy , please sign up again."})
     return render(request, 'signup.html')
 
 
@@ -109,13 +108,14 @@ def verify(request, username):
     if user.is_active: 
         raise Http404
     if request.method == 'POST':
+        if not request.POST.get('token'):
+            return JsonResponse({"success": False, "message":"OTP is required."})
         token = request.POST['token']
         print(user.token)
         if user.token == token:
             user.is_active = True
             user.save()
             GameHistory.objects.get_or_create(user=user,TotalPlayed=0,TotalWin=0,Totaloss=0,TotalEarning=0.00,)
-            
             user.save()
             login(request, user)
             messages.success(request, 'Account activated successfully.')
@@ -126,21 +126,28 @@ def verify(request, username):
     
     return render(request, 'activate.html', {'user': user})
 
+from django.contrib import messages
+
 def login_view(request):
     if request.method == 'POST':
-            username=request.POST['username'].upper()
-            password=request.POST['password']
-            user=authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                
-                return redirect('dashboard')
-                
-            else:
-                messages.error(request,'Invalid credentials')
-                return render(request, 'login.html', )
+        username = request.POST.get('username', '').strip().upper()
+        password = request.POST.get('password', '')
+
+        if not username or not password:
+           
+            return JsonResponse({"success": False, "message":"Username and password are required."})
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('dashboard')
+        else:
+            
+            return JsonResponse({"success": False, "message": "Invalid username or password"})
+            
     else:
         return render(request, 'login.html')
+
 @login_required
 def dashboard(request):
     username=request.user.username
@@ -154,18 +161,20 @@ def profile(request):
         user = request.user
         first_name=request.POST['first_name']
         last_name=request.POST['last_name']
+        
         username=request.POST['username'].upper()
         if MyUser.objects.filter(username=username).exists():
             if request.user.username != username:
                 messages.error(request,'Username already exists, try another one!')
             else:
-                if len(first_name)>200 or len(last_name)>200:
+                if len(first_name)>200 :
                     messages.error(request,"First name and last name must be less than 200 characters")
                 else:
                     user_obj=MyUser.objects.get(username=user.username)
                     user_obj.first_name=first_name
                     user_obj.last_name=last_name
                     user_obj.username=username  
+                    user_obj.save()
             try:
                 user_obj.save()
                 messages.success(request, 'Profile updated successfully.')
@@ -173,12 +182,11 @@ def profile(request):
             except Exception as e:
                 return render(request,'profile.html')
         else:
-            if len(first_name)>200 or len(last_name)>200:
+            if len(first_name)>200  :
                 messages.error(request,"First name and last name must be less than 200 characters")
             else:
                 user_obj=MyUser.objects.get(username=user.username)
                 user_obj.first_name=first_name
-                user_obj.last_name=last_name
                 user_obj.username=username  
         try:
             user_obj.save()
@@ -207,3 +215,45 @@ def logout_view(request):
     logout(request) 
     messages.success(request, 'you have been logged out!')
     return redirect('login')
+def forgot_password(request):
+    if request.method == "POST":
+        print(request.POST)
+        email = request.POST["email"]
+        try:
+            user = MyUser.objects.get(email=email)
+            otp = generate_unique_number(user.username)
+            user.forgetPasswordToken = otp
+            user.save()
+            send_welcome_email(user=user, email=email, token=otp, why="forgot")
+            return JsonResponse({"Success": True, "message":"OTP has been sent to your email, please check your inbox."})  # Redirect to the home page or any other page
+        except MyUser.DoesNotExist:
+            return JsonResponse({"Success": False, "message":"User not found."}) # Redirect to the home page or any other page
+    else:
+        return render(request, "forgot_password.html")
+@require_POST
+def validate_recovery(request):
+    if request.method == "POST":
+        print(request.POST)
+        email = request.POST["email"]
+        token = request.POST["otp"]
+        pass1=request.POST["new_password"]
+        pass2=request.POST["confirm_password"]
+        try:
+            user = MyUser.objects.get(email=email)
+            print(type(str(user.forgetPasswordToken)))
+            print(type(token))
+            if str(user.forgetPasswordToken) == token:
+                if pass1==pass2:
+                    if len(pass1)>6:
+                        user.set_password(pass1)
+                        user.save()
+                        return JsonResponse({"Success": True, "message":"Password changed successfully."})  # Redirect to the home page or any other page
+                    else:
+                        return JsonResponse({"Success": False, "message":"Password must be at least 6 characters."})  # Redirect to the home page or any other page
+                else:
+                    return JsonResponse({"Success": False,"message":"Passwords do not match."})  # Redirect to the home page or any other page
+
+            else:
+                return JsonResponse({"Success": False, "message":"OTP is invalid."})  # Redirect to the home page or any other page
+        except MyUser.DoesNotExist:
+            return JsonResponse({"Success": False, "message":"User not found."}) # Redirect to the home page or any other page

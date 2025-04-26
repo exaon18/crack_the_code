@@ -1,3 +1,5 @@
+from decimal import Decimal
+import string
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import Http404, JsonResponse
@@ -7,31 +9,58 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.urls import reverse
 from autapp.models import MyUser, Ballance
-from .models import WithdrawalRequest,DepositRequest
+from .models import WithdrawalRequest,DepositRequest,TelebirrReq
 import random
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 import json
+import time
+import re
+from django.http import JsonResponse
+import threading
+from autapp.views import generate_unique_number
 
+def extract_sms_info(message):
+    pattern = (
+    r"received ETB (?P<amount>[\d.]+) from (?P<name>.+?)\((?P<phone>[\d\*]+)\)\s+on (?P<date>\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2})\."
+    r" Your transaction number is (?P<tx_id>\w+)"
+)
+
+    match = re.search(pattern, message)
+    if match:
+        print(match.groupdict())
+        return match.groupdict()
+    else:
+        print("Pattern didn't match 😢")
+
+# In your view
 @csrf_exempt
 @require_POST
-def receive_sms(request):
-    try:
-        data = json.loads(request.body)
-        print(data)  # if app sends JSON
-        sender = data.get('from')
-        message = data.get('message')
-        timestamp = data.get('timestamp')
-    except json.JSONDecodeError:
-        sender = request.POST.get('from')  # if app sends as form
-        message = request.POST.get('message')
-        timestamp = request.POST.get('timestamp')
+def receive_sms(request,key):
+    if key=="Plgp2y8yu":
+        body = json.loads(request.body)
+        sms = body.get('content', '')
+        print(sms)
+        data = extract_sms_info(message=sms)
+        tx_id=data['tx_id']
+        amount=float(data['amount'])
+        date=data["date"]
+        if TelebirrReq.objects.filter(tx_id=tx_id).exists()==False and len(tx_id)==10:
+            TelebirrReq.objects.create(tx_id=tx_id,amount=amount,completed=False)
+        elif TelebirrReq.objects.filter(tx_id=tx_id).exists():
+            if TelebirrReq.objects.get(tx_id=tx_id).completed==False:
+                print("trx already exisit waiting to be reedemd")
+            else:
+                print("trx already reedemd")
+        else:
+            print("smtn went wrong")
 
-    # Do something with the SMS data
-    print(f"SMS from {sender}: {message} at {timestamp}")
-    return JsonResponse({'status': 'received'})
+
+        print(data)
+
+    return JsonResponse({'status': 'received', 'parsed': data})
 
 invalidOtp = False
 # ✅ Generate a proper 6-digit OTP
@@ -260,30 +289,52 @@ def Monitering(request, admin):
     else:
         print("❌ User is not staff in Monitering. Raising 404.")
         raise Http404
+def check_Transaction(user,tx_id):
+    print("trial1 check")
+    print(user)
+    user = MyUser.objects.get(username=user)
+    trx_id=str(tx_id).upper()
+    if TelebirrReq.objects.filter(tx_id=trx_id).exists():
+        if TelebirrReq.objects.get(tx_id=trx_id).completed==False:
+            data=TelebirrReq.objects.get(tx_id=trx_id)
+            amount=data.amount
+            userb=Ballance.objects.get(user=user)
+            userb.ballance+=amount
+            userb.save()
+            data.completed=True
+            data.save()
+            user.pendingDeposit = False
+            user.save()
+            return JsonResponse({
+                "status":True,"message":f"your deposit for {amount} ETB has been approved"
+            })
+        else:
+            return JsonResponse({
+                "status":False,"message":"your deposit has already been approved, please use a new one"
+            })
+            
+    else:
+        return JsonResponse({
+            "status":False,"message":"your transaction id is not valid, please try again in a few minutes or use a new one"
+        })
 @login_required
 def deposit(request):
     user = MyUser.objects.get(username=request.user.username)
      
     if request.method == "POST":
         if user.pendingDeposit:
+            user.pendingDeposit = False
+            user.save()
             messages.error(request, "You already have a pending deposit request. Please wait for it to be completed.")
-            return redirect("dashboard")
+            return JsonResponse({
+                "status":False,
+                "message":"You already have a pending deposit request. Please wait for it to be completed."
+            })
         else:
-            amount =float( request.POST["amount"])
-            PhoneNumber= request.POST["phone_number"]
-            ScreenShot= request.FILES.get("screenshot")
-            SenderName = request.POST["name"]
-            if amount>=25 and amount<=1000:
-                user.pendingDeposit = True
-                user.save()
-                depositRequest = DepositRequest.objects.create(user=user, amount=amount, phone_number=PhoneNumber, ScreenShot=ScreenShot, SenderName=SenderName,status="Pending")
-                depositRequest.save()
-                return JsonResponse({"status": True, "message": "Deposit request submitted successfully."})
-
-            
+            print("got ")
+            tx_id=str(request.POST["tx_id"])
+            return check_Transaction(user.username,tx_id)      
     else:
-        if user.pendingDeposit:
-            messages.error(request, "You already have a pending deposit request. Please wait for it to be completed.")
-            return render(request, "deposit.html")
-        else:
-            return render(request, "deposit.html")
+        
+        return render(request, "deposit.html")
+

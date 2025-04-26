@@ -44,12 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
 ]
+APPEND_SLASH=True
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
-CSRF_TRUSTED_ORIGINS = ['https://chiwe.onrender.com']
+CSRF_TRUSTED_ORIGINS = ['https://chiwe.onrender.com','https://vhlz5hd3-8000.uks1.devtunnels.ms/']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

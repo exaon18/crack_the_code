@@ -9,7 +9,8 @@ urlpatterns = [
     path('verify/<str:username>', views.verify, name='verify'),
     path('profile/', views.profile, name='profile'),
     path('logout/',views.logout_view,name='logout'),
-    
+    path("recovery/", views.forgot_password, name="recovery"),
+    path("recovery/validate_recovery/", views.validate_recovery, name="validate_recovery"),
     
 ]
 from django.conf.urls import handler404

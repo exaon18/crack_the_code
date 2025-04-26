@@ -10,6 +10,7 @@ class MyUser(AbstractUser):
     pendingWithdrwal=models.BooleanField(default=False)
     pendingDeposit=models.BooleanField(default=False)
     points=models.IntegerField(default=0)
+    forgetPasswordToken=models.IntegerField(null=True)
     def __str__(self):
         return self.username
 class Ballance(models.Model):
