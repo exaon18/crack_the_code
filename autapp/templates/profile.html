@@ -1,95 +1,176 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chiwe Profile - Dark Theme</title>
+    <title>Chiwe Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2eD573;
+            --primary: #2ed573;
             --primary-dark: #25a85c;
-            --background: #121212;
-            --surface: #1E1E1E;
-            --surface-light: #2A2A2A;
-            --text: #E0E0E0;
-            --text-secondary: #A0A0A0;
+            --primary-light: #7bed9f;
+            --primary-glow: rgba(46, 213, 115, 0.4);
+            --background: #0f0f13;
+            --surface: #1a1a22;
+            --surface-dark: #14141a;
+            --surface-light: #222230;
+            --text: #ffffff;
+            --text-secondary: #a0aec0;
+            --danger: #ff4757;
+            --warning: #ffa502;
+            --success: #2ed573;
             --border-radius: 12px;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --glow: 0 0 15px var(--primary-glow);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Segoe UI', 'Arial', sans-serif;
             background-color: var(--background);
             color: var(--text);
-            line-height: 1.6;
             min-height: 100vh;
-            position: relative;
+            line-height: 1.6;
             overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(46, 213, 115, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(46, 213, 115, 0.05) 0%, transparent 50%);
         }
 
+        /* Header Styles */
         .header {
-            background-color: var(--surface);
-            box-shadow: var(--shadow);
+            background-color: rgba(26, 26, 34, 0.95);
+            backdrop-filter: blur(10px);
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .header-content {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--primary);
             text-decoration: none;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.4);
         }
 
         .nav-links {
             display: flex;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .nav-link {
             color: var(--text);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
         }
 
         .nav-link:hover {
             color: var(--primary);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 80px auto 2rem;
-            padding: 0 1rem;
+        .nav-link:hover::after {
+            width: 100%;
         }
 
-        .profile-section {
+        .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 100px auto 3rem;
+            padding: 0 1.5rem;
+        }
+
+        /* Card Styles */
+        .card {
             background: var(--surface);
             border-radius: var(--border-radius);
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: var(--shadow);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Profile Header */
         .profile-header {
             display: flex;
             align-items: center;
@@ -98,66 +179,139 @@
         }
 
         .profile-picture {
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: var(--surface);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
-            font-weight: bold;
+            font-size: 3rem;
+            box-shadow: var(--glow);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-picture::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                rgba(255, 255, 255, 0.2),
+                rgba(255, 255, 255, 0)
+            );
+            transform: rotate(30deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) rotate(30deg);
+            }
+            20%, 100% {
+                transform: translateX(100%) rotate(30deg);
+            }
+        }
+
+        .profile-info {
+            flex: 1;
         }
 
         .profile-info h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--text);
             margin-bottom: 0.5rem;
         }
 
         .profile-info p {
             color: var(--text-secondary);
+            margin-bottom: 1rem;
         }
 
-        .edit-profile-btn {
-            background-color: var(--primary);
-            color: var(--surface);
-            border: none;
+        .profile-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            background-color: var(--surface-dark);
+            color: var(--primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        /* Button Styles */
+        .btn {
             padding: 0.75rem 1.5rem;
             border-radius: var(--border-radius);
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
         }
 
-        .edit-profile-btn:hover {
-            background-color: var(--primary-dark);
+        .btn-primary {
+            background: var(--primary);
+            color: var(--surface-dark);
         }
 
-        .profile-stats {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 2rem;
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(46, 213, 115, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
         .stat-card {
-            background: var(--surface-light);
+            background: var(--surface-dark);
             border-radius: var(--border-radius);
             padding: 1.5rem;
             text-align: center;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
-            flex: 1;
-            min-width: 120px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--glow);
         }
 
         .stat-value {
@@ -165,33 +319,25 @@
             font-weight: bold;
             color: var(--primary);
             margin-bottom: 0.5rem;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
         }
 
         .stat-label {
             color: var(--text-secondary);
-            font-size: 1.1rem;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
-        .profile-details {
-            background: var(--surface);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .profile-details h2 {
-            color: var(--text);
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-        }
-
+        /* Profile Details */
         .detail-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--surface-light);
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .detail-row:last-child {
@@ -201,63 +347,57 @@
         .detail-label {
             color: var(--text-secondary);
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .detail-value {
             color: var(--text);
-            font-weight: bold;
+            font-weight: 600;
         }
 
-        .achievements-section {
-            background: var(--surface);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-        }
-
-        .achievements-section h2 {
-            color: var(--text);
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-        }
-
+        /* Achievements */
         .achievements-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
         }
 
         .achievement-card {
-            background: var(--surface-light);
+            background: var(--surface-dark);
             border-radius: var(--border-radius);
             padding: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
+            gap: 1.25rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .achievement-card:hover {
             transform: translateY(-5px);
+            box-shadow: var(--glow);
         }
 
         .achievement-icon {
             width: 60px;
             height: 60px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--surface);
+            box-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+            flex-shrink: 0;
         }
 
         .achievement-info h3 {
             color: var(--text);
             margin-bottom: 0.25rem;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .achievement-info p {
@@ -265,70 +405,269 @@
             font-size: 0.9rem;
         }
 
+        /* Edit Form */
         .edit-form {
             display: none;
             margin-top: 2rem;
-            background-color: var(--surface-light);
+            background-color: var(--surface-dark);
             border-radius: var(--border-radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.3s ease;
         }
 
-        .edit-form input {
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-input {
             width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            background-color: var(--surface);
-            border: 1px solid var(--surface-light);
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--border-radius);
             color: var(--text);
             font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
-        .edit-form button {
-            background-color: var(--primary);
-            color: var(--surface);
-            border: none;
-            padding: 0.75rem 1.5rem;
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--glow);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        /* Alert Message */
+        .alert {
+            padding: 1rem;
             border-radius: var(--border-radius);
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
-
-        .edit-form button:hover {
-            background-color: var(--primary-dark);
-        }
-
-        .popup {
+            margin-bottom: 1.5rem;
+            font-weight: 500;
             display: none;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            background-color: var(--surface);
-            border: 2px solid var(--primary);
-            border-radius: var(--border-radius);
-            padding: 2rem;
-            z-index: 1000;
-            box-shadow: var(--shadow);
+            animation: fadeIn 0.3s ease;
         }
 
-        .popup-content {
+        .alert-success {
+            background: rgba(46, 213, 115, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(255, 71, 87, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 71, 87, 0.3);
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(15, 15, 19, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .loading-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            animation: spin 1.2s linear infinite;
+        }
+
+        .loading-circle:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top-color: transparent;
+            border-right-color: var(--primary);
+            animation-duration: 1.5s;
+        }
+
+        .loading-circle:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-top-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: var(--primary);
+            animation-duration: 1.8s;
+        }
+
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary);
+            font-weight: bold;
             text-align: center;
         }
 
-        .popup-close {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: var(--text-secondary);
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
+        /* Success Animation */
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            position: relative;
+            display: none;
+        }
+
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            border-radius: 50%;
+            box-sizing: content-box;
+            border: 4px solid var(--primary);
+        }
+
+        .check-icon::before {
+            top: 3px;
+            left: -2px;
+            width: 30px;
+            transform-origin: 100% 50%;
+            border-radius: 100px 0 0 100px;
+        }
+
+        .check-icon::after {
+            top: 0;
+            left: 30px;
+            width: 60px;
+            transform-origin: 0 50%;
+            border-radius: 0 100px 100px 0;
+            animation: rotate-circle 4.25s ease-in;
+        }
+
+        .check-icon::before, .check-icon::after {
+            content: '';
+            height: 100px;
+            position: absolute;
+            background: var(--background);
+            transform: rotate(-45deg);
+        }
+
+        .icon-line {
+            height: 5px;
+            background-color: var(--primary);
+            display: block;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+        }
+
+        .icon-line.line-tip {
+            top: 46px;
+            left: 14px;
+            width: 25px;
+            transform: rotate(45deg);
+            animation: icon-line-tip 0.75s;
+        }
+
+        .icon-line.line-long {
+            top: 38px;
+            right: 8px;
+            width: 47px;
+            transform: rotate(-45deg);
+            animation: icon-line-long 0.75s;
+        }
+
+        .icon-circle {
+            top: -4px;
+            left: -4px;
+            z-index: 10;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: absolute;
+            box-sizing: content-box;
+            border: 4px solid var(--primary-glow);
+        }
+
+        .icon-fix {
+            top: 8px;
+            width: 5px;
+            left: 26px;
+            z-index: 1;
+            height: 85px;
+            position: absolute;
+            transform: rotate(-45deg);
+            background-color: var(--background);
+        }
+
+        @keyframes rotate-circle {
+            0% { transform: rotate(-45deg); }
+            5% { transform: rotate(-45deg); }
+            12% { transform: rotate(-405deg); }
+            100% { transform: rotate(-405deg); }
+        }
+
+        @keyframes icon-line-tip {
+            0% { width: 0; left: 1px; top: 19px; }
+            54% { width: 0; left: 1px; top: 19px; }
+            70% { width: 50px; left: -8px; top: 37px; }
+            84% { width: 17px; left: 21px; top: 48px; }
+            100% { width: 25px; left: 14px; top: 46px; }
+        }
+
+        @keyframes icon-line-long {
+            0% { width: 0; right: 46px; top: 54px; }
+            65% { width: 0; right: 46px; top: 54px; }
+            84% { width: 55px; right: 0px; top: 35px; }
+            100% { width: 47px; right: 8px; top: 38px; }
+        }
+
+        /* Shooting Stars */
         @keyframes shootingStars {
             0% { transform: translateX(0) translateY(0); opacity: 1; }
             70% { opacity: 1; }
@@ -337,12 +676,14 @@
 
         .shooting-star {
             position: fixed;
-            width: 4px;
-            height: 4px;
-            background-color: #ffffff;
+            width: 3px;
+            height: 3px;
+            background-color: var(--primary);
             border-radius: 50%;
             animation: shootingStars 3s linear infinite;
             z-index: -1;
+            opacity: 0.8;
+            box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
         }
 
         .shooting-star::before {
@@ -351,24 +692,27 @@
             top: 50%;
             right: 50%;
             transform: translate(50%, -50%);
-            width: 30px;
+            width: 40px;
             height: 1px;
-            background: linear-gradient(to left, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.7));
+            background: linear-gradient(to left, rgba(46, 213, 115, 0), rgba(46, 213, 115, 0.7));
         }
 
+        /* Responsive Design */
         @media (max-width: 768px) {
             .header-content {
+                padding: 1rem;
                 flex-direction: column;
-                align-items: flex-start;
+                gap: 1rem;
             }
 
             .nav-links {
-                margin-top: 1rem;
-                flex-wrap: wrap;
+                width: 100%;
+                justify-content: space-between;
             }
 
             .container {
-                margin-top: 120px;
+                margin-top: 140px;
+                padding: 0 1rem;
             }
 
             .profile-header {
@@ -376,34 +720,27 @@
                 text-align: center;
             }
 
-            .profile-picture {
-                margin: 0 auto;
+            .profile-badges {
+                justify-content: center;
             }
 
-            .profile-info h1 {
-                font-size: 2rem;
-            }
-
-            .stat-card {
-                padding: 1rem;
-                min-width: calc(50% - 0.5rem);
-            }
-
-            .stat-value {
-                font-size: 1.8rem;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .detail-row {
                 flex-direction: column;
+                align-items: flex-start;
                 gap: 0.5rem;
             }
 
-            .detail-label, .detail-value {
-                font-size: 0.9rem;
+            .form-actions {
+                flex-direction: column;
+                gap: 0.75rem;
             }
 
-            .achievements-grid {
-                grid-template-columns: 1fr;
+            .btn {
+                width: 100%;
             }
 
             .achievement-card {
@@ -412,12 +749,23 @@
             }
 
             .achievement-icon {
-                margin-bottom: 1rem;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <a href="#" class="logo">Chiwe</a>
@@ -425,155 +773,334 @@
                 <a href="/dashboard" class="nav-link">Home</a>
                 <a href="#" class="nav-link">Games</a>
                 <a href="#" class="nav-link">Leaderboard</a>
-                <a href="/profile" class="nav-link">Profile</a>
+                <a href="/profile" class="nav-link active">Profile</a>
             </nav>
         </div>
     </header>
 
+    <!-- Main Content -->
     <main class="container">
-        <section class="profile-section">
+        <!-- Alert Message -->
+        <div id="alertMessage" class="alert"></div>
+
+        <!-- Profile Card -->
+        <div class="card">
             <div class="profile-header">
                 <div class="profile-picture" id="profilePicture">👨‍🏫</div>
                 <div class="profile-info">
                     <h1 id="username">{{user.username}}</h1>
-                    <p>Member since <span id="memberSince">{{user.date_joined}}</span></p>
-                    <button class="edit-profile-btn" onclick="toggleEditForm()">Edit Profile</button>
+                    <p><i class="fas fa-calendar-alt"></i> Member since <span id="memberSince">{{user.date_joined}}</span></p>
+                    <div class="profile-badges">
+                        <span class="badge"><i class="fas fa-star"></i> Verified</span>
+                        <span class="badge"><i class="fas fa-trophy"></i> Starter</span>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="toggleEditForm()">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
                 </div>
             </div>
-            <form id="editProfileForm" class="edit-form" method="post">
-                {%csrf_token%}
-                <input type="text" id="editUsername" name="username" placeholder="Username" required>
-                <input type="text" id="editFirstName" name="first_name" placeholder="First Name">
-                <input type="text" id="editLastName" name="last_name" placeholder="Last Name">
-                <button type="submit">Save Changes</button>
+
+            <!-- Edit Form -->
+            <form id="editProfileForm" class="edit-form">
+                <div class="form-group">
+                    <label for="editUsername" class="form-label">Username</label>
+                    <input type="text" id="editUsername" name="username" class="form-input" placeholder="Username" required>
+                </div>
+                <div class="form-group">
+                    <label for="editFirstName" class="form-label">First Name</label>
+                    <input type="text" id="editFirstName" name="first_name" class="form-input" placeholder="First Name">
+                </div>
+                <div class="form-group">
+                    <label for="editLastName" class="form-label">Last Name</label>
+                    <input type="text" id="editLastName" name="last_name" class="form-input" placeholder="Last Name">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="toggleEditForm()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveChangesBtn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
             </form>
-            <div class="profile-stats">
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-value" id="gamesPlayed">{{stat.TotalPlayed}}</div>
-                    <div class="stat-label">Games Played🎮</div>
+                    <div class="stat-label"><i class="fas fa-gamepad"></i> Games Played</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="winRate">{{user.points}}</div>
-                    <div class="stat-label">Chiwe Points🟡</div>
+                    <div class="stat-value" id="chiwePoints">{{user.points}}</div>
+                    <div class="stat-label"><i class="fas fa-coins"></i> Chiwe Points</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="totalWinnings">${{stat.TotalEarning}}</div>
-                    <div class="stat-label">Total Winnings💰</div>
+                    <div class="stat-label"><i class="fas fa-money-bill-wave"></i> Total Winnings</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="rank">starter</div>
-                    <div class="stat-label">Rank🏆</div>
+                    <div class="stat-value" id="rank">Starter</div>
+                    <div class="stat-label"><i class="fas fa-crown"></i> Rank</div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section class="profile-details">
-            <h2>Profile Details</h2>
+        <!-- Profile Details Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-user-circle"></i> Profile Details</h2>
+                <p class="card-subtitle">Your personal information</p>
+            </div>
             <div class="detail-row">
-                <span class="detail-label">First Name</span>
+                <span class="detail-label"><i class="fas fa-user"></i> First Name</span>
                 <span class="detail-value" id="firstName">{{user.first_name}}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Last Name</span>
+                <span class="detail-label"><i class="fas fa-user"></i> Last Name</span>
                 <span class="detail-value" id="lastName">{{user.last_name}}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Email</span>
+                <span class="detail-label"><i class="fas fa-envelope"></i> Email</span>
                 <span class="detail-value" id="email">{{user.email}}</span>
             </div>
             <div class="detail-row">
-                <span class="detail-label">Current Balance</span>
+                <span class="detail-label"><i class="fas fa-wallet"></i> Current Balance</span>
                 <span class="detail-value" id="balance">${{ballance.ballance}}</span>
             </div>
-        </section>
+        </div>
 
-        <section class="achievements-section">
-            <h2>Achievements</h2>
+        <!-- Achievements Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-medal"></i> Achievements</h2>
+                <p class="card-subtitle">Milestones you've reached</p>
+            </div>
             <div class="achievements-grid">
                 <div class="achievement-card">
-                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-icon"><i class="fas fa-trophy"></i></div>
                     <div class="achievement-info">
                         <h3>Code Master</h3>
                         <p>Won 10 Crack the Code games</p>
                     </div>
                 </div>
                 <div class="achievement-card">
-                    <div class="achievement-icon">💰</div>
+                    <div class="achievement-icon"><i class="fas fa-coins"></i></div>
                     <div class="achievement-info">
                         <h3>High Roller</h3>
                         <p>Won over $1000 in a single game</p>
                     </div>
                 </div>
                 <div class="achievement-card">
-                    <div class="achievement-icon">🔥</div>
+                    <div class="achievement-icon"><i class="fas fa-fire"></i></div>
                     <div class="achievement-info">
                         <h3>Hot Streak</h3>
                         <p>Won 5 games in a row</p>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <div id="popup" class="popup">
-        <span class="popup-close" onclick="closePopup()">&times;</span>
-        <div class="popup-content">
-            <p id="popupMessage"></p>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="loading-circle"></div>
+            <div class="loading-circle"></div>
+            <div class="loading-circle"></div>
+            <div class="loading-text">Updating Profile...</div>
+        </div>
+        <div class="success-checkmark" id="successCheckmark">
+            <div class="check-icon">
+                <span class="icon-line line-tip"></span>
+                <span class="icon-line line-long"></span>
+                <div class="icon-circle"></div>
+                <div class="icon-fix"></div>
+            </div>
         </div>
     </div>
 
+    <!-- Stars Background -->
+    <div id="starsContainer"></div>
+
     <script>
-        // Set initial for profile picture
+        // DOM Elements
+        const profilePicture = document.getElementById('profilePicture');
+        const username = document.getElementById('username');
+        const firstName = document.getElementById('firstName');
+        const lastName = document.getElementById('lastName');
+        const editForm = document.getElementById('editProfileForm');
+        const editUsername = document.getElementById('editUsername');
+        const editFirstName = document.getElementById('editFirstName');
+        const editLastName = document.getElementById('editLastName');
+        const saveChangesBtn = document.getElementById('saveChangesBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const successCheckmark = document.getElementById('successCheckmark');
+        const alertMessage = document.getElementById('alertMessage');
+        const starsContainer = document.getElementById('starsContainer');
+
+        // Set profile initial
         function setProfileInitial() {
-            const username = document.getElementById('username').textContent;
-            const initial = username.charAt(0).toUpperCase();
-            document.getElementById('profilePicture').textContent = `👨‍🏫`;
+            const usernameText = username.textContent;
+            const initial = usernameText.charAt(0).toUpperCase();
+            profilePicture.textContent = `👨‍🏫`;
         }
 
         // Toggle edit profile form
         function toggleEditForm() {
-            const form = document.getElementById('editProfileForm');
-            const btn = document.querySelector('.edit-profile-btn');
-            if (form.style.display === 'none' || form.style.display === '') {
-                form.style.display = 'block';
-                btn.textContent = 'Cancel';
+            const isVisible = editForm.style.display === 'block';
+            
+            if (!isVisible) {
+                // Populate form with current values
+                editUsername.value = username.textContent;
+                editFirstName.value = firstName.textContent;
+                editLastName.value = lastName.textContent;
+                editForm.style.display = 'block';
             } else {
-                form.style.display = 'none';
-                btn.textContent = 'Edit Profile';
+                editForm.style.display = 'none';
             }
         }
 
-        // Show popup
-        function showPopup(message) {
-            const popup = document.getElementById('popup');
-            const popupMessage = document.getElementById('popupMessage');
-            popupMessage.textContent = message;
-            popup.style.display = 'block';
-        }
-
-        // Close popup
-        function closePopup() {
-            const popup = document.getElementById('popup');
-            popup.style.display = 'none';
+        // Show alert message
+        function showAlert(message, type) {
+            alertMessage.textContent = message;
+            alertMessage.className = `alert alert-${type}`;
+            alertMessage.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertMessage.style.display = 'none';
+            }, 5000);
         }
 
         // Create shooting stars
         function createShootingStar() {
             const star = document.createElement('div');
             star.classList.add('shooting-star');
-            star.style.top = `${Math.random() * window.innerHeight}px`;
-            star.style.right = '0px';
+            
+            // Random position and delay
+            const topPosition = Math.random() * window.innerHeight;
+            const rightPosition = Math.random() * 100;
+            const animationDuration = 2 + Math.random() * 2;
+            const animationDelay = Math.random() * 2;
+            
+            star.style.top = `${topPosition}px`;
+            star.style.right = `${rightPosition}px`;
+            star.style.animationDuration = `${animationDuration}s`;
+            star.style.animationDelay = `${animationDelay}s`;
+            
             document.body.appendChild(star);
-
+            
+            // Remove star after animation completes
             setTimeout(() => {
                 star.remove();
-            }, 3000);
+            }, (animationDuration + animationDelay) * 1000);
+        }
+
+        // Show loading animation
+        function showLoading() {
+            loadingOverlay.classList.add('active');
+            successCheckmark.style.display = 'none';
+        }
+
+        // Show success animation
+        function showSuccess() {
+            document.querySelector('.loading-spinner').style.display = 'none';
+            successCheckmark.style.display = 'block';
+            
+            // Hide overlay after delay
+            setTimeout(() => {
+                loadingOverlay.classList.remove('active');
+                document.querySelector('.loading-spinner').style.display = 'block';
+                successCheckmark.style.display = 'none';
+            }, 2000);
+        }
+
+        // Handle form submission
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading animation
+            showLoading();
+            
+            // Get form data
+            const formData = new FormData();
+            formData.append('username', editUsername.value);
+            formData.append('first_name', editFirstName.value);
+            formData.append('last_name', editLastName.value);
+            
+            // Get CSRF token
+            const csrftoken = getCookie('csrftoken');
+            
+            // Send AJAX request
+            fetch('/profile/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success animation
+                    showSuccess();
+                    
+                    // Update profile data
+                    username.textContent = editUsername.value;
+                    firstName.textContent = editFirstName.value;
+                    lastName.textContent = editLastName.value;
+                    
+                    // Hide form
+                    editForm.style.display = 'none';
+                    
+                    // Show success message
+                    showAlert(data.message, 'success');
+                } else {
+                    // Hide loading overlay
+                    loadingOverlay.classList.remove('active');
+                    
+                    // Show error message
+                    showAlert(data.message || 'An error occurred. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                // Hide loading overlay
+                loadingOverlay.classList.remove('active');
+                
+                // Show error message
+                showAlert('Network error. Please try again.', 'error');
+                console.error('Error:', error);
+            });
+        });
+
+        // Helper function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             setProfileInitial();
-            setInterval(createShootingStar, 2000);
+            
+            // Create initial stars
+            for (let i = 0; i < 10; i++) {
+                setTimeout(createShootingStar, i * 200);
+            }
+            
+            // Continue creating stars
+            setInterval(createShootingStar, 1000);
         });
     </script>
 </body>

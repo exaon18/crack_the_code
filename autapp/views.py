@@ -15,6 +15,7 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
+import re
 def send_welcome_email(user, email,token,why):
     subject = 'Welcome to Chiwe'
     from_email = settings.DEFAULT_FROM_EMAIL
@@ -57,6 +58,8 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password1']
         password2 = request.POST['password2']
+        if "@" not in email:
+            return JsonResponse({"success": False, "message":"Invalid email."})
         
         if password != password2:
             return JsonResponse({"success": False, "message":"Passwords do not match."})
@@ -65,6 +68,8 @@ def signup(request):
             return JsonResponse({"success": False, "message":"Password must be at least 6 characters."})
         
         # Check for active user conflicts
+        if " " in username:
+            return JsonResponse({"success": False, "message":"Username must not contain spaces."})
         if MyUser.objects.filter(username=username, is_active=True).exists():
             return JsonResponse({"success": False, "message":"Username already exists, try another one."})
         if MyUser.objects.filter(email=email, is_active=True).exists():
@@ -163,12 +168,15 @@ def profile(request):
         last_name=request.POST['last_name']
         
         username=request.POST['username'].upper()
+        if " " in username:
+            return JsonResponse({"success": False, "message":"Username must not contain spaces."})
+        
         if MyUser.objects.filter(username=username).exists():
             if request.user.username != username:
-                messages.error(request,'Username already exists, try another one!')
+                return JsonResponse({"success": False, "message":"Username already exists, try another one."})
             else:
                 if len(first_name)>200 :
-                    messages.error(request,"First name and last name must be less than 200 characters")
+                    return JsonResponse({"success": False, "message":"First name and last name must be less than 200 characters"})
                 else:
                     user_obj=MyUser.objects.get(username=user.username)
                     user_obj.first_name=first_name
@@ -177,23 +185,21 @@ def profile(request):
                     user_obj.save()
             try:
                 user_obj.save()
-                messages.success(request, 'Profile updated successfully.')
-                return redirect('profile')
+                return JsonResponse({"success": True, "message":"Profile updated successfully."})
             except Exception as e:
                 return render(request,'profile.html')
         else:
             if len(first_name)>200  :
-                messages.error(request,"First name and last name must be less than 200 characters")
+                return JsonResponse({"success":False,"messaege":"First name and last name must be less than 200 characters"})
             else:
                 user_obj=MyUser.objects.get(username=user.username)
                 user_obj.first_name=first_name
                 user_obj.username=username  
-        try:
-            user_obj.save()
-            messages.success(request, 'Profile updated successfully.')
-            return redirect('profile')
-        except Exception as e:
-            return render(request,'profile.html')
+                try:
+                    user_obj.save()
+                    return JsonResponse({"success": True, "message":"Profile updated successfully."})
+                except Exception as e:
+                    return JsonResponse({"success": False, "message":"Erorr updating profile try again"})
     user_file=MyUser.objects.get(username=request.user.username)
     Game_Stat, created = GameHistory.objects.get_or_create(
     user=user_file, 
