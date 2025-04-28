@@ -520,6 +520,111 @@
         .popup-message-text {
             font-weight: 500;
         }
+
+        /* Error Styles */
+        .form-input.error {
+            border-color: var(--danger);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        /* Success Animation */
+        .success-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 15, 19, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .success-animation.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .checkmark-circle {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 4;
+            stroke: var(--primary);
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px var(--primary);
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+
+        .checkmark__circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 4;
+            stroke-miterlimit: 10;
+            stroke: var(--primary);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0px 0px 0px 80px transparent;
+            }
+        }
+
+        .success-text {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -562,6 +667,7 @@
                     <label for="username" class="form-label">Username or Email</label>
                     <i class="fas fa-user form-icon"></i>
                     <input type="text" id="username" name="username" class="form-input" placeholder="Enter your username or email" required>
+                    <div id="usernameError" class="error-message">Please enter a valid username or email</div>
                 </div>
                 
                 <div class="form-group">
@@ -571,6 +677,7 @@
                     <button type="button" class="password-toggle" id="togglePassword">
                         <i class="fas fa-eye"></i>
                     </button>
+                    <div id="passwordError" class="error-message">Please enter your password</div>
                 </div>
 
                 <div class="links-container">
@@ -590,13 +697,13 @@
             <div class="divider">or continue with</div>
 
             <div class="social-login">
-                <button class="social-btn">
+                <button class="social-btn" id="googleBtn">
                     <i class="fab fa-google"></i>
                 </button>
-                <button class="social-btn">
+                <button class="social-btn" id="facebookBtn">
                     <i class="fab fa-facebook-f"></i>
                 </button>
-                <button class="social-btn">
+                <button class="social-btn" id="appleBtn">
                     <i class="fab fa-apple"></i>
                 </button>
             </div>
@@ -616,18 +723,35 @@
         <div class="popup-message-icon">
             <i class="fas fa-info-circle"></i>
         </div>
-        <div class="popup-message-text">Coming soon!</div>
+        <div class="popup-message-text" id="popupMessageText">Coming soon!</div>
+    </div>
+
+    <!-- Success Animation -->
+    <div class="success-animation" id="successAnimation">
+        <div class="checkmark-circle">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            <div class="success-text">Login Successful!</div>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
             const passwordInput = document.getElementById('password');
+            const usernameInput = document.getElementById('username');
             const togglePassword = document.getElementById('togglePassword');
             const loginForm = document.getElementById('login-form');
             const loginBtn = document.getElementById('loginBtn');
             const messagesContainer = document.getElementById('messagesContainer');
             const starsContainer = document.getElementById('starsContainer');
+            const popupMessage = document.getElementById('popupMessage');
+            const popupMessageText = document.getElementById('popupMessageText');
+            const successAnimation = document.getElementById('successAnimation');
+            const usernameError = document.getElementById('usernameError');
+            const passwordError = document.getElementById('passwordError');
             
             // Toggle password visibility
             togglePassword.addEventListener('click', function() {
@@ -693,28 +817,119 @@
             // Continue creating stars
             setInterval(createShootingStar, 1000);
 
+            // Show popup message
+            function showPopup(message, duration = 3000) {
+                popupMessageText.textContent = message;
+                popupMessage.classList.add('show');
+                
+                setTimeout(() => {
+                    popupMessage.classList.remove('show');
+                }, duration);
+            }
+
             // Handle social login buttons
             const socialButtons = document.querySelectorAll('.social-btn');
-            const popupMessage = document.getElementById('popupMessage');
-
+            
             socialButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    // Show popup message
-                    popupMessage.classList.add('show');
-                    
-                    // Hide popup after 3 seconds
-                    setTimeout(() => {
-                        popupMessage.classList.remove('show');
-                    }, 3000);
+                    showPopup('Coming soon!');
                 });
             });
             
-            // Form submission with loading state
+            // Create message element
+            function createMessage(message, type = 'info') {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message');
+                
+                // Icon element
+                const iconElement = document.createElement('div');
+                iconElement.classList.add('message-icon');
+                
+                // Content element
+                const contentElement = document.createElement('div');
+                contentElement.classList.add('message-content');
+                contentElement.textContent = message;
+                
+                // Close button
+                const closeButton = document.createElement('button');
+                closeButton.classList.add('message-close');
+                closeButton.innerHTML = '<i class="fas fa-times"></i>';
+                closeButton.addEventListener('click', function() {
+                    messageElement.classList.add('hiding');
+                    setTimeout(() => {
+                        messageElement.remove();
+                    }, 300);
+                });
+                
+                // Set icon and style based on type
+                if (type === 'success') {
+                    iconElement.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    iconElement.style.color = 'var(--success)';
+                    messageElement.style.borderLeftColor = 'var(--success)';
+                } else if (type === 'error') {
+                    iconElement.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                    iconElement.style.color = 'var(--danger)';
+                    messageElement.style.borderLeftColor = 'var(--danger)';
+                } else {
+                    iconElement.innerHTML = '<i class="fas fa-info-circle"></i>';
+                }
+                
+                // Add elements to message
+                messageElement.appendChild(iconElement);
+                messageElement.appendChild(contentElement);
+                messageElement.appendChild(closeButton);
+                
+                return messageElement;
+            }
+            
+            // Show success animation
+            function showSuccessAnimation() {
+                successAnimation.classList.add('show');
+                
+                setTimeout(() => {
+                    successAnimation.classList.remove('show');
+                }, 2000);
+            }
+            
+            // Validate form
+            function validateForm() {
+                let isValid = true;
+                
+                // Reset errors
+                usernameInput.classList.remove('error');
+                passwordInput.classList.remove('error');
+                usernameError.style.display = 'none';
+                passwordError.style.display = 'none';
+                
+                // Validate username
+                if (!usernameInput.value.trim()) {
+                    usernameInput.classList.add('error');
+                    usernameError.style.display = 'block';
+                    isValid = false;
+                }
+                
+                // Validate password
+                if (!passwordInput.value.trim()) {
+                    passwordInput.classList.add('error');
+                    passwordError.style.display = 'block';
+                    isValid = false;
+                }
+                
+                return isValid;
+            }
+            
+            // Form submission with AJAX
             let isSubmitting = false;
             
             loginForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                
                 if (isSubmitting) {
-                    e.preventDefault();
+                    return;
+                }
+                
+                // Validate form
+                if (!validateForm()) {
                     return;
                 }
                 
@@ -723,8 +938,101 @@
                 loginBtn.classList.add('loading');
                 loginBtn.disabled = true;
                 
-                // Let the form submit naturally for Django CSRF
-                // Don't prevent default
+                // Get form data
+                const formData = new FormData(this);
+                
+                // Get CSRF token
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                // Send AJAX request
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Reset loading state
+                    isSubmitting = false;
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                    
+                    if (data.success) {
+                        // Show success animation
+                        showSuccessAnimation();
+                        
+                        // Show success message
+                        const successMessage = createMessage(data.message || 'Login successful!', 'success');
+                        messagesContainer.appendChild(successMessage);
+                        
+                        // Auto dismiss after 3 seconds
+                        setTimeout(() => {
+                            successMessage.classList.add('hiding');
+                            setTimeout(() => {
+                                successMessage.remove();
+                            }, 300);
+                        }, 3000);
+                        
+                        // Redirect to dashboard after delay
+                        setTimeout(() => {
+                            window.location.href = '/dashboard';
+                        }, 2000);
+                    } else {
+                        // Show error message
+                        const errorMessage = createMessage(data.message || 'Invalid credentials. Please try again.', 'error');
+                        messagesContainer.appendChild(errorMessage);
+                        
+                        // Auto dismiss after 5 seconds
+                        setTimeout(() => {
+                            errorMessage.classList.add('hiding');
+                            setTimeout(() => {
+                                errorMessage.remove();
+                            }, 300);
+                        }, 5000);
+                    }
+                })
+                .catch(error => {
+                    // Reset loading state
+                    isSubmitting = false;
+                    loginBtn.classList.remove('loading');
+                    loginBtn.disabled = false;
+                    
+                    // Show error message
+                    const errorMessage = createMessage('Network error. Please try again.', 'error');
+                    messagesContainer.appendChild(errorMessage);
+                    
+                    // Auto dismiss after 5 seconds
+                    setTimeout(() => {
+                        errorMessage.classList.add('hiding');
+                        setTimeout(() => {
+                            errorMessage.remove();
+                        }, 300);
+                    }, 5000);
+                    
+                    console.error('Error:', error);
+                });
+            });
+            
+            // Remember me functionality
+            const rememberCheckbox = document.getElementById('remember');
+            
+            // Check if there's a saved username
+            const savedUsername = localStorage.getItem('chiwe_username');
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                rememberCheckbox.checked = true;
+            }
+            
+            // Save username if remember me is checked
+            rememberCheckbox.addEventListener('change', function() {
+                if (this.checked && usernameInput.value.trim()) {
+                    localStorage.setItem('chiwe_username', usernameInput.value.trim());
+                } else {
+                    localStorage.removeItem('chiwe_username');
+                }
             });
         });
     </script>
