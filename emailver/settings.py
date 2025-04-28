@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-zr*n+*b1v%xb2squ$mi%t)pjxkuxgr7j+)#io5pac7=0a)8$--
 DEBUG = True
 ALLOWED_HOSTS = ['*']
 
-DATABASE_URL="postgresql://postgres:mzDAflGhpZQPCElYOhDCbKMmBuODDZSP@gondola.proxy.rlwy.net:25414/railway"
+DATABASE_URL="postgresql://postgres:skrDQeeVMRxIbnxMoiccrloouwKpzywX@shinkansen.proxy.rlwy.net:33794/railway"
 # Application definition
 
 INSTALLED_APPS = [
@@ -88,11 +88,13 @@ ASGI_APPLICATION = 'emailver.asgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_max_age=600,        # persist connections
+        ssl_require=True         # enforce SSL
+    )
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
