@@ -145,7 +145,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            return JsonResponse({"success": True, "message":"Login successful."})
         else:
             
             return JsonResponse({"success": False, "message": "Invalid username or password"})
