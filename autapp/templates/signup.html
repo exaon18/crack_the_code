@@ -377,7 +377,7 @@ body {
         
         <form id="signup-form">
             <!-- CSRF Token - Hidden field for Django -->
-            <input type="hidden" name="csrfmiddlewaretoken" id="csrfToken" value="">
+            <input type="hidden" name="csrfmiddlewaretoken" id="csrfToken" value="{{ csrf_token }}">
             
             <div class="form-row">
                 <div class="form-group">
@@ -459,8 +459,36 @@ body {
         const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
         const loginLink = document.getElementById('loginLink');
         
-        // Set CSRF token from cookie
-        csrfTokenInput.value = getCookie('csrftoken');
+        // CSRF token handling - Use the Django template rendered token
+        // The token is already set in the HTML via Django's template system: value="{{ csrf_token }}"
+        // This ensures the token is available even in incognito mode
+        
+        // If for some reason the token wasn't set via template, try to get it from cookie as fallback
+        if (!csrfTokenInput.value) {
+            csrfTokenInput.value = getCookie('csrftoken');
+            
+            // If still no token, fetch a new one from the server
+            if (!csrfTokenInput.value) {
+                fetchCSRFToken();
+            }
+        }
+        
+        // Function to fetch a new CSRF token if needed
+        function fetchCSRFToken() {
+            fetch('/get-csrf-token/', {
+                method: 'GET',
+                credentials: 'same-origin' // Important for cookies
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.csrf_token) {
+                    csrfTokenInput.value = data.csrf_token;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching CSRF token:', error);
+            });
+        }
         
         // Email validation
         function isValidEmail(email) {
@@ -595,6 +623,12 @@ body {
             
             if (!isValid) return;
             
+            // Check if CSRF token is available
+            if (!csrfTokenInput.value) {
+                showAlert('Security token missing. Please refresh the page and try again.', 'error');
+                return;
+            }
+            
             // Show loading state
             signupBtn.disabled = true;
             signupSpinner.style.display = 'block';
@@ -602,19 +636,24 @@ body {
             // Prepare form data
             const formData = new FormData(form);
             
-            // Get CSRF token
-            const csrftoken = getCookie('csrftoken');
-            
             // Send AJAX request
             fetch('/signup', {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrftoken
-                }
+                    'X-CSRFToken': csrfTokenInput.value
+                },
+                credentials: 'same-origin' // Important for cookies
             })
-            .then(response => response.json())
+            .then(response => {
+                // Check if we need to update the CSRF token from response headers
+                const newToken = response.headers.get('X-CSRFToken');
+                if (newToken) {
+                    csrfTokenInput.value = newToken;
+                }
+                return response.json();
+            })
             .then(data => {
                 // Reset loading state
                 signupSpinner.style.display = 'none';
@@ -657,6 +696,11 @@ body {
                         emailError.textContent = data.message;
                         emailError.style.display = 'block';
                     }
+                    
+                    // If the error mentions CSRF, try to refresh the token
+                    if (data.message && data.message.toLowerCase().includes('csrf')) {
+                        fetchCSRFToken();
+                    }
                 }
             })
             .catch(error => {
@@ -665,6 +709,9 @@ body {
                 signupBtn.disabled = false;
                 showAlert('Network error. Please try again.', 'error');
                 console.error('Error:', error);
+                
+                // Try to refresh the CSRF token in case that was the issue
+                fetchCSRFToken();
             });
         });
         

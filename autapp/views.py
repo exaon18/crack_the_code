@@ -16,6 +16,16 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 import re
+from django.middleware.csrf import get_token
+
+def get_csrf_token(request):
+    """
+    View to provide a fresh CSRF token via AJAX.
+    This is useful for SPA applications or when cookies might be blocked.
+    """
+    csrf_token = get_token(request)
+    return JsonResponse({'csrf_token': csrf_token})
+
 def send_welcome_email(user, email,token,why):
     subject = 'Welcome to Chiwe'
     from_email = settings.DEFAULT_FROM_EMAIL
