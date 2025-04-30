@@ -289,52 +289,66 @@ def Monitering(request, admin):
     else:
         print("❌ User is not staff in Monitering. Raising 404.")
         raise Http404
-def check_Transaction(user,tx_id):
-    print("trial1 check")
-    print(user)
-    user = MyUser.objects.get(username=user)
-    trx_id=str(tx_id).upper()
-    if TelebirrReq.objects.filter(tx_id=trx_id).exists():
-        if TelebirrReq.objects.get(tx_id=trx_id).completed==False:
-            data=TelebirrReq.objects.get(tx_id=trx_id)
-            amount=data.amount
-            userb=Ballance.objects.get(user=user)
-            userb.ballance+=amount
-            userb.save()
-            data.completed=True
-            data.save()
-            user.pendingDeposit = False
-            user.save()
+from django.db import transaction
+from django.db.models import F
+from django.http import JsonResponse
+
+def check_transaction(username: str, tx_id: str):
+    tx_id = tx_id.upper()
+
+    # Wrap the whole thing in an atomic block
+    with transaction.atomic():
+        try:
+            # Lock the TelebirrReq row so concurrent threads queue up here
+            req = (TelebirrReq.objects
+                   .select_for_update()
+                   .get(tx_id=tx_id))
+        except TelebirrReq.DoesNotExist:
             return JsonResponse({
-                "status":True,"message":f"your deposit for {amount} ETB has been approved"
+                "status": False,
+                "message": "Your transaction id is not valid, please try again in a few minutes or use a new one"
             })
-        else:
+
+        if req.completed:
             return JsonResponse({
-                "status":False,"message":"your deposit has already been approved, please use a new one"
+                "status": False,
+                "message": "Your deposit has already been approved, please use a new one"
             })
-            
-    else:
+
+        # Lock the user balance row too
+        user = MyUser.objects.get(username=username)
+        bal = (Ballance.objects
+               .select_for_update()
+               .get(user=user))
+
+        # Credit using an F-expression so it’s done in the database
+        bal.ballance = F("ballance") + req.amount
+        bal.save()
+
+        # Mark request completed
+        req.completed = True
+        req.save()
+
+        # Clear the pending-deposit flag
+        user.pendingDeposit = False
+        user.save()
+
         return JsonResponse({
-            "status":False,"message":"your transaction id is not valid, please try again in a few minutes or use a new one"
+            "status": True,
+            "message": f"Your deposit for {req.amount} ETB has been approved"
         })
 @login_required
 def deposit(request):
-    user = MyUser.objects.get(username=request.user.username)
-     
+    user = request.user
+
     if request.method == "POST":
         if user.pendingDeposit:
-            user.pendingDeposit = False
-            user.save()
-            messages.error(request, "You already have a pending deposit request. Please wait for it to be completed.")
             return JsonResponse({
-                "status":False,
-                "message":"You already have a pending deposit request. Please wait for it to be completed."
+                "status": False,
+                "message": "You already have a pending deposit request. Please wait for it to be completed."
             })
-        else:
-            print("got ")
-            tx_id=str(request.POST["tx_id"])
-            return check_Transaction(user.username,tx_id)      
-    else:
-        
-        return render(request, "deposit.html")
+        tx_id = request.POST["tx_id"]
+        return check_transaction(user.username, tx_id)
+
+    return render(request, "deposit.html")
 
