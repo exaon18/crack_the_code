@@ -18,8 +18,7 @@ class Ballance(models.Model):
     ballance=models.DecimalField(max_digits=10,decimal_places=2,default=0.00)
     def __str__(self):
         return self.user.username
-  # Ensure you have the correct user model
-
+  
     
 class GameHistory(models.Model):
     user= models.OneToOneField(MyUser,on_delete=models.CASCADE, null=False)
