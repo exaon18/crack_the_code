@@ -339,9 +339,8 @@ def check_transaction(username: str, tx_id: str):
         })
 @login_required
 def deposit(request):
-    user = request.user
-
     if request.method == "POST":
+        user = MyUser.objects.get(username=request.user.username)
         if user.pendingDeposit:
             return JsonResponse({
                 "status": False,

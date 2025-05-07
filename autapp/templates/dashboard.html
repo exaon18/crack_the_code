@@ -1286,7 +1286,7 @@
                                 <div class="stat-label">Max Win</div>
                             </div>
                         </div>
-                        <button class="play-btn">Play Now</button>
+                        <button class="play-btn" data-game="ctc">Play Now</button>
                     </div>
                 </div>
 
@@ -1315,7 +1315,7 @@
                                 <div class="stat-label">Max Win</div>
                             </div>
                         </div>
-                        <button class="play-btn">Play Now</button>
+                        <button class="play-btn" data-game="roolet">Play Now</button>
                     </div>
                 </div>
 
@@ -1486,49 +1486,104 @@
                 window.location.href = '/logout';
             });
             
-            // Game card click handler with loading animation
-            const gameCards = document.querySelectorAll('.game-card');
+            // FIX 1: Make Play Now buttons work properly
+            const playButtons = document.querySelectorAll('.play-btn:not([disabled])');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const loadingText = document.getElementById('loadingText');
             const loadingProgressBar = document.getElementById('loadingProgressBar');
             
-            gameCards.forEach(card => {
-                card.addEventListener('click', (e) => {
-                    // Don't trigger if clicking on the disabled button
-                    if (e.target.disabled) return;
+            playButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent card click from triggering
                     
-                    const gameName = card.getAttribute('data-game');
-                    if (!gameName) return; // Skip for coming soon games
+                    const gameName = this.getAttribute('data-game');
+                    if (!gameName) return;
                     
                     // Show loading overlay
                     loadingOverlay.classList.add('active');
                     
                     // Set loading text based on game
-                    loadingText.textContent = `Loading ${card.querySelector('.game-title').textContent}...`;
+                    const gameTitle = this.closest('.game-card').querySelector('.game-title').textContent;
+                    loadingText.textContent = `Loading ${gameTitle}...`;
                     
-                    // Animate progress bar
+                    // Reset progress bar
                     loadingProgressBar.style.width = '0%';
                     
-                    let progress = 0;
-                    const progressInterval = setInterval(() => {
-                        progress += Math.random() * 15;
-                        if (progress > 100) progress = 100;
-                        
-                        loadingProgressBar.style.width = `${progress}%`;
-                        
-                        if (progress === 100) {
-                            clearInterval(progressInterval);
-                            
-                            // Redirect after a short delay
-                            setTimeout(() => {
-                                if (gameName === 'ctc') {
-                                    window.location.href = '/games/ctc';
-                                } else if (gameName === 'roolet') {
-                                    window.location.href = '/games/bingo';
-                                }
-                            }, 500);
+                    // FIX 2: Make loading real - track actual page load progress
+                    let gameUrl = '';
+                    if (gameName === 'ctc') {
+                        gameUrl = '/games/ctc';
+                    } else if (gameName === 'roolet') {
+                        gameUrl = '/games/bingo';
+                    }
+                    
+                    // Start loading the page in the background
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('GET', gameUrl, true);
+                    
+                    // Track progress
+                    xhr.onprogress = function(e) {
+                        if (e.lengthComputable) {
+                            const percentComplete = (e.loaded / e.total) * 100;
+                            loadingProgressBar.style.width = `${percentComplete}%`;
+                        } else {
+                            // If length not computable, show animated progress
+                            simulateProgress();
                         }
-                    }, 300);
+                    };
+                    
+                    // Handle completion
+                    xhr.onload = function() {
+                        loadingProgressBar.style.width = '100%';
+                        // Redirect to the game page
+                        setTimeout(() => {
+                            window.location.href = gameUrl;
+                        }, 200);
+                    };
+                    
+                    // Handle errors
+                    xhr.onerror = function() {
+                        // If error, still redirect after showing full progress
+                        loadingProgressBar.style.width = '100%';
+                        setTimeout(() => {
+                            window.location.href = gameUrl;
+                        }, 200);
+                    };
+                    
+                    xhr.send();
+                });
+            });
+            
+            // Fallback progress simulation if actual progress can't be tracked
+            function simulateProgress() {
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 10;
+                    if (progress > 90) progress = 90; // Cap at 90% for simulation
+                    
+                    loadingProgressBar.style.width = `${progress}%`;
+                    
+                    if (progress >= 90) {
+                        clearInterval(progressInterval);
+                    }
+                }, 300);
+            }
+            
+            // Game card click handler - delegate to the Play Now button
+            const gameCards = document.querySelectorAll('.game-card[data-game]');
+            
+            gameCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on the button directly (button handles its own click)
+                    if (e.target.classList.contains('play-btn') || e.target.closest('.play-btn')) {
+                        return;
+                    }
+                    
+                    // Find and click the play button in this card
+                    const playButton = this.querySelector('.play-btn:not([disabled])');
+                    if (playButton) {
+                        playButton.click();
+                    }
                 });
             });
 

@@ -108,7 +108,8 @@ def signup(request):
         print("finished")
         try:
             send_welcome_email(user, email, token,why="signup")
-            return JsonResponse({"success": True, "message":"OTP has been sent to your email, please check your inbox.","username":username})
+            return JsonResponse({"success": True, "message":"OTP has been sent to your email, please check your inbox.",
+                                 "username":username})
         except Exception as e:
             print(e)
             messages.error(request, f'Error sending email: please sign up again')
@@ -167,7 +168,7 @@ def login_view(request):
 def dashboard(request):
     username=request.user.username
     user=MyUser.objects.get(username=username)
-    print(user.pendingWithdrwal)
+    
     ballance=Ballance.objects.get(user=user).ballance
     return render(request,'dashboard.html',{'user':user,'ballance':ballance})
 @login_required
@@ -192,7 +193,7 @@ def profile(request):
                     user_obj.first_name=first_name
                     user_obj.last_name=last_name
                     user_obj.username=username  
-                    user_obj.save()
+                    
             try:
                 user_obj.save()
                 return JsonResponse({"success": True, "message":"Profile updated successfully."})
@@ -237,6 +238,8 @@ def forgot_password(request):
         email = request.POST["email"]
         try:
             user = MyUser.objects.get(email=email)
+            if not user.is_active:
+                return JsonResponse({"Success": False, "message":"User is not active."})
             otp = generate_unique_number(user.username)
             user.forgetPasswordToken = otp
             user.save()
@@ -256,6 +259,8 @@ def validate_recovery(request):
         pass2=request.POST["confirm_password"]
         try:
             user = MyUser.objects.get(email=email)
+            if not user.is_active:
+                return JsonResponse({"Success": False, "message":"User is not active."})
             print(type(str(user.forgetPasswordToken)))
             print(type(token))
             if str(user.forgetPasswordToken) == token:
@@ -273,3 +278,37 @@ def validate_recovery(request):
                 return JsonResponse({"Success": False, "message":"OTP is invalid."})  # Redirect to the home page or any other page
         except MyUser.DoesNotExist:
             return JsonResponse({"Success": False, "message":"User not found."}) # Redirect to the home page or any other page
+from django.utils import timezone
+from datetime import timedelta
+
+@require_POST
+def resend_otp_signup(request, username):
+    try:
+        user = MyUser.objects.get(username=username)
+        
+        if user.is_active:
+            return JsonResponse({"Success": False, "message": "User is already active."})
+
+        cooldown_period = timedelta(seconds=60)
+        now = timezone.now()
+        last_otp=user.last_otp_sent
+
+        if last_otp and now - last_otp < cooldown_period:
+            remaining = cooldown_period - (now - last_otp)
+            return JsonResponse({
+                "Success": False,
+                "message": f"Please wait {int(remaining.total_seconds())} seconds before resending OTP."
+            })
+
+        otp = generate_unique_number(user.username)
+        user.token = otp
+        user.last_otp_sent = now
+        user.save()
+        send_welcome_email(user=user, email=user.email, token=otp, why="signup")
+
+        return JsonResponse({"Success": True, "message": "OTP has been sent to your email."})
+
+    except MyUser.DoesNotExist:
+        return JsonResponse({"Success": False, "message": "User not found."})
+
+    
