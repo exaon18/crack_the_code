@@ -13,6 +13,10 @@ def ctc(request):
     ballance=Ballance.objects.get(user=user).ballance
 
     if request.method =='POST':
+        if user.Active_Game:
+            print("user is already in a game")
+            messages.error(request,"You are already in a game")
+            return JsonResponse({"proceed":False,"message":"You are already in a game"})
         amount=int(request.POST["amount"])
         print("in the view ")
         if amount == 25 or amount == 50 or amount ==100:
@@ -36,11 +40,18 @@ def ctc(request):
 @login_required
 def bingo(request):
       user=MyUser.objects.get(username=request.user.username)
+      if not user.is_authenticated:
+          raise Http404("User not authenticated")
+      
       print(f"users id {user}")
       print(MyUser.objects.get(id=user.id).username)
       print(Ballance.objects.get(user=user).ballance)
       ballance=Ballance.objects.get(user=user).ballance
       if request.method =='POST':
+          if user.Active_Game:
+            print("user is already in a game")
+            messages.error(request,"You are already in a game")
+            return JsonResponse({"proceed":False,"message":"You are already in a game"})
           amount=int(request.POST["amount"])
           print("in the view bingo ")
           if amount == 25 or amount == 50 or amount ==100:

@@ -12,6 +12,7 @@ class MyUser(AbstractUser):
     points=models.IntegerField(default=0)
     forgetPasswordToken=models.IntegerField(null=True)
     last_otp_sent = models.DateTimeField(null=True, blank=True)
+    Active_Game=models.BooleanField(default=False)
     def __str__(self):
         return self.username
 class Ballance(models.Model):

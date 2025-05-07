@@ -91,6 +91,9 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
 
         async_to_sync(self.channel_layer.group_add)(self.room, self.channel_name)
         self.accept()
+        user=MyUser.objects.get(username=self.username)
+        user.Active_Game=True
+        user.save()
         players_in_game.append(self.username)
         print("created new room")
 
@@ -109,6 +112,9 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
 
             async_to_sync(self.channel_layer.group_add)(self.room, self.channel_name)
             self.accept()
+            user=MyUser.objects.get(username=self.username)
+            user.Active_Game=True
+            user.save()
             if room_list[0]["players_amount"] == 2:
                 self.Game_state = Crack_the_CodeConsumer.game_states[self.room]  
                 self.player_1 = self.Game_state["player1"]
@@ -323,6 +329,12 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
             elif self.room_list == 100:
                 room_with_100.pop(0)
             self.clean_up_room()
+         
+            user=MyUser.objects.get(username=self.username)
+            print(f"the game hasnt finished before updated {user.Active_Game}")
+            user.Active_Game=False
+            user.save()
+            print(f"the game hasnt finished updated {user.Active_Game}")
         elif room_state and not Crack_the_CodeConsumer.games_finished.get(self.room, False):
             # If game hasn't finished, declare the other player as winner
             print("game hasnt finished")
