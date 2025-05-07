@@ -11,6 +11,7 @@ urlpatterns = [
     path('logout/',views.logout_view,name='logout'),
     path("recovery/", views.forgot_password, name="recovery"),
     path("recovery/validate_recovery/", views.validate_recovery, name="validate_recovery"),
+    path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
     
 ]
 from django.conf.urls import handler404

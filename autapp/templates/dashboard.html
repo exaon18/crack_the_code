@@ -604,6 +604,31 @@
             left: 100%;
         }
 
+        /* Play button loading state */
+        .play-btn.loading {
+            background: var(--primary-dark);
+            color: transparent;
+            pointer-events: none;
+        }
+
+        .play-btn.loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            border-top-color: var(--background);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Welcome section */
         .welcome-section {
             text-align: center;
@@ -654,88 +679,6 @@
 
         .stat-card .stat-label {
             font-size: 0.9rem;
-        }
-
-        /* Loading overlay */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 15, 19, 0.9);
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .loading-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .loading-spinner {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1.5rem;
-        }
-
-        .loading-spinner::before,
-        .loading-spinner::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 4px solid transparent;
-            border-top-color: var(--primary);
-        }
-
-        .loading-spinner::before {
-            animation: spin 1.5s linear infinite;
-            z-index: 2;
-        }
-
-        .loading-spinner::after {
-            border: 4px solid rgba(46, 213, 115, 0.1);
-            z-index: 1;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--primary);
-            font-size: 1.2rem;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        .loading-progress {
-            width: 200px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            margin-top: 1rem;
-            overflow: hidden;
-        }
-
-        .loading-progress-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 2px;
         }
 
         /* Modal */
@@ -825,155 +768,6 @@
         .modal-btn-secondary:hover {
             border-color: var(--text);
             transform: translateY(-2px);
-        }
-
-        /* New styles for enhanced waiting page */
-        .game-status {
-            position: relative;
-            background: rgba(46, 213, 115, 0.05);
-            border-radius: 16px;
-            padding: 3rem;
-            text-align: center;
-            margin-top: 2rem;
-            border: 1px solid rgba(46, 213, 115, 0.2);
-        }
-
-        .game-status p {
-            font-size: 1.5rem;
-            color: var(--primary);
-            margin-bottom: 2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-        }
-
-        /* Enhanced game info styles */
-        #gameInfo {
-            background: rgba(23, 25, 35, 0.9);
-            border: 1px solid rgba(46, 213, 115, 0.3);
-            padding: 3rem 2rem;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #gameInfo::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            animation: scanline 2s linear infinite;
-        }
-
-        @keyframes scanline {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        #countdown {
-            font-size: 6rem;
-            font-weight: 800;
-            color: var(--primary);
-            text-shadow: 0 0 20px rgba(46, 213, 115, 0.5);
-            animation: countdownPulse 1s ease-in-out infinite;
-            margin: 2rem 0;
-        }
-
-        @keyframes countdownPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Enhanced game over popup */
-        .popup {
-            background: rgba(0, 0, 0, 0.95);
-        }
-
-        .popup-content {
-            background: rgba(23, 25, 35, 0.95);
-            border: 1px solid rgba(46, 213, 115, 0.3);
-            padding: 3rem 2rem;
-            border-radius: 20px;
-            position: relative;
-            overflow: hidden;
-            min-width: 300px;
-        }
-
-        .popup h2 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
-        }
-
-        .popup button {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            padding: 1rem 2rem;
-            margin: 0.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer !important;
-            transition: all 0.3s ease;
-            pointer-events: auto !important;
-        }
-
-        .popup button:hover {
-            background: var(--primary);
-            color: var(--background);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
-        }
-
-        /* Leave confirmation popup */
-        #leaveGamePopup .popup-content {
-            border-color: rgba(255, 99, 71, 0.3);
-        }
-
-        #leaveGamePopup h2 {
-            color: tomato;
-            text-shadow: 0 0 10px rgba(255, 99, 71, 0.3);
-        }
-
-        #leaveGamePopup button:first-of-type {
-            border-color: tomato;
-            color: tomato;
-        }
-
-        #leaveGamePopup button:first-of-type:hover {
-            background: tomato;
-            color: var(--background);
-            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
-        }
-
-        /* Enhanced timer styles */
-        .countdown-timer {
-            background: rgba(23, 25, 35, 0.8);
-            border-radius: 50%;
-            padding: 10px;
-            box-shadow: 0 0 20px rgba(46, 213, 115, 0.2);
-            pointer-events: auto !important;
-            position: relative;
-            z-index: 10;
-        }
-
-        .timer-circle {
-            stroke-width: 8;
-            stroke-linecap: round;
-            filter: drop-shadow(0 0 4px rgba(46, 213, 115, 0.5));
-            pointer-events: auto !important;
-        }
-
-        .timer-text {
-            font-size: 1.8rem;
-            font-weight: 800;
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.5);
-            pointer-events: auto !important;
         }
 
         /* Responsive styles - Improved for mobile */
@@ -1066,16 +860,6 @@
             .game-stat {
                 min-width: 30%;
             }
-
-            .loading-text {
-                font-size: 1rem;
-                padding: 0 1rem;
-            }
-
-            .loading-progress {
-                width: 80%;
-                max-width: 250px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -1134,11 +918,6 @@
 
             .modal-btn {
                 width: 100%;
-            }
-
-            .loading-spinner {
-                width: 60px;
-                height: 60px;
             }
         }
 
@@ -1381,15 +1160,6 @@
         </section>
     </main>
 
-    <!-- Loading overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-text" id="loadingText">Loading Crack the Code...</div>
-        <div class="loading-progress">
-            <div class="loading-progress-bar" id="loadingProgressBar"></div>
-        </div>
-    </div>
-
     <!-- Logout confirmation modal -->
     <div class="modal" id="logoutModal">
         <div class="modal-content">
@@ -1429,6 +1199,12 @@
         
         // SIMPLIFIED NAVIGATION TOGGLE
         document.addEventListener('DOMContentLoaded', function() {
+            // Reset any buttons that might still be in loading state when returning to the dashboard
+            document.querySelectorAll('.play-btn.loading').forEach(button => {
+                button.classList.remove('loading');
+                button.disabled = false;
+            });
+
             const navToggle = document.getElementById('navToggle');
             const navMenu = document.getElementById('navMenu');
             const navOverlay = document.getElementById('navOverlay');
@@ -1486,95 +1262,47 @@
                 window.location.href = '/logout';
             });
             
-            // FIX 1: Make Play Now buttons work properly
+            // REFACTORED: Play Now button functionality
             const playButtons = document.querySelectorAll('.play-btn:not([disabled])');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const loadingText = document.getElementById('loadingText');
-            const loadingProgressBar = document.getElementById('loadingProgressBar');
             
+            // Function to handle game loading - direct redirect without fetch
+            function loadGame(gameType) {
+                // Determine game URL based on game type
+                let gameUrl = '';
+                if (gameType === 'ctc') {
+                    gameUrl = '/games/ctc';
+                } else if (gameType === 'roolet') {
+                    gameUrl = '/games/bingo';
+                } else {
+                    return; // Exit if invalid game type
+                }
+                
+                // Redirect immediately to the game page
+                window.location.href = gameUrl;
+            }
+
+            // Add click event listeners to all play buttons
             playButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.stopPropagation(); // Prevent card click from triggering
                     
-                    const gameName = this.getAttribute('data-game');
-                    if (!gameName) return;
+                    // Add loading state to button
+                    this.classList.add('loading');
+                    this.disabled = true;
                     
-                    // Show loading overlay
-                    loadingOverlay.classList.add('active');
+                    const gameType = this.getAttribute('data-game');
                     
-                    // Set loading text based on game
-                    const gameTitle = this.closest('.game-card').querySelector('.game-title').textContent;
-                    loadingText.textContent = `Loading ${gameTitle}...`;
-                    
-                    // Reset progress bar
-                    loadingProgressBar.style.width = '0%';
-                    
-                    // FIX 2: Make loading real - track actual page load progress
-                    let gameUrl = '';
-                    if (gameName === 'ctc') {
-                        gameUrl = '/games/ctc';
-                    } else if (gameName === 'roolet') {
-                        gameUrl = '/games/bingo';
-                    }
-                    
-                    // Start loading the page in the background
-                    const xhr = new XMLHttpRequest();
-                    xhr.open('GET', gameUrl, true);
-                    
-                    // Track progress
-                    xhr.onprogress = function(e) {
-                        if (e.lengthComputable) {
-                            const percentComplete = (e.loaded / e.total) * 100;
-                            loadingProgressBar.style.width = `${percentComplete}%`;
-                        } else {
-                            // If length not computable, show animated progress
-                            simulateProgress();
-                        }
-                    };
-                    
-                    // Handle completion
-                    xhr.onload = function() {
-                        loadingProgressBar.style.width = '100%';
-                        // Redirect to the game page
-                        setTimeout(() => {
-                            window.location.href = gameUrl;
-                        }, 200);
-                    };
-                    
-                    // Handle errors
-                    xhr.onerror = function() {
-                        // If error, still redirect after showing full progress
-                        loadingProgressBar.style.width = '100%';
-                        setTimeout(() => {
-                            window.location.href = gameUrl;
-                        }, 200);
-                    };
-                    
-                    xhr.send();
+                    // Load the game
+                    loadGame(gameType, this);
                 });
             });
-            
-            // Fallback progress simulation if actual progress can't be tracked
-            function simulateProgress() {
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += Math.random() * 10;
-                    if (progress > 90) progress = 90; // Cap at 90% for simulation
-                    
-                    loadingProgressBar.style.width = `${progress}%`;
-                    
-                    if (progress >= 90) {
-                        clearInterval(progressInterval);
-                    }
-                }, 300);
-            }
-            
+
             // Game card click handler - delegate to the Play Now button
             const gameCards = document.querySelectorAll('.game-card[data-game]');
-            
+
             gameCards.forEach(card => {
                 card.addEventListener('click', function(e) {
-                    // Don't trigger if clicking on the button directly (button handles its own click)
+                    // Don't trigger if clicking on the button directly
                     if (e.target.classList.contains('play-btn') || e.target.closest('.play-btn')) {
                         return;
                     }
