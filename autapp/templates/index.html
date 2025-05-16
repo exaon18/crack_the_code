@@ -3,27 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Chiwe - 1v1 Multiplayer Gaming</title>
+    <title>Chiwe - 1v1 Multiplayer Gaming Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
+            /* Primary color palette */
             --primary: #2eD573;
             --primary-dark: #25a85c;
-            --background: #0a0a0a;
-            --surface: #1a1a1a;
+            --primary-light: #4aea8b;
+            --primary-glow: rgba(46, 213, 115, 0.4);
+            
+            /* Secondary colors */
+            --secondary: #00c9b7;
+            --secondary-dark: #00a896;
+            --secondary-light: #2fded0;
+            --secondary-glow: rgba(0, 201, 183, 0.4);
+            
+            /* Background colors */
+            --background: #0a0a10;
+            --background-alt: #0d0d14;
+            --surface: #14141c;
+            --surface-hover: #1a1a24;
+            --surface-active: #1e1e2a;
+            
+            /* Text colors */
             --text: #ffffff;
             --text-secondary: #a0aec0;
+            --text-tertiary: #6b7280;
+            
+            /* Status colors */
+            --success: #2eD573;
+            --warning: #ffb74d;
+            --danger: #ff5252;
+            --info: #4fc3f7;
+            
+            /* UI elements */
+            --border-radius-sm: 0.375rem;
+            --border-radius: 0.75rem;
+            --border-radius-lg: 1.5rem;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            --glow: 0 0 20px var(--primary-glow);
+            --secondary-glow: 0 0 20px var(--secondary-glow);
+            
+            /* Animation speeds */
+            --transition-fast: 0.15s;
+            --transition-normal: 0.3s;
+            --transition-slow: 0.5s;
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-5: 1.5rem;
+            --space-6: 2rem;
+            --space-8: 3rem;
+            --space-10: 4rem;
+            --space-12: 6rem;
+            
+            /* Header height for calculations */
+            --header-height: 80px;
+        }
+
+        /* Reset and base styles */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
         }
 
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--background);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            line-height: 1.6;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(46, 213, 115, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 201, 183, 0.03) 0%, transparent 50%);
         }
 
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: var(--space-4);
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: var(--space-5);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--text);
+            position: relative;
+            display: inline-block;
+            margin-bottom: var(--space-8);
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 2px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        p {
+            margin-bottom: var(--space-4);
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 650px;
+        }
+
+        /* Layout */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-4);
+        }
+
+        section {
+            padding: var(--space-10) 0;
+            position: relative;
+        }
+
+        /* Header and Navigation */
         .header {
             position: fixed;
             top: 0;
@@ -32,308 +165,1043 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem;
-            background-color: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(5px);
+            padding: var(--space-4) var(--space-5);
+            background-color: rgba(10, 10, 16, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all var(--transition-normal) ease;
+            height: var(--header-height);
+        }
+
+        .header.scrolled {
+            padding: var(--space-3) var(--space-5);
+            background-color: rgba(10, 10, 16, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .left-section {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
         }
 
         .logo {
-            width: 50px;
-            height: 50px;
-            background-color: var(--surface);
-            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
             font-weight: bold;
+            color: var(--background);
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.5);
+            transition: all var(--transition-normal) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: none;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .auth-btn {
+            position: relative;
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            border-radius: var(--border-radius);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all var(--transition-normal) ease;
+            cursor: pointer;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+        }
+
+        .auth-btn.login {
+            background-color: transparent;
+            border: 1px solid var(--primary);
             color: var(--primary);
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
+        }
+
+        .auth-btn.signup {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--background);
+            box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .auth-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(45deg);
+            z-index: 1;
+            transition: all var(--transition-normal) ease;
+            opacity: 0;
+        }
+
+        .auth-btn:hover::before {
+            animation: shine 1.5s;
+        }
+
+        .auth-btn.login:hover {
+            background-color: var(--primary);
+            color: var(--background);
+            border-color: var(--primary);
+        }
+
+        .auth-btn.signup:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.5);
+        }
+
+        /* Loading state for auth buttons - Unique Animation */
+        .auth-btn.loading {
+            pointer-events: none;
+            position: relative;
+        }
+
+        .auth-btn.login.loading {
+            color: transparent;
+            background-color: transparent;
+            border-color: var(--primary);
+        }
+
+        .auth-btn.signup.loading {
+            color: transparent;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        .auth-btn.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--text);
+            animation: spin 0.8s linear infinite;
+        }
+
+        .auth-btn.loading::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(90deg, 
+                transparent 25%, 
+                rgba(255, 255, 255, 0.3) 50%, 
+                transparent 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .auth-btn.login.loading::after {
+            border: 2px solid rgba(46, 213, 115, 0.3);
+            border-top-color: var(--primary);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         .menu-toggle {
             display: block;
             background: none;
             border: none;
-            padding: 0.5rem;
+            padding: var(--space-2);
             cursor: pointer;
+            z-index: 1001;
         }
 
         .menu-toggle span {
             display: block;
-            width: 25px;
-            height: 3px;
+            width: 28px;
+            height: 2px;
             background-color: var(--text);
-            margin: 5px 0;
-            transition: all 0.3s ease;
+            margin: 6px 0;
+            transition: all var(--transition-normal) ease;
+            border-radius: 1px;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
         }
 
         .nav-links {
             display: none;
-            position: absolute;
-            top: 100%;
+            position: fixed;
+            top: 0;
             left: 0;
             right: 0;
-            background-color: var(--surface);
+            bottom: 0;
+            background-color: var(--background);
             flex-direction: column;
-            padding: 1rem;
+            justify-content: center;
+            align-items: center;
+            gap: var(--space-6);
+            padding: var(--space-6);
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .nav-links.active {
             display: flex;
+            transform: translateY(0);
         }
 
         .nav-link {
-            padding: 0.5rem 0;
+            padding: var(--space-2) var(--space-4);
             color: var(--text);
             text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            font-size: 1.25rem;
+            transition: all var(--transition-normal) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform var(--transition-normal) ease;
         }
 
         .nav-link:hover {
             color: var(--primary);
         }
 
-        .auth-buttons {
-            display: flex;
-            gap: 0.5rem;
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
         }
 
-        .auth-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--primary);
-            border-radius: 4px;
-            color: var(--text);
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-        }
-
-        .auth-btn:hover {
-            background-color: var(--primary);
-            color: var(--background);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
+        /* Hero Section */
         .hero {
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
-            padding-top: 6rem;
-            padding-bottom: 4rem;
+            justify-content: center;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+            padding-bottom: var(--space-10);
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            color: var(--primary);
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
-            margin-bottom: 1rem;
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            z-index: 2;
+            animation: fadeInUp 1s ease-out;
+            padding-top: var(--space-10);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.25rem, 3vw, 2.25rem);
+            font-weight: 300;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-6);
         }
 
         .typewriter {
-            font-size: 1.5rem;
-            height: 3rem;
-            margin-bottom: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            height: 3.5rem;
+            margin-bottom: var(--space-6);
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
         }
 
-        .hero p {
-            font-size: 1.125rem;
-            margin-bottom: 2rem;
+        .typewriter::after {
+            content: '|';
+            position: absolute;
+            right: -8px;
+            animation: blink 1s infinite;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            margin-bottom: var(--space-8);
+            color: var(--text-secondary);
         }
 
         .cta-btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-3) var(--space-6);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
             color: var(--background);
             text-decoration: none;
-            font-weight: bold;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 1.125rem;
+            border-radius: var(--border-radius);
+            transition: all var(--transition-normal) ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.3);
+            z-index: 1;
+        }
+
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            transform: rotate(45deg);
+            z-index: -1;
+            transition: all var(--transition-normal) ease;
+            opacity: 0;
         }
 
         .cta-btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-4px);
-            box-shadow: 0 4px 20px rgba(46, 213, 115, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(46, 213, 115, 0.5);
+        }
+
+        .cta-btn:hover::before {
+            animation: shine 1.5s;
+        }
+
+        .cta-btn i {
+            margin-left: var(--space-2);
+            transition: transform var(--transition-normal) ease;
+        }
+
+        .cta-btn:hover i {
+            transform: translateX(5px);
+        }
+
+        .hero-image-container {
+            position: relative;
+            margin-top: var(--space-8);
+            width: 100%;
+            max-width: 500px;
+            z-index: 2;
         }
 
         .hero-image {
-            max-width: 250px;
             width: 100%;
-            margin-top: 2rem;
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(46, 213, 115, 0.5));
+            animation: float 6s ease-in-out infinite;
+            transform-origin: center;
         }
 
-        .section-title {
-            font-size: 2rem;
+        .hero-image-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(46, 213, 115, 0.3) 0%, rgba(46, 213, 115, 0) 70%);
+            z-index: -1;
+            filter: blur(30px);
+            opacity: 0.8;
+            animation: pulse 4s ease-in-out infinite alternate;
+        }
+
+        .hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: float-particle 15s infinite linear;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .particle:nth-child(even) {
+            background-color: var(--secondary);
+            box-shadow: 0 0 10px var(--secondary-glow);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            opacity: 0.7;
+            transition: all var(--transition-normal) ease;
+            animation: fadeInUp 1s ease-out 1s both, bounce 2s infinite 2s;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .scroll-indicator i {
+            font-size: 1.5rem;
+            margin-top: 8px;
+        }
+
+        .scroll-indicator:hover {
+            opacity: 1;
             color: var(--primary);
-            text-shadow: 0 0 10px rgba(46, 213, 115, 0.7);
-            margin-bottom: 2rem;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Featured Games Section */
+        .games-section {
+            position: relative;
+            padding: var(--space-12) 0;
+        }
+
+        .section-header {
             text-align: center;
+            margin-bottom: var(--space-10);
         }
 
         .game-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-10);
         }
 
         .game-item {
-            background-color: var(--surface);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--primary);
-            transition: all 0.3s ease;
+            background: rgba(20, 20, 28, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: all var(--transition-normal) cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            position: relative;
+            border: 1px solid rgba(46, 213, 115, 0.1);
+            box-shadow: var(--card-shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .game-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(46, 213, 115, 0.05), transparent);
+            opacity: 0;
+            transition: opacity var(--transition-normal) ease;
         }
 
         .game-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 0 15px rgba(46, 213, 115, 0.7);
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 20px rgba(46, 213, 115, 0.4);
         }
 
-        .game-item h3 {
+        .game-item:hover::before {
+            opacity: 1;
+        }
+
+        .game-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(46, 213, 115, 0.1);
+        }
+
+        .game-content {
+            padding: var(--space-5);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-title {
             font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+            color: var(--text);
         }
 
-        .game-item p {
+        .game-description {
             color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: var(--space-4);
+            flex-grow: 1;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: auto;
+        }
+
+        .game-stat {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .game-stat i {
+            color: var(--primary);
+        }
+
+        .game-action {
+            margin-top: var(--space-4);
+            text-align: center;
+        }
+
+        .game-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: var(--space-2) var(--space-4);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--background);
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all var(--transition-normal) cubic-bezier(0.17, 0.67, 0.83, 0.67);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .game-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .game-btn:hover {
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .game-btn:hover::before {
+            left: 100%;
+        }
+
+        .game-btn i {
+            margin-left: var(--space-2);
+            transition: transform var(--transition-normal) ease;
+        }
+
+        .game-btn:hover i {
+            transform: translateX(3px);
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            position: relative;
+            padding: var(--space-12) 0;
+            background-color: var(--background-alt);
         }
 
         .steps {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-6);
         }
 
         .step {
-            background-color: var(--surface);
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--primary);
+            background: rgba(20, 20, 28, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: var(--space-6);
             text-align: center;
+            position: relative;
+            border: 1px solid rgba(46, 213, 115, 0.1);
+            transition: all var(--transition-normal) ease;
+            overflow: hidden;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(46, 213, 115, 0.2);
+        }
+
+        .step-number {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 5rem;
+            font-weight: 800;
+            color: rgba(46, 213, 115, 0.1);
+            line-height: 1;
+            font-family: 'Orbitron', sans-serif;
         }
 
         .step-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-4);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--background);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            color: var(--text);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Community Stats Section */
+        .community-section {
+            position: relative;
+            padding: var(--space-12) 0;
         }
 
         .stats {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
         }
 
-        .stat {
+        .stat-card {
+            background: rgba(20, 20, 28, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: var(--space-6);
             text-align: center;
+            border: 1px solid rgba(46, 213, 115, 0.1);
+            transition: all var(--transition-normal) ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(46, 213, 115, 0.2);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-4);
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--primary);
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: var(--space-2);
+            line-height: 1;
         }
 
         .stat-label {
             color: var(--text-secondary);
+            font-size: 1.125rem;
+            font-weight: 500;
         }
 
+        /* Footer */
         footer {
             background-color: var(--surface);
-            padding: 2rem 0;
+            padding: var(--space-10) 0 var(--space-4);
+            position: relative;
+            overflow: hidden;
         }
 
         .footer-content {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+        }
+
+        .footer-logo .logo {
+            width: 40px;
+            height: 40px;
+            font-size: 18px;
+        }
+
+        .footer-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: var(--space-4);
+        }
+
+        .social-links {
+            display: flex;
+            gap: var(--space-3);
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--surface-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            font-size: 1.125rem;
+            transition: all var(--transition-normal) ease;
+        }
+
+        .social-link:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--background);
+            transform: translateY(-3px);
         }
 
         .footer-section h3 {
-            color: var(--primary);
-            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            margin-bottom: var(--space-4);
+            color: var(--text);
         }
 
-        .footer-section ul {
+        .footer-links {
             list-style-type: none;
             padding: 0;
         }
 
-        .footer-section ul li {
-            margin-bottom: 0.5rem;
+        .footer-links li {
+            margin-bottom: var(--space-3);
         }
 
-        .footer-section ul li a {
+        .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: color var(--transition-normal) ease;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
         }
 
-        .footer-section ul li a:hover {
+        .footer-links a:hover {
             color: var(--primary);
+        }
+
+        .footer-links a i {
+            margin-right: var(--space-2);
+            font-size: 0.875rem;
+        }
+
+        .footer-dropdown {
+            position: relative;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background-color: var(--surface-hover);
+            border-radius: var(--border-radius);
+            padding: var(--space-6);
+            z-index: 1010;
+            border: 1px solid rgba(46, 213, 115, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all var(--transition-normal) ease;
+        }
+
+        .dropdown-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .dropdown-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1005;
+            opacity: 0;
+            transition: opacity var(--transition-normal) ease;
+        }
+
+        .dropdown-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .dropdown-content h4 {
+            font-size: 1.25rem;
+            margin-bottom: var(--space-4);
+            color: var(--text);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .dropdown-content p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-4);
+        }
+
+        .dropdown-content ul {
+            list-style-type: disc;
+            padding-left: var(--space-6);
+            margin-bottom: var(--space-4);
+        }
+
+        .dropdown-content ul li {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-3);
+        }
+
+        .dropdown-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--surface-active);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-normal) ease;
+        }
+
+        .dropdown-close:hover {
+            background-color: var(--primary);
+            color: var(--background);
         }
 
         .footer-bottom {
             text-align: center;
-            margin-top: 2rem;
-            color: var(--text-secondary);
+            padding-top: var(--space-6);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-tertiary);
+            font-size: 0.875rem;
         }
 
+        .footer-bottom a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        /* Animations */
         @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
-        @keyframes shootingStars {
-            0% { transform: translateX(0) translateY(0); opacity: 1; }
-            70% { opacity: 1; }
-            100% { transform: translateX(-500px) translateY(500px); opacity: 0; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
         }
 
-        .shooting-star {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background-color: var(--text);
-            border-radius: 50%;
-            animation: shootingStars 3s linear infinite;
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
-        .shooting-star::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 50%;
-            transform: translate(50%, -50%);
-            width: 30px;
-            height: 1px;
-            background: linear-gradient(to left, rgba(46, 213, 115, 0), rgba(46, 213, 115, 0.7));
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
+        @keyframes float-particle {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive styles */
         @media (min-width: 768px) {
-            .header {
-                padding: 1rem 2rem;
+            .container {
+                padding: 0 var(--space-6);
             }
 
-            .logo {
-                width: 60px;
-                height: 60px;
-                font-size: 24px;
+            .logo-text {
+                display: block;
             }
 
             .menu-toggle {
@@ -343,148 +1211,250 @@
             .nav-links {
                 display: flex;
                 position: static;
-                background-color: transparent;
+                transform: none;
                 flex-direction: row;
+                background-color: transparent;
                 padding: 0;
+                gap: var(--space-5);
             }
 
             .nav-link {
-                padding: 0;
-                margin-left: 1.5rem;
-            }
-
-            .auth-buttons {
-                gap: 1rem;
+                font-size: 1rem;
             }
 
             .auth-btn {
                 font-size: 1rem;
+                padding: var(--space-2) var(--space-5);
             }
 
             .hero {
                 flex-direction: row;
                 text-align: left;
                 justify-content: space-between;
+                gap: var(--space-8);
                 align-items: center;
-                padding-top: 8rem;
             }
 
-            h1 {
-                font-size: 3.75rem;
+            .hero-content {
+                text-align: left;
+                max-width: 600px;
             }
 
-            .typewriter {
-                font-size: 2.25rem;
-            }
-
-            .hero-image {
-                max-width: 400px;
+            .hero-image-container {
                 margin-top: 0;
             }
 
-            .section-title {
-                font-size: 2.25rem;
+            .section-header {
+                text-align: left;
             }
 
-            .steps, .stats {
-                grid-template-columns: repeat(3, 1fr);
+            .section-header h2 {
+                margin-bottom: var(--space-10);
+            }
+
+            .section-header h2::after {
+                left: 0;
+                transform: none;
             }
 
             .footer-content {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: 2fr repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container {
+                padding: 0 var(--space-8);
+            }
+
+            .hero-content {
+                max-width: 650px;
+            }
+        }
+
+        /* Dark mode optimization */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #2eD573;
+                --secondary: #00c9b7;
             }
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="logo">C</div>
-        <button class="menu-toggle" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-links">
-            <a href="{% url 'index' %}" class="nav-link">Home</a>
-            <a href="#" class="nav-link">Games</a>
-            <a href="#" class="nav-link">Leaderboard</a>
-            <a href="#" class="nav-link">About</a>
-        </nav>
-        <div class="auth-buttons">
-            <a href="{% url 'login' %}" class="auth-btn">Log In</a>
-            <a href="{% url 'signup' %}" class="auth-btn">Sign Up</a>
+    <!-- Background particles -->
+    <div class="hero-particles" id="particles"></div>
+
+    <header class="header" id="header">
+        <div class="container">
+            <div class="left-section">
+                <div class="logo-container">
+                    <div class="logo">C</div>
+                    <div class="logo-text">Chiwe</div>
+                </div>
+                
+                <div class="auth-buttons">
+                    <a href="{% url 'login' %}" class="auth-btn login" id="loginBtn">Log In</a>
+                    <a href="{% url 'signup' %}" class="auth-btn signup" id="signupBtn">Sign Up</a>
+                </div>
+            </div>
+            
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <nav class="nav-links" id="navLinks">
+                <a href="{% url 'index' %}" class="nav-link">Home</a>
+                <a href="#games" class="nav-link">Games</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#community" class="nav-link">Community</a>
+                <a href="#" class="nav-link">About</a>
+            </nav>
         </div>
     </header>
 
-    <main class="container">
+    <main>
         <section class="hero">
-            <div>
-                <h1>Welcome to Chiwe</h1>
-                <div class="typewriter" id="typewriter"></div>
-                <p>Challenge players 1v1. Winner takes all. Are you ready?</p>
-                <a href="#" class="cta-btn">Start Playing Now</a>
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Welcome to Chiwe</h1>
+                    <div class="typewriter" id="typewriter"></div>
+                    <p class="hero-description">Challenge players 1v1. Winner takes all. Are you ready to prove your skills and earn rewards in real-time competitive gaming?</p>
+                    <a href="#games" class="cta-btn">Start Playing Now <i class="fas fa-arrow-right"></i></a>
+                </div>
+                
+                
             </div>
-            <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/[removal.ai]_0605bcab-1b15-4fa5-939d-4c70cfbcb2ea-photo_2024-12-23_23-46-41_S6SNVR-AdUOLx2dWZPgzhnfnqPObrWXwehim2.png" 
-                 alt="Chiwe Robot Mascot" class="hero-image">
-        </section>
-
-        <section>
-            <h2 class="section-title">Featured Games</h2>
-            <div class="game-list">
-                <div class="game-item">
-                    <h3>Chess</h3>
-                    <p>Test your skills and win big!</p>
-                </div>
-                <div class="game-item">
-                    <h3>Poker</h3>
-                    <p>Test your skills and win big!</p>
-                </div>
-                <div class="game-item">
-                    <h3>Trivia Challenge</h3>
-                    <p>Test your skills and win big!</p>
-                </div>
-                <div class="game-item">
-                    <h3>Speed Math</h3>
-                    <p>Test your skills and win big!</p>
-                </div>
+            <div class="scroll-indicator" id="scrollIndicator">
+                <span>Scroll to explore</span>
+                <i class="fas fa-chevron-down"></i>
             </div>
         </section>
 
-        <section>
-            <h2 class="section-title">How It Works</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-icon">👤</div>
-                    <h3>1. Create Account</h3>
-                    <p>Sign up and customize your profile</p>
+        <section class="games-section" id="games">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Featured Games</h2>
+                    <p>Discover our collection of skill-based games where you can compete head-to-head with other players and win real rewards.</p>
                 </div>
-                <div class="step">
-                    <div class="step-icon">🎮</div>
-                    <h3>2. Choose a Game</h3>
-                    <p>Pick a game and set your stake</p>
-                </div>
-                <div class="step">
-                    <div class="step-icon">🏆</div>
-                    <h3>3. Win & Earn</h3>
-                    <p>Defeat your opponent and claim the prize</p>
+                
+                <div class="game-list">
+                    <div class="game-item">
+                        <img src="/placeholder.svg?height=180&width=320" alt="Chess" class="game-image">
+                        <div class="game-content">
+                            <h3 class="game-title">Crack the code</h3>
+                            <p class="game-description">Test your strategic thinking in this classic game of skill. Challenge opponents and win based on your cracking mastery.</p>
+                            <div class="game-stats">
+                                <div class="game-stat">
+                                    <i class="fas fa-users"></i>
+                                    <span>250+ Players</span>
+                                </div>
+                                <div class="game-stat">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>2x Max Win</span>
+                                </div>
+                            </div>
+                            <div class="game-action">
+                                <button class="game-btn">Play Now <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-item">
+                        <img src="/placeholder.svg?height=180&width=320" alt="Poker" class="game-image">
+                        <div class="game-content">
+                            <h3 class="game-title">Poker</h3>
+                            <p class="game-description">Bluff your way to victory in this strategic card game. Read your opponents and make calculated decisions.</p>
+                            <div class="game-stats">
+                                <div class="game-stat">
+                                    <i class="fas fa-users"></i>
+                                    <span>120+ Players</span>
+                                </div>
+                                <div class="game-stat">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>2x Max Win</span>
+                                </div>
+                            </div>
+                            <div class="game-action">
+                                <button class="game-btn">Play Now <i class="fas fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section>
-            <h2 class="section-title">Chiwe Community</h2>
-            <div class="stats">
-                <div class="stat">
-                    <div id="totalUsers" class="stat-value">0</div>
-                    <div class="stat-label">Total Users</div>
+        <section class="how-it-works" id="how-it-works">
+            <div class="container">
+                <div class="section-header">
+                    <h2>How It Works</h2>
+                    <p>Getting started with Chiwe is simple. Follow these steps to begin your competitive gaming journey.</p>
                 </div>
-                <div class="stat">
-                    <div id="activeGames" class="stat-value">0</div>
-                    <div class="stat-label">Active Games</div>
+                
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h3 class="step-title">Create Account</h3>
+                        <p class="step-description">Sign up for free and customize your profile. Verify your account to unlock all features.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <h3 class="step-title">Choose a Game</h3>
+                        <p class="step-description">Browse our selection of skill-based games. Set your stake and find an opponent.</p>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3 class="step-title">Win & Earn</h3>
+                        <p class="step-description">Defeat your opponent and claim the prize. Withdraw your winnings anytime.</p>
+                    </div>
                 </div>
-                <div class="stat">
-                    <div id="totalWinnings" class="stat-value">$0</div>
-                    <div class="stat-label">Total Winnings Paid</div>
+            </div>
+        </section>
+
+        <section class="community-section" id="community">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Chiwe Community</h2>
+                    <p>Join thousands of players already competing and winning on our platform.</p>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div id="totalUsers" class="stat-value">0</div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div id="activeGames" class="stat-value">0</div>
+                        <div class="stat-label">Active Games</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div id="totalWinnings" class="stat-value">$0</div>
+                        <div class="stat-label">Total Winnings Paid</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -494,39 +1464,150 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="logo">C</div>
+                        <div class="logo-text">Chiwe</div>
+                    </div>
+                    <p class="footer-description">Chiwe is a skill-based gaming platform where players can compete 1v1 and win real rewards based on their performance.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
                     <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Responsible Gaming</a></li>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li class="footer-dropdown">
+                            <a href="#" class="dropdown-toggle" data-dropdown="terms"><i class="fas fa-chevron-right"></i> Terms of Service</a>
+                        </li>
+                        <li class="footer-dropdown">
+                            <a href="#" class="dropdown-toggle" data-dropdown="privacy"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+                        </li>
+                        <li class="footer-dropdown">
+                            <a href="#" class="dropdown-toggle" data-dropdown="responsible"><i class="fas fa-chevron-right"></i> Responsible Gaming</a>
+                        </li>
                     </ul>
                 </div>
+                
                 <div class="footer-section">
                     <h3>Support</h3>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Live Chat</a></li>
+                    <ul class="footer-links">
+                        <li class="footer-dropdown">
+                            <a href="#" class="dropdown-toggle" data-dropdown="faq"><i class="fas fa-chevron-right"></i> FAQ</a>
+                        </li>
+                        <li><a href="https://t.me/Exaon"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
+                        
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Help Center</a></li>
                     </ul>
                 </div>
+                
                 <div class="footer-section">
-                    <h3>Follow Us</h3>
-                    <ul>
-                        <li><a href="#">Facebook</a></li>
-                        <li><a href="#">Twitter</a></li>
-                        <li><a href="#">Instagram</a></li>
+                    <h3>Games</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Crack The Code</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Bingo</a></li>
+                        
                     </ul>
                 </div>
             </div>
+            
             <div class="footer-bottom">
-                © 2023 Chiwe. All rights reserved.
+                <p>&copy; 2023 Chiwe. All rights reserved. | Designed with <i class="fas fa-heart" style="color: var(--primary);"></i> by Chiwe Team</p>
             </div>
         </div>
     </footer>
 
+    <!-- Dropdown content containers -->
+    <div class="dropdown-overlay" id="dropdown-overlay"></div>
+    
+    <div class="dropdown-content" id="terms-dropdown">
+        <div class="dropdown-close"><i class="fas fa-times"></i></div>
+        <h4>Terms of Service</h4>
+        <p>By using Chiwe, you agree to the following terms:</p>
+        <ul>
+            <li>You must be at least 18 years old to use our platform</li>
+            <li>All games are skill-based and comply with local regulations</li>
+            <li>Chiwe reserves the right to suspend accounts that violate our terms</li>
+            <li>Withdrawals are processed within 24-48 hours</li>
+            <li>Users are responsible for taxes on their winnings</li>
+        </ul>
+        <p>For the complete terms, please contact our support team.</p>
+    </div>
+    
+    <div class="dropdown-content" id="privacy-dropdown">
+        <div class="dropdown-close"><i class="fas fa-times"></i></div>
+        <h4>Privacy Policy</h4>
+        <p>Chiwe is committed to protecting your privacy:</p>
+        <ul>
+            <li>We collect only necessary information to provide our services</li>
+            <li>Your personal data is encrypted and securely stored</li>
+            <li>We never share your information with third parties without consent</li>
+            <li>You can request deletion of your data at any time</li>
+            <li>We use cookies to enhance your experience on our platform</li>
+        </ul>
+        <p>For more details on our privacy practices, please contact our support team.</p>
+    </div>
+    
+    <div class="dropdown-content" id="responsible-dropdown">
+        <div class="dropdown-close"><i class="fas fa-times"></i></div>
+        <h4>Responsible Gaming</h4>
+        <p>At Chiwe, we promote responsible gaming:</p>
+        <ul>
+            <li>Set personal limits on deposits and playing time</li>
+            <li>Take regular breaks from gaming</li>
+            <li>Never play to recover losses</li>
+            <li>Gaming should be for entertainment, not a source of income</li>
+            <li>If you need help, we provide resources for gaming addiction</li>
+        </ul>
+        <p>If you're concerned about your gaming habits, please contact our support team for assistance.</p>
+    </div>
+    
+    <div class="dropdown-content" id="faq-dropdown">
+        <div class="dropdown-close"><i class="fas fa-times"></i></div>
+        <h4>Frequently Asked Questions</h4>
+        <p><strong>How do I deposit funds?</strong><br>You can deposit using credit/debit cards, bank transfers, or cryptocurrency.</p>
+        <p><strong>How long do withdrawals take?</strong><br>Withdrawals are processed within 24-48 hours depending on your payment method.</p>
+        <p><strong>Is Chiwe available worldwide?</strong><br>Chiwe is available in most countries, but some restrictions apply based on local regulations.</p>
+        <p><strong>How are winners determined?</strong><br>Winners are determined based on skill and performance in each game.</p>
+        <p><strong>What if I have a dispute?</strong><br>Contact our support team, and we'll resolve any issues within 24 hours.</p>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Header scroll effect
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navLinks.classList.toggle('active');
+                document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+            });
+            
+            // Close mobile menu when clicking on a link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    menuToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
+
+            // Typewriter effect
             const typewriterElement = document.getElementById('typewriter');
             const words = ["Compete", "Win", "Earn"];
             let wordIndex = 0;
@@ -561,25 +1642,46 @@
 
             typeWriter();
 
-            function createShootingStar() {
-                const star = document.createElement('div');
-                star.classList.add('shooting-star');
-                star.style.top = `${Math.random() * window.innerHeight}px`;
-                star.style.right = '0px';
-                document.body.appendChild(star);
-                setTimeout(() => star.remove(), 3000);
+            // Create background particles
+            function createParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random position
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    
+                    // Random size
+                    const size = Math.random() * 3 + 1;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Random opacity
+                    particle.style.opacity = Math.random() * 0.5 + 0.1;
+                    
+                    // Random animation delay
+                    particle.style.animationDelay = `${Math.random() * 15}s`;
+                    particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                    
+                    particlesContainer.appendChild(particle);
+                }
             }
+            
+            createParticles();
 
-            setInterval(createShootingStar, 2000);
-
-            function animateValue(id, start, end, duration) {
+            // Animate stats counters
+            function animateValue(id, start, end, duration, prefix = '') {
                 const element = document.getElementById(id);
                 let startTimestamp = null;
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
                     const value = Math.floor(progress * (end - start) + start);
-                    element.textContent = id === 'totalWinnings' ? `$${value.toLocaleString()}` : value.toLocaleString();
+                    element.textContent = prefix + value.toLocaleString();
                     if (progress < 1) {
                         window.requestAnimationFrame(step);
                     }
@@ -587,15 +1689,158 @@
                 window.requestAnimationFrame(step);
             }
 
-            animateValue('totalUsers', 0, 100000, 2000);
-            animateValue('activeGames', 0, 5000, 2000);
-            animateValue('totalWinnings', 0, 10000000, 2000);
+            // Intersection Observer for stats animation
+            const statsObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateValue('totalUsers', 0, 1000, 200);
+                        animateValue('activeGames', 0, 500, 200);
+                        animateValue('totalWinnings', 0, 100000, 2000, '$');
+                        statsObserver.disconnect();
+                    }
+                });
+            }, { threshold: 0.1 });
 
-            const menuToggle = document.querySelector('.menu-toggle');
-            const navLinks = document.querySelector('.nav-links');
+            statsObserver.observe(document.querySelector('.community-section'));
 
-            menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
+            // Login and Signup button loading animations with unique effects
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+
+            loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.add('loading');
+                
+                // Simulate loading (remove this in production and use actual form submission)
+                setTimeout(() => {
+                    window.location.href = this.getAttribute('href');
+                }, 1500);
+            });
+
+            signupBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.classList.add('loading');
+                
+                // Simulate loading (remove this in production and use actual form submission)
+                setTimeout(() => {
+                    window.location.href = this.getAttribute('href');
+                }, 1500);
+            });
+
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') !== '#') {
+                        e.preventDefault();
+                        const targetId = this.getAttribute('href');
+                        const targetElement = document.querySelector(targetId);
+                        
+                        if (targetElement) {
+                            const headerHeight = document.querySelector('.header').offsetHeight;
+                            const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                            
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+
+            // Parallax effect for particles
+            window.addEventListener('mousemove', (e) => {
+                const particles = document.getElementById('particles');
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+                
+                particles.style.transform = `translate(${x * -20}px, ${y * -20}px)`;
+            });
+
+            // Make game cards clickable
+            document.querySelectorAll('.game-item').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on the button itself
+                    if (!e.target.closest('.game-btn')) {
+                        const button = this.querySelector('.game-btn');
+                        if (button) {
+                            button.click();
+                        }
+                    }
+                });
+            });
+
+            // Scroll indicator functionality
+            const scrollIndicator = document.getElementById('scrollIndicator');
+            if (scrollIndicator) {
+                scrollIndicator.addEventListener('click', () => {
+                    const gamesSection = document.getElementById('games');
+                    if (gamesSection) {
+                        const headerHeight = document.querySelector('.header').offsetHeight;
+                        const targetPosition = gamesSection.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            }
+
+            // Footer dropdown functionality
+            const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+            const dropdownOverlay = document.getElementById('dropdown-overlay');
+            const dropdownCloseButtons = document.querySelectorAll('.dropdown-close');
+            
+            // Close dropdown function
+            function closeAllDropdowns() {
+                document.querySelectorAll('.dropdown-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                dropdownOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Close dropdown when clicking on close button
+            dropdownCloseButtons.forEach(button => {
+                button.addEventListener('click', closeAllDropdowns);
+            });
+            
+            // Close dropdown when clicking on overlay
+            dropdownOverlay.addEventListener('click', closeAllDropdowns);
+            
+            // Toggle dropdown when clicking on toggle button
+            dropdownToggles.forEach(toggle => {
+                toggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const dropdownId = this.getAttribute('data-dropdown');
+                    const dropdown = document.getElementById(`${dropdownId}-dropdown`);
+                    
+                    // Close all other dropdowns
+                    document.querySelectorAll('.dropdown-content').forEach(content => {
+                        if (content !== dropdown) {
+                            content.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current dropdown
+                    dropdown.classList.toggle('active');
+                    dropdownOverlay.classList.toggle('active');
+                    
+                    // Prevent scrolling when dropdown is open
+                    if (dropdown.classList.contains('active')) {
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        document.body.style.overflow = '';
+                    }
+                });
+            });
+            
+            // Close dropdown when pressing ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeAllDropdowns();
+                }
             });
         });
     </script>

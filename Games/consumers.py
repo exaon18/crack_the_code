@@ -41,8 +41,8 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
     def connect(self):
         self.username = self.scope['user'].username
         amount = int(self.scope['url_route']['kwargs']['amount'])
-        user = MyUser.objects.get(username=self.username)
-        ballance = Ballance.objects.get(user=user).ballance
+        self.user = MyUser.objects.get(username=self.username)
+        ballance = Ballance.objects.get(user=self.user).ballance
 
         self.win = False
         self.game_over = False  
@@ -91,7 +91,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
 
         async_to_sync(self.channel_layer.group_add)(self.room, self.channel_name)
         self.accept()
-        user=MyUser.objects.get(username=self.username)
+        user=self.user
         user.Active_Game=True
         user.save()
         players_in_game.append(self.username)
@@ -366,9 +366,7 @@ class BingoConsumer(WebsocketConsumer):
     game_states = {}
     active_players = {}
     games_finished = {}  # New dictionary to track finished games per room
-    timer_event = threading.Event()  
-    timer_lock = threading.Lock()  
-    active_threads = {}
+    room_timers = {} 
     
     def connect(self):
         self.username = self.scope['user'].username
@@ -377,13 +375,10 @@ class BingoConsumer(WebsocketConsumer):
         query_params = parse_qs(query_string)
         board = query_params.get('board', [''])[0]
         self.Game_state={}  # Get board as string
-        
+        print(f"playrs in b {players_in_game_bingo} room bingo 25 {bingo_room_with_25} room bingo 50 {bingo_room_with_50} room bingo 100 {bingo_room_with_100}")
         if board:
             self.board_numbers = list(map(int, board.split(',')))  # Convert to list of numbers
             print("Received board:", self.board_numbers)  # Debugging
-
-        
-        
         user = MyUser.objects.get(username=self.username)
         ballance = Ballance.objects.get(user=user).ballance
 
@@ -406,40 +401,73 @@ class BingoConsumer(WebsocketConsumer):
             elif self.amount == 100:
                 self.room_list = 100
                 self.handle_room_connection(bingo_room_with_100, self.amount)
-    def start_timer(self):
-        """Starts or resets the game timer using a single persistent thread."""
-        with self.timer_lock:  # Prevent race conditions
-            self.timer_event.set()  # Signal any running timer to reset
-            self.timer_event.clear()  # Allow a fresh countdown
-
-            if self.room not in Crack_the_CodeConsumer.active_threads:
-                Crack_the_CodeConsumer.active_threads[self.room] = threading.Thread(target=self.run_timer, daemon=True)
-                Crack_the_CodeConsumer.active_threads[self.room].start()
-
-            async_to_sync(self.channel_layer.group_send)(
-                self.room, 
-                {"type": "timer_limit", "timer": 45}
-            ) 
-    def run_timer(self):
-        """Runs background timer and exits when game ends."""
-        while not self.game_ended:
-            if not Crack_the_CodeConsumer.active_players.get(self.room, 0):
-                print(f"🚨 No active players. Stopping timer for room {self.room}.")
-                break
-
-            print(f"⏳ Timer running for room {self.room}...")
-
-            if self.timer_event.wait(45):  # Reset signal received
-                continue
-
-            print(f"🕰️ Timer expired for room {self.room}. Forcing turn change.")
-            self.forced_change_turn()
-
-        print(f"🛑 Timer stopped for room {self.room}.")
+    
+    
   
-   
+   # Inside your BingoConsumer class
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._move_timer = None
+
+    def start_move_timer(self):
+        # Cancel any existing timer
+        if self._move_timer:
+            print(f"[TIMER] Cancelling existing move timer for room {self.room}")
+            self._move_timer.cancel()
+
+        print(f"[TIMER] Starting new 45-second move timer for room {self.room}")
+        self._move_timer = threading.Timer(45.0, self._on_move_timeout)
+        self._move_timer.daemon = True
+        self._move_timer.start()
+
+    def _on_move_timeout(self, room):
+        """
+        Called when the 45 s expires; forces a turn change and restarts the 45 s.
+        """
+        print(f"[TIMER] 🔥 Timeout expired in room {room}")
+
+        game_state = BingoConsumer.game_states.get(room)
+        if not game_state:
+            print(f"[ERROR] No game_state for room {room}; aborting timeout")
+            return
+
+        p1 = game_state["player1"]
+        p2 = game_state["player2"]
+        # figure out who *was* to move
+        offender = p1 if game_state[p1] else p2
+
+        # notify timeout
+        async_to_sync(self.channel_layer.group_send)(
+            room,
+            {
+                "type": "move_timeout",
+                "message": f"⏰ {offender} missed their move – forced turn!"
+            }
+        )
+
+        # swap the boolean flags
+        print(f"[TURN] before swap: {p1}={game_state[p1]}, {p2}={game_state[p2]}")
+        game_state[p1], game_state[p2] = game_state[p2], game_state[p1]
+        print(f"[TURN] after  swap: {p1}={game_state[p1]}, {p2}={game_state[p2]}")
+
+        # push updated turns
+        async_to_sync(self.channel_layer.send)(
+            game_state["player1_channel"],
+            {"type": "turns", "myturn": game_state[p1]}
+        )
+        async_to_sync(self.channel_layer.send)(
+            game_state["player2_channel"],
+            {"type": "turns", "myturn": game_state[p2]}
+        )
+
+        # and finally restart a fresh 45 s for the *new* active player
+        self._reset_room_timer(room)
+
+    
+
     def handle_room_connection(self, room_list, amount):
-        if len(room_list) == 0 or room_list[0]["players_amount"] == 2:
+        if len(room_list)==0 or room_list[0]["players_amount"] == 2:
+            print("in handle room connection")
             self.create_new_room(room_list, amount)
         else:
             self.join_existing_room(room_list, amount)
@@ -472,7 +500,7 @@ class BingoConsumer(WebsocketConsumer):
 
         async_to_sync(self.channel_layer.group_add)(self.room, self.channel_name)
         self.accept()
-        players_in_game.append(self.username)
+        
         async_to_sync(self.channel_layer.send)(
             BingoConsumer.game_states[self.room]["player1_channel"],
             {
@@ -481,7 +509,7 @@ class BingoConsumer(WebsocketConsumer):
             }
             
         )
-        print("created new room")
+        print(f"created new room{self.room}")
 
     def join_existing_room(self, room_list, amount):
         self.room = room_list[0]["room_number"]
@@ -546,7 +574,8 @@ class BingoConsumer(WebsocketConsumer):
                         "amount": self.Game_state["amount"], 
                         "players_amount": 2}
                 )
-                self.start_timer()
+                self._reset_room_timer(self.room)
+                self.start_move_timer()
                 async_to_sync(self.channel_layer.send)(
             self.Game_state["player2_channel"],
             {
@@ -558,7 +587,7 @@ class BingoConsumer(WebsocketConsumer):
                 print("joined existing room")
         else:
             room_list.pop(0)
-            players_in_game.remove(self.username)
+            
             self.create_new_room(room_list, amount)
     def count_completed_lines(self, board):
         completed = 0
@@ -592,7 +621,7 @@ class BingoConsumer(WebsocketConsumer):
         if data["type"]=="bingo" and game_state["bingo"] == False:
             if self.username==game_state["player1"]:
                 if game_state["player1_comp"]>=5:
-                    game_state["bingo"]==False
+                    game_state["bingo"]==True
                     return Crack_the_CodeConsumer.handle_game_win(self, winner=self.username, loser=game_state["player2"], amount=game_state["amount"])
                 
                     
@@ -603,8 +632,8 @@ class BingoConsumer(WebsocketConsumer):
                         
                     )
             else:
-                if game_state["player2_comp"]>=5:
-                    game_state["bingo"]==False
+                if game_state["player2_comp"]>=5 and game_state["bingo"] == False:
+                    game_state["bingo"]==True
                     return Crack_the_CodeConsumer.handle_game_win(self, winner=self.username, loser=game_state["player1"], amount=game_state["amount"])
                 else:
                     return async_to_sync(self.channel_layer.group_send)(
@@ -677,11 +706,8 @@ class BingoConsumer(WebsocketConsumer):
                         )
                         
                         # Switch turns
-                        game_state[self.username] = False
-                        if self.username == game_state["player1"]:
-                            game_state[game_state["player2"]] = True
-                        else:
-                            game_state[game_state["player1"]] = True
+                        game_state[game_state["player1"]] = not game_state[game_state["player1"]]
+                        game_state[game_state["player2"]] = not game_state[game_state["player2"]]
                         
                         print(f"Turn - Player1: {game_state[game_state['player1']]}, Player2: {game_state[game_state['player2']]}")
                         
@@ -699,12 +725,73 @@ class BingoConsumer(WebsocketConsumer):
                                 "myturn": game_state[game_state["player2"]]
                             }
                         )
-                    
+                        self._reset_room_timer(self.room)
                     # Debug: print boards after processing
                     print("Player1 matrix after:", 
                         player1_matrix)
                     print("Player2 matrix after:", 
                         player2_matrix)
+    def disconnect(self, code):
+        # 1) Cancel any per-room move‐timer
+        timer = BingoConsumer.room_timers.pop(self.room, None)
+        if timer:
+            print(f"[TIMER] Cancelling room_timers timer for room {self.room}")
+            timer.cancel()
+
+        # 2) Also cancel this instance's _move_timer if i still have one floating around
+        if getattr(self, "_move_timer", None):
+            print(f"[TIMER] Cancelling self._move_timer for room {self.room}")
+            self._move_timer.cancel()
+
+        # 3) Fetch current room state (if any)
+        state = BingoConsumer.game_states.get(self.room)
+        if state:
+            status = state.get("status")
+            # If they were mid-game, declare the other side winner
+            if status == "playing" and not BingoConsumer.games_finished.get(self.room, False):
+                # find other player
+                p1, p2 = state["player1"], state["player2"]
+                winner = p2 if self.username == p1 else p1
+                amount = state.get("amount")
+                print(f"[DISCONNECT] {self.username} left mid-game — declaring {winner} winner for ${amount}")
+                Crack_the_CodeConsumer.handle_game_win(
+                    self,
+                    winner=winner,
+                    loser=self.username,
+                    amount=amount,
+                )
+                BingoConsumer.games_finished[self.room] = True
+
+            # 4) Clean up all per-room mappings (only once)
+            print(f"[CLEANUP] Removing room state for room {self.room}")
+            BingoConsumer.game_states.pop(self.room, None)
+            BingoConsumer.active_players.pop(self.room, None)
+            BingoConsumer.games_finished.pop(self.room, None)
+        else:
+            print(f"[DISCONNECT] No saved state for room {self.room}, nothing to declare or remove.")
+
+        # 5) Remove from channel group so no further broadcasts
+        async_to_sync(self.channel_layer.group_discard)(self.room, self.channel_name)
+        # 6) Finally close the socket
+        super().disconnect(code)
+
+        
+    def _reset_room_timer(self, room):
+        """
+        Cancel any old timer and start a brand-new 45 s timer for `room`.
+        """
+        # cancel old one
+        old = BingoConsumer.room_timers.get(room)
+        if old:
+            print(f"[TIMER] Cancelling old timer for room {room}")
+            old.cancel()
+
+        # schedule new one
+        print(f"[TIMER] Starting fresh 45s move timer for room {room}")
+        t = threading.Timer(45, lambda: self._on_move_timeout(room))
+        t.daemon = True
+        t.start()
+        BingoConsumer.room_timers[room] = t
 
     def result(self,event):
         self.send(json.dumps(event))
@@ -726,4 +813,6 @@ class BingoConsumer(WebsocketConsumer):
         self.send(json.dumps(event))
         self.disconnect(1000)
     def myusername(self, event):
+        self.send(json.dumps(event))
+    def move_timeout(self, event):
         self.send(json.dumps(event))

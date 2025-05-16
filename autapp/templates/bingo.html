@@ -1855,22 +1855,22 @@
 
     <script>
         let isSearching = false;
-let attemptingToLeave = false;
-let networkStatus = 'Good';
-let networkBars = 3;
-let selectedAmount = 0;
-let boardCells = [];
-let usedNumbers = new Set();
-let currentBetAmount = 0;
-let gameSocket = null;
-let gameBoard = [];
-let calledNumbers = [];
-let selectedNumber = null;
-let myTurn = false;
-let currentPlayer = '';
-let opponent = '';
-let completedLetters = 0; // Track how many BINGO letters are completed
-let username = ''; // Store the user's username
+        let attemptingToLeave = false;
+        let networkStatus = 'Good';
+        let networkBars = 3;
+        let selectedAmount = 0;
+        let boardCells = [];
+        let usedNumbers = new Set();
+        let currentBetAmount = 0;
+        let gameSocket = null;
+        let gameBoard = [];
+        let calledNumbers = [];
+        let selectedNumber = null;
+        let myTurn = false;
+        let currentPlayer = '';
+        let opponent = '';
+        let completedLetters = 0; // Track how many BINGO letters are completed
+        let username = ''; // Store the user's username
 
 // Simulate dynamic stats for waiting page
 function updateWaitingStats() {
@@ -1966,26 +1966,7 @@ function monitorNetwork() {
 function checkNetworkStatus() {
     const start = Date.now();
     
-    fetch('/dashboard', { 
-        method: 'HEAD',
-        cache: 'no-store'
-    })
-    .then(response => {
-        const latency = Date.now() - start;
-        
-        if (latency < 100) {
-            updateNetworkIndicator('Excellent');
-        } else if (latency < 300) {
-            updateNetworkIndicator('Good');
-        } else if (latency < 600) {
-            updateNetworkIndicator('Fair');
-        } else {
-            updateNetworkIndicator('Poor');
-        }
-    })
-    .catch(() => {
-        updateNetworkIndicator('Offline');
-    });
+    
 }
 
 function displayMessage(message) {
@@ -2472,6 +2453,12 @@ function cancelLeave() {
 
 function confirmLeaveSearch() {
     attemptingToLeave = true;
+    
+    // Close WebSocket connection if it exists
+    if (gameSocket) {
+        gameSocket.close();
+    }
+    
     isSearching = false;
     window.location.href = '/dashboard';
 }
@@ -2567,6 +2554,7 @@ document.getElementById('joinForm').addEventListener('submit', async (e) => {
 
 function handleJoinResponse(data) {
     const submitButton = document.querySelector('#joinForm button');
+    console.log(data)
     
     if (!data.proceed) {
         hideLoading(submitButton);
@@ -2588,7 +2576,8 @@ function handleJoinResponse(data) {
         document.getElementById('gameSetup').style.display = 'none';
         document.getElementById('gameStatus').style.display = 'block';
         isSearching = true;
-        initWebSocket(data.amount);
+        // Don't initialize WebSocket here anymore
+        hideLoading(submitButton);
     }
 }
 
@@ -2606,13 +2595,29 @@ function startBingoGame() {
     const joinButton = document.getElementById('joinGameBtn');
     showLoading(joinButton);
     
+    // Check if we already have an active WebSocket connection
+    if (gameSocket && (gameSocket.readyState === WebSocket.OPEN || gameSocket.readyState === WebSocket.CONNECTING)) {
+        // Close the existing connection if the button is clicked again
+        gameSocket.close();
+        isSearching = false;
+        displayMessage('Game search cancelled');
+        document.getElementById('gameStatus').style.display = 'none';
+        document.getElementById('boardAssembly').style.display = 'block';
+        hideLoading(joinButton);
+        return;
+    }
+    
     // Show waiting page
     document.getElementById('boardAssembly').style.display = 'none';
     document.getElementById('gameStatus').style.display = 'block';
+    
+    // Set searching flag
     isSearching = true;
     
     // Initialize WebSocket with board data
     initWebSocket(currentBetAmount, boardNumbers);
+    
+    hideLoading(joinButton);
 }
 
 function initWebSocket(amount, boardNumbers = null) {
@@ -2623,7 +2628,7 @@ function initWebSocket(amount, boardNumbers = null) {
     }
 
     // Construct the WebSocket URL with the board parameter
-    const socketUrl = `https://chiwe.onrender.com/wss/bingo/${amount}/?${boardQuery}`;
+    const socketUrl = `https://exaon.tech/wss/bingo/${amount}/?${boardQuery}`;
 
     // Create WebSocket connection
     gameSocket = new WebSocket(socketUrl);
@@ -2631,6 +2636,7 @@ function initWebSocket(amount, boardNumbers = null) {
     gameSocket.onopen = () => {
         console.log('WebSocket connection established');
         updateNetworkIndicator('Good');
+        displayMessage('Connected to game server. Waiting for opponent...');
     };
 
     gameSocket.onmessage = (event) => {
@@ -2647,6 +2653,11 @@ function initWebSocket(amount, boardNumbers = null) {
 
     gameSocket.onclose = () => {
         console.log('WebSocket connection closed');
+        if (isSearching) {
+            displayMessage('Connection to game server lost. Please try again.');
+            document.getElementById('gameStatus').style.display = 'none';
+            document.getElementById('boardAssembly').style.display = 'block';
+        }
         isSearching = false;
         updateNetworkIndicator('Offline');
     };
