@@ -236,6 +236,10 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         chiweProfit.objects.create(gameType="ctc", profit=self.fee)
         winner_obj = MyUser.objects.get(id=winnerid)
         loser_obj = MyUser.objects.get(id=loserid)
+        winner_obj.Active_Game=False
+        winner_obj.save()
+        loser_obj.Active_Game=False
+        loser_obj.save()
         winner_balance = Ballance.objects.get(user=winner_obj)
         loser_balance = Ballance.objects.get(user=loser_obj)
         winner_history = GameHistory.objects.get(user=winner_obj)
