@@ -221,7 +221,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         self.fee = Decimal(amount) * Decimal(2.5) / Decimal(100)
         winnerid=0
         loserid=0
-        if winner == self.player_1:
+        if winner == Crack_the_CodeConsumer.game_states[self.room]["player1"]:
             winnerid= Crack_the_CodeConsumer.game_states[self.room]["player1_id"]
             loserid=Crack_the_CodeConsumer.game_states[self.room]["player2_id"]
         else:
@@ -230,7 +230,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
 
         print(f"🏆 Winner: {winner} | ❌ Loser: {loser} | Jackpot: {self.jackpot} | Fee: {self.fee}")
         admin=MyUser.objects.get(username="ADMIN_CTA")
-        adminb=Ballance.objects.get_or_create(user=admin)
+        adminb=Ballance.objects.get(user=admin)
         adminb.ballance += self.fee
         winner_obj = MyUser.objects.get(id=winnerid)
         loser_obj = MyUser.objects.get(id=loserid)
