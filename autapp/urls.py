@@ -12,6 +12,8 @@ urlpatterns = [
     path("recovery/", views.forgot_password, name="recovery"),
     path("recovery/validate_recovery/", views.validate_recovery, name="validate_recovery"),
     path('get-csrf-token/', views.get_csrf_token, name='get_csrf_token'),
+    path('resend-otp-signup/<str:username>', views.resend_otp_signup, name='resend_otp'),
+    path('resend-otp-fp/<str:username>', views.resend_otp_token_fp, name='resend_otp_fp'),
     
 ]
 from django.conf.urls import handler404

@@ -118,6 +118,149 @@
             font-weight: 600;
         }
 
+        /* Timer Styles */
+        .timer-container {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: var(--surface);
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1500;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 30px rgba(46, 213, 115, 0.5);
+            animation: timerPulse 2s infinite;
+        }
+
+        .timer-container.active {
+            display: flex;
+        }
+
+        .timer-container.warning {
+            border-color: var(--warning);
+            box-shadow: 0 0 30px rgba(255, 165, 2, 0.5);
+            animation: timerWarning 1s infinite;
+        }
+
+        .timer-container.danger {
+            border-color: var(--danger);
+            box-shadow: 0 0 30px rgba(255, 71, 87, 0.5);
+            animation: timerDanger 0.5s infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.05); }
+        }
+
+        @keyframes timerWarning {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.1); }
+        }
+
+        @keyframes timerDanger {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            25% { transform: translateY(-50%) scale(1.15); }
+            75% { transform: translateY(-50%) scale(1.05); }
+        }
+
+        .timer-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+            text-shadow: 0 0 10px rgba(46, 213, 115, 0.5);
+        }
+
+        .timer-container.warning .timer-display {
+            color: var(--warning);
+            text-shadow: 0 0 10px rgba(255, 165, 2, 0.5);
+        }
+
+        .timer-container.danger .timer-display {
+            color: var(--danger);
+            text-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+        }
+
+        .timer-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .timer-progress {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 0deg, transparent 0deg);
+            transition: background 0.1s ease;
+        }
+
+        .timer-container.warning .timer-progress {
+            background: conic-gradient(var(--warning) 0deg, transparent 0deg);
+        }
+
+        .timer-container.danger .timer-progress {
+            background: conic-gradient(var(--danger) 0deg, transparent 0deg);
+        }
+
+        .timer-progress::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 108px;
+            height: 108px;
+            background: var(--surface);
+            border-radius: 50%;
+        }
+
+        /* Mobile timer positioning */
+        @media (max-width: 768px) {
+            .timer-container {
+                position: fixed;
+                top: 80px;
+                right: 10px;
+                width: 80px;
+                height: 80px;
+            }
+
+            .timer-display {
+                font-size: 1.4rem;
+            }
+
+            .timer-label {
+                font-size: 0.6rem;
+            }
+
+            .timer-progress {
+                width: 80px;
+                height: 80px;
+            }
+
+            .timer-progress::before {
+                top: 4px;
+                left: 4px;
+                width: 72px;
+                height: 72px;
+            }
+        }
+
         /* Money selector */
         .money-selector {
             display: grid;
@@ -1583,6 +1726,15 @@
         <span class="network-status network-good" id="network-text">Good</span>
     </div>
 
+    <!-- Timer Container -->
+    <div class="timer-container" id="timerContainer">
+        <div class="timer-progress" id="timerProgress"></div>
+        <div class="timer-content">
+            <div class="timer-display" id="timerDisplay">45</div>
+            <div class="timer-label">SECONDS</div>
+        </div>
+    </div>
+
     <!-- Message Display -->
     <div id="messageDisplay"></div>
 
@@ -1871,6 +2023,90 @@
         let opponent = '';
         let completedLetters = 0; // Track how many BINGO letters are completed
         let username = ''; // Store the user's username
+
+        // Timer variables
+        let timerInterval = null;
+        let currentTime = 0;
+        let totalTime = 0;
+        let isTimerActive = false;
+
+        // Timer functions
+        function startTimer(time) {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            currentTime = time;
+            totalTime = time;
+            isTimerActive = true;
+            
+            const timerContainer = document.getElementById('timerContainer');
+            const timerDisplay = document.getElementById('timerDisplay');
+            const timerProgress = document.getElementById('timerProgress');
+            
+            // Show timer
+            timerContainer.classList.add('active');
+            timerContainer.classList.remove('warning', 'danger');
+            
+            // Update display
+            timerDisplay.textContent = currentTime;
+            updateTimerProgress();
+            
+            // Start countdown
+            timerInterval = setInterval(() => {
+                currentTime--;
+                timerDisplay.textContent = currentTime;
+                updateTimerProgress();
+                
+                // Change timer appearance based on remaining time
+                if (currentTime <= 10 && currentTime > 5) {
+                    timerContainer.classList.add('warning');
+                    timerContainer.classList.remove('danger');
+                } else if (currentTime <= 5) {
+                    timerContainer.classList.add('danger');
+                    timerContainer.classList.remove('warning');
+                }
+                
+                // Timer finished
+                if (currentTime <= 0) {
+                    stopTimer();
+                    displayMessage('Time\'s up! Your turn has ended.');
+                }
+            }, 1000);
+            
+            displayMessage(`Your turn! You have ${time} seconds to make a move.`);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            isTimerActive = false;
+            const timerContainer = document.getElementById('timerContainer');
+            timerContainer.classList.remove('active', 'warning', 'danger');
+        }
+
+        function resetTimer() {
+            stopTimer();
+            currentTime = 0;
+            totalTime = 0;
+        }
+
+        function updateTimerProgress() {
+            const timerProgress = document.getElementById('timerProgress');
+            const percentage = ((totalTime - currentTime) / totalTime) * 360;
+            timerProgress.style.background = `conic-gradient(var(--primary) ${percentage}deg, transparent ${percentage}deg)`;
+            
+            // Update progress color based on timer state
+            const timerContainer = document.getElementById('timerContainer');
+            if (timerContainer.classList.contains('warning')) {
+                timerProgress.style.background = `conic-gradient(var(--warning) ${percentage}deg, transparent ${percentage}deg)`;
+            } else if (timerContainer.classList.contains('danger')) {
+                timerProgress.style.background = `conic-gradient(var(--danger) ${percentage}deg, transparent ${percentage}deg)`;
+            }
+        }
 
 // Simulate dynamic stats for waiting page
 function updateWaitingStats() {
@@ -2459,6 +2695,9 @@ function confirmLeaveSearch() {
         gameSocket.close();
     }
     
+    // Stop timer if active
+    resetTimer();
+    
     isSearching = false;
     window.location.href = '/dashboard';
 }
@@ -2628,7 +2867,7 @@ function initWebSocket(amount, boardNumbers = null) {
     }
 
     // Construct the WebSocket URL with the board parameter
-    const socketUrl = `https://exaon.tech/wss/bingo/${amount}/?${boardQuery}`;
+    const socketUrl = `https://vhlz5hd3-8000.uks1.devtunnels.ms/ws/bingo/${amount}/?${boardQuery}`;
 
     // Create WebSocket connection
     gameSocket = new WebSocket(socketUrl);
@@ -2660,6 +2899,9 @@ function initWebSocket(amount, boardNumbers = null) {
         }
         isSearching = false;
         updateNetworkIndicator('Offline');
+        
+        // Stop timer when connection is lost
+        resetTimer();
     };
 }
 
@@ -2673,6 +2915,10 @@ function handleWebSocketMessage(data) {
                 // Store the username when received
                 username = message.username;
                 console.log('Username set:', username);
+                break;
+            case 'timer':
+                // Handle timer message
+                handleTimerMessage(message);
                 break;
             case 'send.board':
                 handleBoardMessage(message);
@@ -2698,6 +2944,17 @@ function handleWebSocketMessage(data) {
     }
 }
 
+// Handle timer message from backend
+function handleTimerMessage(message) {
+    console.log('Timer message received:', message);
+    
+    if (message.time && message.time > 0) {
+        startTimer(message.time);
+    } else {
+        stopTimer();
+    }
+}
+
 // Handle result message from backend
 function handleResultMessage(message) {
     console.log('Result message received:', message);
@@ -2707,6 +2964,9 @@ function handleResultMessage(message) {
         calledNumbers.push(message.called);
         updateCalledNumbers(message.called, true);
         displayMessage(`Number called: ${message.called}`);
+        
+        // Reset timer when a move is made
+        resetTimer();
     }
     
     // Update BINGO letters completion
@@ -2756,6 +3016,9 @@ function handleTurnChange(message) {
         // Highlight opponent's card
         opponentCard.style.border = '2px solid var(--primary)';
         opponentCard.style.boxShadow = '0 0 15px rgba(46, 213, 115, 0.5)';
+        
+        // Stop timer when it's not my turn
+        stopTimer();
     }
 }
 
@@ -2814,6 +3077,9 @@ function handleGameStartMessage(message) {
 
 function handleGameOver(message) {
     console.log('Game over message received:', message);
+    
+    // Stop timer when game is over
+    resetTimer();
     
     // Parse the winning amount to a number for display
     const winningAmount = parseInt(message.winningAmount);
@@ -2875,6 +3141,9 @@ function callNumber() {
         gameBoard.forEach(cell => cell.classList.remove('selected-to-call'));
         selectedNumber = null;
         
+        // Reset timer when player makes a move
+        resetTimer();
+        
         // Hide loading after a short delay
         setTimeout(() => {
             hideLoading(callBtn);
@@ -2905,6 +3174,9 @@ function claimBingo() {
         
         // Disable BINGO button
         bingoBtn.disabled = true;
+        
+        // Reset timer when player claims bingo
+        resetTimer();
         
         // Hide loading after a short delay
         setTimeout(() => {

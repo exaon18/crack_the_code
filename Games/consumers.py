@@ -40,8 +40,9 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
 
     def connect(self):
         self.username = self.scope['user'].username
+        self.id=self.scope['user'].id
         amount = int(self.scope['url_route']['kwargs']['amount'])
-        self.user = MyUser.objects.get(username=self.username)
+        self.user = MyUser.objects.get(id=self.id)
         ballance = Ballance.objects.get(user=self.user).ballance
 
         self.win = False
@@ -78,6 +79,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
             "room_number": self.room_number,
             "code": self.code,
             "player1": self.username,
+            "player1_id": self.id,
             "player2": None,
             "player1_channel": self.channel_name,
             f"{self.username}": True,
@@ -103,6 +105,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         if self.username != room_list[0]["player1"]:
             room_list[0]["players_amount"] += 1
             room_list[0]["player2"] = self.username
+            room_list[0]["player2_id"] = self.id
             room_list[0]["player2_channel"] = self.channel_name
             room_list[0][f"{self.username}"] = False
             room_list[0]["status"] = "playing"
@@ -112,7 +115,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
 
             async_to_sync(self.channel_layer.group_add)(self.room, self.channel_name)
             self.accept()
-            user=MyUser.objects.get(username=self.username)
+            user=MyUser.objects.get(username=self.id)
             user.Active_Game=True
             user.save()
             if room_list[0]["players_amount"] == 2:
@@ -216,11 +219,21 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         self.game_ended = True  
         self.jackpot = Decimal(amount) * Decimal(97.5) / Decimal(100)
         self.fee = Decimal(amount) * Decimal(2.5) / Decimal(100)
+        winnerid=0
+        loserid=0
+        if winner == self.player_1:
+            winnerid= Crack_the_CodeConsumer.game_states[self.room]["player1_id"]
+            loserid=Crack_the_CodeConsumer.game_states[self.room]["player2_id"]
+        else:
+            winnerid= Crack_the_CodeConsumer.game_states[self.room]["player2_id"]
+            loserid=Crack_the_CodeConsumer.game_states[self.room]["player1_id"]
 
         print(f"🏆 Winner: {winner} | ❌ Loser: {loser} | Jackpot: {self.jackpot} | Fee: {self.fee}")
-
-        winner_obj = MyUser.objects.get(username=winner)
-        loser_obj = MyUser.objects.get(username=loser)
+        admin=MyUser.objects.get(username="ADMIN_CTA")
+        adminb=Ballance.objects.get_or_create(user=admin)
+        adminb.ballance += self.fee
+        winner_obj = MyUser.objects.get(id=winnerid)
+        loser_obj = MyUser.objects.get(id=loserid)
         winner_balance = Ballance.objects.get(user=winner_obj)
         loser_balance = Ballance.objects.get(user=loser_obj)
         winner_history = GameHistory.objects.get(user=winner_obj)
@@ -230,19 +243,21 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         winner_history.TotalPlayed+=1
         losser_history.TotalPlayed+=1
         losser_history.Totaloss+=1
-        winner_history.save()
-        losser_history.save()
+        
         points = {25: 7, 50: 20, 100: 45}.get(amount, 0)
         winner_obj.points += points
         loser_obj.points = max(0, loser_obj.points - points)
 
         winner_balance.ballance += self.jackpot
         loser_balance.ballance -= Decimal(amount)
-
+        winner_history.save()
+        losser_history.save()
+        adminb.save()  
         winner_balance.save()
         loser_balance.save()
         winner_obj.save()
         loser_obj.save()
+
         print(f"winner ppoints {winner_obj.points}")
         print(f"losser points {loser_obj.points}")
 
@@ -253,7 +268,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
                 "winner": winner,
                 "loser": loser,
                 "winningAmount": str(self.jackpot),
-                "betAmount":str(amount)
+                "betAmount":str(amount)*2
             }
         )
 
@@ -370,6 +385,7 @@ class BingoConsumer(WebsocketConsumer):
     
     def connect(self):
         self.username = self.scope['user'].username
+        self.id=self.scope['user'].id
         self.amount = int(self.scope['url_route']['kwargs']['amount'])
         query_string = self.scope['query_string'].decode()
         query_params = parse_qs(query_string)
@@ -410,6 +426,7 @@ class BingoConsumer(WebsocketConsumer):
         self._move_timer = None
 
     def start_move_timer(self):
+        gamestate=BingoConsumer.game_states.get(self.room)  
         # Cancel any existing timer
         if self._move_timer:
             print(f"[TIMER] Cancelling existing move timer for room {self.room}")
@@ -419,6 +436,24 @@ class BingoConsumer(WebsocketConsumer):
         self._move_timer = threading.Timer(45.0, self._on_move_timeout)
         self._move_timer.daemon = True
         self._move_timer.start()
+        if gamestate[gamestate["player1"]]:
+            async_to_sync(self.channel_layer.send)(
+                gamestate["player1_channel"],
+                {
+                    "type": "timer",
+                    "time": 45
+                }
+                
+            )
+        else:
+            async_to_sync(self.channel_layer.send)(
+                gamestate["player2_channel"],
+                {
+                    "type": "timer",
+                    "time": 45
+                }
+            )
+
 
     def _on_move_timeout(self, room):
         """
@@ -459,7 +494,23 @@ class BingoConsumer(WebsocketConsumer):
             game_state["player2_channel"],
             {"type": "turns", "myturn": game_state[p2]}
         )
-
+        if game_state[game_state["player1"]]:
+            async_to_sync(self.channel_layer.send)(
+                game_state["player1_channel"],
+                {
+                    "type": "timer",
+                    "time": 45
+                }
+                
+            )
+        else:
+            async_to_sync(self.channel_layer.send)(
+                game_state["player2_channel"],
+                {
+                    "type": "timer",
+                    "time": 45
+                }
+            )
         # and finally restart a fresh 45 s for the *new* active player
         self._reset_room_timer(room)
 
@@ -481,6 +532,7 @@ class BingoConsumer(WebsocketConsumer):
             "room_number": self.room_number,
             "player1_board": self.board_numbers,
             "player1": self.username,
+            "player1_id": self.id,
             "player2": None,
             "player1_channel": self.channel_name,
             "player1_comp": 0,
@@ -521,6 +573,7 @@ class BingoConsumer(WebsocketConsumer):
             room_list[0][f"{self.username}"] = False
             room_list[0]["status"] = "playing"
             room_list[0]["player2_board"]= self.board_numbers
+            room_list[0]["player2_id"] = self.id
 
             BingoConsumer.game_states[self.room] = room_list[0]
            
@@ -612,6 +665,73 @@ class BingoConsumer(WebsocketConsumer):
             completed += 1
 
         return completed
+    def handle_game_win(self, winner, loser, amount):
+
+        if BingoConsumer.games_finished.get(self.room, False):
+                
+                print(f"⚠️ Game in room {self.room} already ended. Ignoring duplicate call.")
+                return None
+
+        BingoConsumer.games_finished[self.room] = True  
+        self.win = True
+        self.game_ended = True  
+        self.jackpot = Decimal(amount) * Decimal(97.5) / Decimal(100)
+        self.fee = Decimal(amount) * Decimal(2.5) / Decimal(100)
+        winnerid=0
+        loserid=0
+        if winner == BingoConsumer.game_states[self.room]["player1"]:
+            winnerid= BingoConsumer.game_states[self.room]["player1_id"]
+            loserid=BingoConsumer.game_states[self.room]["player2_id"]
+        else:
+            winnerid= BingoConsumer.game_states[self.room]["player2_id"]
+            loserid=BingoConsumer.game_states[self.room]["player1_id"]
+
+        print(f"🏆 Winner: {winner} | ❌ Loser: {loser} | Jackpot: {self.jackpot} | Fee: {self.fee}")
+        admin=MyUser.objects.get(username="ADMIN_CTA")
+        adminb=Ballance.objects.get(user=admin)
+        adminb.ballance += self.fee
+        winner_obj = MyUser.objects.get(id=winnerid)
+        loser_obj = MyUser.objects.get(id=loserid)
+        winner_balance = Ballance.objects.get(user=winner_obj)
+        loser_balance = Ballance.objects.get(user=loser_obj)
+        winner_history = GameHistory.objects.get(user=winner_obj)
+        losser_history = GameHistory.objects.get(user=loser_obj)
+        winner_history.TotalWin+=1
+        winner_history.TotalEarning+=Decimal(amount)
+        winner_history.TotalPlayed+=1
+        losser_history.TotalPlayed+=1
+        losser_history.Totaloss+=1
+        
+        points = {25: 7, 50: 20, 100: 45}.get(amount, 0)
+        winner_obj.points += points
+        loser_obj.points = max(0, loser_obj.points - points)
+
+        winner_balance.ballance += self.jackpot
+        loser_balance.ballance -= Decimal(amount)
+        winner_history.save()
+        losser_history.save()
+        adminb.save()  
+        winner_balance.save()
+        loser_balance.save()
+        winner_obj.save()
+        loser_obj.save()
+
+        print(f"winner ppoints {winner_obj.points}")
+        print(f"losser points {loser_obj.points}")
+        self.jackpot = Decimal(amount)*2
+
+        async_to_sync(self.channel_layer.group_send)(
+            self.room,
+            {
+                "type": "Game_Over",
+                "winner": winner,
+                "loser": loser,
+                "winningAmount": str(self.jackpot),
+                "betAmount":str(amount)
+            }
+        )
+
+        print(f"✅ Balance updated: {winner} +{self.jackpot}Bingoconsumer")
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         data = text_data_json
@@ -622,7 +742,7 @@ class BingoConsumer(WebsocketConsumer):
             if self.username==game_state["player1"]:
                 if game_state["player1_comp"]>=5:
                     game_state["bingo"]==True
-                    return Crack_the_CodeConsumer.handle_game_win(self, winner=self.username, loser=game_state["player2"], amount=game_state["amount"])
+                    return BingoConsumer.handle_game_win(self, winner=self.username, loser=game_state["player2"], amount=game_state["amount"])
                 
                     
                 else:
@@ -634,7 +754,7 @@ class BingoConsumer(WebsocketConsumer):
             else:
                 if game_state["player2_comp"]>=5 and game_state["bingo"] == False:
                     game_state["bingo"]==True
-                    return Crack_the_CodeConsumer.handle_game_win(self, winner=self.username, loser=game_state["player1"], amount=game_state["amount"])
+                    return BingoConsumer.handle_game_win(self, winner=self.username, loser=game_state["player1"], amount=game_state["amount"])
                 else:
                     return async_to_sync(self.channel_layer.group_send)(
                         self.room, 
@@ -754,7 +874,7 @@ class BingoConsumer(WebsocketConsumer):
                 winner = p2 if self.username == p1 else p1
                 amount = state.get("amount")
                 print(f"[DISCONNECT] {self.username} left mid-game — declaring {winner} winner for ${amount}")
-                Crack_the_CodeConsumer.handle_game_win(
+                BingoConsumer.handle_game_win(
                     self,
                     winner=winner,
                     loser=self.username,
@@ -781,6 +901,7 @@ class BingoConsumer(WebsocketConsumer):
         Cancel any old timer and start a brand-new 45 s timer for `room`.
         """
         # cancel old one
+        game_state=BingoConsumer.game_states.get(room)
         old = BingoConsumer.room_timers.get(room)
         if old:
             print(f"[TIMER] Cancelling old timer for room {room}")
@@ -792,6 +913,23 @@ class BingoConsumer(WebsocketConsumer):
         t.daemon = True
         t.start()
         BingoConsumer.room_timers[room] = t
+        if game_state[game_state["player1"]]:
+            async_to_sync(self.channel_layer.send)(
+                game_state["player1_channel"],
+                {
+                    "type": "timer",
+                    "time": 45
+                }
+                
+            )
+        else:
+            async_to_sync(self.channel_layer.send)(
+                game_state["player2_channel"],
+                {
+                    "type": "timer",
+                    "time": 45
+                }
+            )
 
     def result(self,event):
         self.send(json.dumps(event))
@@ -815,4 +953,6 @@ class BingoConsumer(WebsocketConsumer):
     def myusername(self, event):
         self.send(json.dumps(event))
     def move_timeout(self, event):
+        self.send(json.dumps(event))
+    def timer(self, event):
         self.send(json.dumps(event))

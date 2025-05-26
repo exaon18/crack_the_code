@@ -17,6 +17,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_POST
 import re
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
 
 def get_csrf_token(request):
     """
@@ -120,12 +121,23 @@ def signup(request):
 
 
 def verify(request, username):
+   
     user = get_object_or_404(MyUser, username=username)
     if user.is_active: 
         raise Http404
     if request.method == 'POST':
+        print(request.POST)
+        if request.POST.get('type')=="fp":
+           
+            if str(username)==str(request.POST.get('username')):
+               
+               return resend_otp_signup(request, user)
+            else:
+                return JsonResponse({"success":False,"message":"Something went wrong , please refresh the page"})
         if not request.POST.get('token'):
             return JsonResponse({"success": False, "message":"OTP is required."})
+        
+            
         token = request.POST['token']
         print(user.token)
         if user.token == token:
@@ -135,7 +147,7 @@ def verify(request, username):
             user.save()
             login(request, user)
             messages.success(request, 'Account activated successfully.')
-            return JsonResponse({"Success": True, "message":"Account Verified successfully, redirecting you to the login page "})  # Redirect to the home page or any other page
+            return JsonResponse({"success": True, "message":"Account Verified successfully, redirecting you to the login page "})  # Redirect to the home page or any other page
         else:
             messages.error(request, 'Invalid token')
             return JsonResponse({"success": False, "message":"Invalid token"})
@@ -249,7 +261,7 @@ def forgot_password(request):
             return JsonResponse({"Success": False, "message":"User not found."}) # Redirect to the home page or any other page
     else:
         return render(request, "forgot_password.html")
-@require_POST
+@require_POST 
 def validate_recovery(request):
     if request.method == "POST":
         print(request.POST)
@@ -282,32 +294,53 @@ from django.utils import timezone
 from datetime import timedelta
 
 @require_POST
-def resend_otp_signup(request, username):
+def resend_otp_signup(request, userobj):
+    print("i got in ")
     try:
-        user = MyUser.objects.get(username=username)
-        
+        user = userobj
+    
         if user.is_active:
-            return JsonResponse({"Success": False, "message": "User is already active."})
-
+            return JsonResponse({"success": False, "message": "User is already active."})
         cooldown_period = timedelta(seconds=60)
         now = timezone.now()
         last_otp=user.last_otp_sent
-
         if last_otp and now - last_otp < cooldown_period:
             remaining = cooldown_period - (now - last_otp)
             return JsonResponse({
-                "Success": False,
+                "success": False,
                 "message": f"Please wait {int(remaining.total_seconds())} seconds before resending OTP."
-            })
-
+                })
         otp = generate_unique_number(user.username)
         user.token = otp
         user.last_otp_sent = now
         user.save()
         send_welcome_email(user=user, email=user.email, token=otp, why="signup")
-
-        return JsonResponse({"Success": True, "message": "OTP has been sent to your email."})
-
+        return JsonResponse({"success": True, "message": "OTP has been sent to your email. Please check your inbox or SPAM folder."})
+    except MyUser.DoesNotExist:
+        return JsonResponse({"success": False, "message": "User not found."})
+@csrf_exempt
+@require_POST
+def resend_otp_token_fp(request, username):
+    try:
+        user = MyUser.objects.get(username=username)
+        
+        if not user.is_active:
+            return JsonResponse({"Success": False, "message": "User is not actived, please signup again."})
+        cooldown_period = timedelta(seconds=60)
+        now = timezone.now()
+        last_otp=user.last_otp_fp
+        if last_otp and now - last_otp < cooldown_period:
+            remaining = cooldown_period - (now - last_otp)
+            return JsonResponse({
+                "Success": False,
+                "message": f"Please wait {int(remaining.total_seconds())} seconds before resending OTP."
+                })
+        otp = generate_unique_number(user.username)
+        user.forgetPasswordToken = otp
+        user.last_otp_fp = now
+        user.save()
+        send_welcome_email(user=user, email=user.email, token=otp, why="forgot")
+        return JsonResponse({"Success": True, "message": "OTP has been sent to your email. Please check your inbox or SPAM folder."})
     except MyUser.DoesNotExist:
         return JsonResponse({"Success": False, "message": "User not found."})
 

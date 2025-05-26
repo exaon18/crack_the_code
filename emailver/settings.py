@@ -127,6 +127,16 @@ USE_I18N = True
 USE_TZ = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'rate-limit-cache',      # just a unique name
+        'TIMEOUT': None,                     # or a default timeout in seconds
+        'OPTIONS': {
+            'MAX_ENTRIES': 10000,            # how many keys before it starts evicting
+        }
+    }
+}
 
 
 # Static files (CSS, JavaScript, Images)

@@ -144,6 +144,11 @@
             font-size: 0.95rem;
         }
 
+        /* Hidden form styles */
+        .hidden-form {
+            display: none;
+        }
+
         /* OTP input styles */
         .otp-container {
             display: flex;
@@ -259,12 +264,43 @@
         .resend-link a {
             color: var(--primary);
             text-decoration: none;
-            transition: opacity 0.2s ease;
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
         }
 
-        .resend-link a:hover {
+        .resend-link a:hover:not(.disabled) {
             opacity: 0.8;
             text-decoration: underline;
+        }
+
+        .resend-link a.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
+        .resend-link a.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .resend-link a.loading::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin-left: 8px;
+            border: 2px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .resend-countdown {
+            color: var(--warning);
+            font-weight: 600;
+            margin-left: 0.5rem;
         }
 
         /* Alert message styles */
@@ -839,7 +875,7 @@
     <!-- Main container -->
     <div class="container">
         <h1 class="title">Activate Your Account</h1>
-        <p class="subtitle">Hello {{ user.username }}, please enter the verification code sent to your email</p>
+        <p class="subtitle">Hello <span id="usernameDisplay">{{ user.username }}</span>, please enter the verification code sent to your email</p>
 
         <!-- Alert message -->
         <div class="alert alert-error" id="alert">
@@ -873,7 +909,9 @@
             </button>
             
             <div class="resend-link">
-                Didn't receive the code? <a href="#" id="resendLink">Resend code</a>
+                Didn't receive the code? 
+                <a href="#" id="resendLink">Resend code</a>
+                <span class="resend-countdown" id="resendCountdown" style="display: none;"></span>
             </div>
         </form>
     </div>
@@ -923,14 +961,43 @@
             const successDescription = document.getElementById('successDescription');
             const continueBtn = document.getElementById('continueBtn');
             const resendLink = document.getElementById('resendLink');
+            const resendCountdown = document.getElementById('resendCountdown');
             const leaveConfirmation = document.getElementById('leaveConfirmation');
             const leaveBtn = document.getElementById('leaveBtn');
             const stayBtn = document.getElementById('stayBtn');
             const starsContainer = document.getElementById('starsContainer');
             const djangoMessagesContainer = document.getElementById('djangoMessagesContainer');
+            const usernameDisplay = document.getElementById('usernameDisplay');
 
             // Get CSRF token for AJAX requests
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            // Extract username from the page
+            function getUsername() {
+                return usernameDisplay.textContent.trim();
+            }
+
+            // Resend countdown timer
+            let resendCountdownTimer = null;
+            let resendTimeLeft = 0;
+
+            function startResendCountdown() {
+                resendTimeLeft = 30;
+                resendLink.classList.add('disabled');
+                resendCountdown.style.display = 'inline';
+                
+                resendCountdownTimer = setInterval(() => {
+                    resendTimeLeft--;
+                    resendCountdown.textContent = `(${resendTimeLeft}s)`;
+                    
+                    if (resendTimeLeft <= 0) {
+                        clearInterval(resendCountdownTimer);
+                        resendLink.classList.remove('disabled');
+                        resendCountdown.style.display = 'none';
+                        resendCountdown.textContent = '';
+                    }
+                }, 1000);
+            }
 
             // Create shooting stars effect
             function createShootingStar() {
@@ -1138,8 +1205,8 @@
                     
                     const data = await response.json();
                     
-                    // Handle Django JsonResponse
-                    if (data.Success) {
+                    // Handle Django JsonResponse - Fixed case sensitivity
+                    if (data.success) {
                         // Show success message
                         successDescription.textContent = data.message;
                         successMessage.classList.add('active');
@@ -1157,6 +1224,7 @@
                         createDjangoMessage(data.message, 'error');
                     }
                 } catch (error) {
+                    console.error('Verification error:', error);
                     showAlert('An error occurred. Please try again.');
                     createDjangoMessage('An error occurred. Please try again.', 'error');
                 } finally {
@@ -1170,47 +1238,80 @@
                 window.location.href = '/login';
             });
 
-            // Resend code functionality with Django AJAX
+            // Enhanced resend code functionality using AJAX - SINGLE EVENT LISTENER
             resendLink.addEventListener('click', async (e) => {
                 e.preventDefault();
                 
-                // Disable resend link
-                resendLink.style.pointerEvents = 'none';
-                resendLink.style.opacity = '0.5';
+                // Check if button is disabled
+                if (resendLink.classList.contains('disabled') || resendLink.classList.contains('loading')) {
+                    return;
+                }
+                
+                // Extract username from the page
+                const username = getUsername();
+                
+                if (!username) {
+                    createDjangoMessage('Unable to extract username. Please refresh the page.', 'error');
+                    showAlert('Unable to extract username. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                // Show loading state on resend link
+                resendLink.classList.add('loading');
                 
                 try {
-                    // Make AJAX request to Django resend view
-                    const response = await fetch('', {
+                    // Create FormData with username and type
+                    const formData = new FormData();
+                    formData.append('username', username);
+                    formData.append('type', 'fp');
+                    formData.append('csrfmiddlewaretoken', csrfToken);
+                    
+                    // Make AJAX request to the resend endpoint - Fixed endpoint URL
+                    const response = await fetch(window.location.pathname, {
                         method: 'POST',
                         headers: {
                             'X-CSRFToken': csrfToken,
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Content-Type': 'application/json'
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
-                        body: JSON.stringify({})
+                        body: formData
                     });
+                    
+                    // Check if response is ok
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
                     
                     const data = await response.json();
                     
-                    if (data.Success) {
+                    // Handle response - Fixed case sensitivity
+                    if (data.success) {
                         // Create Django success message
-                        createDjangoMessage('A new verification code has been sent to your email.', 'success');
+                        createDjangoMessage(data.message, 'success');
+                        showAlert(data.message, 'success');
                         
                         // Clear inputs for new code
                         inputs.forEach(input => input.value = '');
                         inputs[0].focus();
+                        
+                        // Start countdown after successful request
+                        startResendCountdown();
                     } else {
-                        // Show error message
-                        createDjangoMessage(data.message, 'error');
+                        // Show error message from server
+                        createDjangoMessage(data.message, 'warning');
+                        showAlert(data.message, 'warning');
+                        
+                        // Still start countdown even if there's a rate limit
+                        if (data.message.includes('wait') || data.message.includes('seconds') || data.message.includes('minute')) {
+                            startResendCountdown();
+                        }
                     }
                 } catch (error) {
+                    console.error('Resend OTP error:', error);
                     createDjangoMessage('Failed to resend code. Please try again.', 'error');
+                    showAlert('Failed to resend code. Please try again.', 'error');
                 } finally {
-                    // Re-enable resend link after 30 seconds
-                    setTimeout(() => {
-                        resendLink.style.pointerEvents = 'auto';
-                        resendLink.style.opacity = '1';
-                    }, 30000);
+                    // Remove loading state
+                    resendLink.classList.remove('loading');
                 }
             });
 
