@@ -35,7 +35,8 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
     timer_event = threading.Event()  
     timer_lock = threading.Lock()
     active_threads = {}  
-    active_players = {}  
+    active_players = {} 
+    connect_lock=threading.Lock() 
     
 
     def connect(self):
@@ -65,10 +66,11 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
                 self.handle_room_connection(room_with_100, amount)
 
     def handle_room_connection(self, room_list, amount):
-        if len(room_list) == 0 or room_list[0]["players_amount"] == 2:
-            self.create_new_room(room_list, amount)
-        else:
-            self.join_existing_room(room_list, amount)
+        with Crack_the_CodeConsumer.connect_lock:
+            if len(room_list) == 0 or room_list[0]["players_amount"] == 2:
+                self.create_new_room(room_list, amount)
+            else:
+                self.join_existing_room(room_list, amount)
 
     def create_new_room(self, room_list, amount):
         self.code = generate_unique_4_numbers()
@@ -377,6 +379,8 @@ class BingoConsumer(WebsocketConsumer):
     active_players = {}
     games_finished = {}  # New dictionary to track finished games per room
     room_timers = {} 
+    connect_lock=threading.Lock()
+    bingo_lock=threading.Lock()
     
     def connect(self):
         self.username = self.scope['user'].username
@@ -512,11 +516,12 @@ class BingoConsumer(WebsocketConsumer):
     
 
     def handle_room_connection(self, room_list, amount):
-        if len(room_list)==0 or room_list[0]["players_amount"] == 2:
-            print("in handle room connection")
-            self.create_new_room(room_list, amount)
-        else:
-            self.join_existing_room(room_list, amount)
+        with BingoConsumer.connect_lock:
+            if len(room_list)==0 or room_list[0]["players_amount"] == 2:
+                print("in handle room connection")
+                self.create_new_room(room_list, amount)
+            else:
+                self.join_existing_room(room_list, amount)
 
     def create_new_room(self, room_list, amount):
         self.code = generate_unique_4_numbers()
@@ -734,119 +739,119 @@ class BingoConsumer(WebsocketConsumer):
 
         game_state = BingoConsumer.game_states[self.room]
         print("Received data:", data)
-        if data["type"]=="bingo" and game_state["bingo"] == False:
-            if self.username==game_state["player1"]:
-                if game_state["player1_comp"]>=5:
-                    game_state["bingo"]==True
-                    return BingoConsumer.handle_game_win(self, winner=self.username, loser=game_state["player2"], amount=game_state["amount"])
-                
+        with BingoConsumer.bingo_lock:
+            if data["type"]=="bingo" and game_state["bingo"] == False:
+                if self.username==game_state["player1"]:
+                    if game_state["player1_comp"]>=5:
+                        game_state["bingo"]==True
+                        return BingoConsumer.handle_game_win(self, winner=self.username, loser=game_state["player2"], amount=game_state["amount"])
                     
+                    else:
+                        return async_to_sync(self.channel_layer.group_send)(
+                            self.room, 
+                            {"type": "warning", "message": "You have not completed a line yet. if you call bingo again you will lose the game by penality"}
+                            
+                        )
                 else:
-                    return async_to_sync(self.channel_layer.group_send)(
-                        self.room, 
-                        {"type": "warning", "message": "You have not completed a line yet. if you call bingo again you will lose the game by penality"}
+                    if game_state["player2_comp"]>=5 and game_state["bingo"] == False:
+                        game_state["bingo"]==True
+                        return BingoConsumer.handle_game_win(self, winner=self.username, loser=game_state["player1"], amount=game_state["amount"])
+                    else:
+                        return async_to_sync(self.channel_layer.group_send)(
+                            self.room, 
+                            {"type": "warning", "message": "You have not completed a line yet. if you call bingo again you will lose the game by penality"}
                         
                     )
             else:
-                if game_state["player2_comp"]>=5 and game_state["bingo"] == False:
-                    game_state["bingo"]==True
-                    return BingoConsumer.handle_game_win(self, winner=self.username, loser=game_state["player1"], amount=game_state["amount"])
-                else:
-                    return async_to_sync(self.channel_layer.group_send)(
-                        self.room, 
-                        {"type": "warning", "message": "You have not completed a line yet. if you call bingo again you will lose the game by penality"}
-                        
-                    )
-        else:
 
         
-            called_num = data["number"]
-            
-            # Convert boards to matrices
-            player1_matrix = np.array(game_state["player1_board"]).reshape(5, 5)
-            player2_matrix = np.array(game_state["player2_board"]).reshape(5, 5)
-            
-            # Debug: print boards before processing
-            print("Player1 matrix before:", player1_matrix)
-            print("Player2 matrix before:", player2_matrix)
-            
-            # Use .any() for the NumPy array membership check
-            if game_state[self.username]:
-                if called_num in self.player1_board and (player2_matrix == called_num).any():
-                    p1result = np.where(player1_matrix == called_num)
-                    p2result = np.where(player2_matrix == called_num)
-                    
-                    if p1result[0].size > 0 and p2result[0].size > 0:
-                        row, col = p1result[0][0], p1result[1][0]
-                        row2, col2 = p2result[0][0], p2result[1][0]
-                        print(f"Player1: {called_num} found at row {row}, column {col}")
-                        print(f"Player2: {called_num} found at row {row2}, column {col2}")
+                called_num = data["number"]
+                
+                # Convert boards to matrices
+                player1_matrix = np.array(game_state["player1_board"]).reshape(5, 5)
+                player2_matrix = np.array(game_state["player2_board"]).reshape(5, 5)
+                
+                # Debug: print boards before processing
+                print("Player1 matrix before:", player1_matrix)
+                print("Player2 matrix before:", player2_matrix)
+                
+                # Use .any() for the NumPy array membership check
+                if game_state[self.username]:
+                    if called_num in self.player1_board and (player2_matrix == called_num).any():
+                        p1result = np.where(player1_matrix == called_num)
+                        p2result = np.where(player2_matrix == called_num)
                         
-                        # Mark the cell by assignment
-                        player1_matrix[row][col] = 0
-                        player2_matrix[row2][col2] = 0
-                        
-                        # Update the persistent board state
-                        self.player1_board = player1_matrix.flatten().tolist()
-                        game_state["player1_board"] = player1_matrix.flatten().tolist() 
-                        game_state["player2_board"] = player2_matrix.flatten().tolist()
-                        
-                        # Recalculate completed lines
-                        p1comp = self.count_completed_lines(player1_matrix)
-                        p2comp = self.count_completed_lines(player2_matrix)
-                        print(f"Player1 completed lines: {p1comp}")
-                        print(f"Player2 completed lines: {p2comp}")
-                        
-                        # Update the game state
-                        game_state["player1_comp"] = p1comp
-                        game_state["player2_comp"] = p2comp
-                        
-                        print(f"Updated gstate1: {game_state['player1_comp']}")
-                        print(f"Updated gstate2: {game_state['player2_comp']}")
-                        
-                        async_to_sync(self.channel_layer.send)(
-                            game_state["player1_channel"],
-                            {
-                                "type": "result",
-                                "called": called_num,
-                                "completed": game_state["player1_comp"]
-                            }
-                        )
-                        async_to_sync(self.channel_layer.send)(
-                            game_state["player2_channel"],
-                            {
-                                "type": "result",
-                                "called": called_num,
-                                "completed": game_state["player2_comp"]
-                            }
-                        )
-                        
-                        # Switch turns
-                        game_state[game_state["player1"]] = not game_state[game_state["player1"]]
-                        game_state[game_state["player2"]] = not game_state[game_state["player2"]]
-                        
-                        print(f"Turn - Player1: {game_state[game_state['player1']]}, Player2: {game_state[game_state['player2']]}")
-                        
-                        async_to_sync(self.channel_layer.send)(
-                            game_state["player1_channel"],
-                            {
-                                "type": "turns",
-                                "myturn": game_state[game_state["player1"]]
-                            }
-                        )
-                        async_to_sync(self.channel_layer.send)(
-                            game_state["player2_channel"],
-                            {
-                                "type": "turns",
-                                "myturn": game_state[game_state["player2"]]
-                            }
-                        )
-                        self._reset_room_timer(self.room)
-                    # Debug: print boards after processing
-                    print("Player1 matrix after:", 
-                        player1_matrix)
-                    print("Player2 matrix after:", 
-                        player2_matrix)
+                        if p1result[0].size > 0 and p2result[0].size > 0:
+                            row, col = p1result[0][0], p1result[1][0]
+                            row2, col2 = p2result[0][0], p2result[1][0]
+                            print(f"Player1: {called_num} found at row {row}, column {col}")
+                            print(f"Player2: {called_num} found at row {row2}, column {col2}")
+                            
+                            # Mark the cell by assignment
+                            player1_matrix[row][col] = 0
+                            player2_matrix[row2][col2] = 0
+                            
+                            # Update the persistent board state
+                            self.player1_board = player1_matrix.flatten().tolist()
+                            game_state["player1_board"] = player1_matrix.flatten().tolist() 
+                            game_state["player2_board"] = player2_matrix.flatten().tolist()
+                            
+                            # Recalculate completed lines
+                            p1comp = self.count_completed_lines(player1_matrix)
+                            p2comp = self.count_completed_lines(player2_matrix)
+                            print(f"Player1 completed lines: {p1comp}")
+                            print(f"Player2 completed lines: {p2comp}")
+                            
+                            # Update the game state
+                            game_state["player1_comp"] = p1comp
+                            game_state["player2_comp"] = p2comp
+                            
+                            print(f"Updated gstate1: {game_state['player1_comp']}")
+                            print(f"Updated gstate2: {game_state['player2_comp']}")
+                            
+                            async_to_sync(self.channel_layer.send)(
+                                game_state["player1_channel"],
+                                {
+                                    "type": "result",
+                                    "called": called_num,
+                                    "completed": game_state["player1_comp"]
+                                }
+                            )
+                            async_to_sync(self.channel_layer.send)(
+                                game_state["player2_channel"],
+                                {
+                                    "type": "result",
+                                    "called": called_num,
+                                    "completed": game_state["player2_comp"]
+                                }
+                            )
+                            
+                            # Switch turns
+                            game_state[game_state["player1"]] = not game_state[game_state["player1"]]
+                            game_state[game_state["player2"]] = not game_state[game_state["player2"]]
+                            
+                            print(f"Turn - Player1: {game_state[game_state['player1']]}, Player2: {game_state[game_state['player2']]}")
+                            
+                            async_to_sync(self.channel_layer.send)(
+                                game_state["player1_channel"],
+                                {
+                                    "type": "turns",
+                                    "myturn": game_state[game_state["player1"]]
+                                }
+                            )
+                            async_to_sync(self.channel_layer.send)(
+                                game_state["player2_channel"],
+                                {
+                                    "type": "turns",
+                                    "myturn": game_state[game_state["player2"]]
+                                }
+                            )
+                            self._reset_room_timer(self.room)
+                        # Debug: print boards after processing
+                        print("Player1 matrix after:", 
+                            player1_matrix)
+                        print("Player2 matrix after:", 
+                            player2_matrix)
     def disconnect(self, code):
         # 1) Cancel any per-room move‐timer
         timer = BingoConsumer.room_timers.pop(self.room, None)
