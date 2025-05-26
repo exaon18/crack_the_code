@@ -10,6 +10,8 @@ from django.core.mail import EmailMessage
 from django.urls import reverse
 from autapp.models import MyUser, Ballance
 from .models import WithdrawalRequest,DepositRequest,TelebirrReq
+from autapp.models import chiweProfit
+from django.db.models import Sum
 import random
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
@@ -197,12 +199,8 @@ def Monitering(request, admin):
         Pdata = WithdrawalRequest.objects.filter(status="Pending")
         Adata = WithdrawalRequest.objects.filter(status="Approved")
         Rdata = WithdrawalRequest.objects.filter(status="Rejected")
-        Adepo=DepositRequest.objects.filter(status="Approved")
-        Rdepo=DepositRequest.objects.filter(status="Rejected")
-        Pdepo=DepositRequest.objects.filter(status="Pending")
-
+        profit=chiweProfit.objects.all().aggregate(total=Sum("profit"))
         print(f"📊 Admin: {admin} - Pending: {Pdata.count()}, Approved: {Adata.count()}, Rejected: {Rdata.count()}")
-
         if request.method == "POST":
             transactiontype=request.POST["transaction_type"]
             print(transactiontype)
@@ -212,9 +210,7 @@ def Monitering(request, admin):
                 user = request.POST["username"]
                 phoneNumber= request.POST["phone_number"]
                 AdminRES = request.POST["adminres"]
-                
                 print(transactiontype)
-            
                 try:
                     Player = MyUser.objects.get(username=user)
                     PlayerB = Ballance.objects.get(user=Player)
@@ -227,8 +223,6 @@ def Monitering(request, admin):
                         Player.withdrawalToken = None
                         Player.save()
                         WR.update(status="Approved")
-                            
-                        
                         messages.success(request, f"✅ approved {amount} ETB to {user}.")
                         print(f"✅ Approved transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
                         return JsonResponse({"success":True,"message":"withdrawal request has been approved"})
@@ -244,48 +238,20 @@ def Monitering(request, admin):
                     else:
                         return JsonResponse({"success":False, "message":"the request is already on pending "})
                     
-                        
+             
                 except MyUser.DoesNotExist:
                     print("❌ User does not exist!")
                 except Ballance.DoesNotExist:
                     print("❌ User has no balance record!")
-            elif transactiontype == "deposit":
-                amount = request.POST["amount"]
-                user = request.POST["username"]
-                phoneNumber= request.POST["phone_number"]
-                AdminRES = request.POST["adminres"]
-                print(transactiontype)
-                try:    
-                    Player = MyUser.objects.get(username=user)
-                    PlayerB = Ballance.objects.get(user=Player)
-                    DR = DepositRequest.objects.filter(user=Player, status="Pending")
-
-                    if AdminRES == "Approved" and DR.exists():
-                        PlayerB.ballance += int(amount)
-                        PlayerB.save()
-                        DR.update(status="Approved")
-                        Player.pendingDeposit = False
-                        Player.save()
-                        messages.success(request, f"✅ approved {amount} ETB to {user}.")
-                        print(f"✅ Approved transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
-                        return JsonResponse({"success":True,"message":"deposit request has been approved"})
-                    elif AdminRES == "Rejected":
-                        DR.update(status="Rejected")
-                        Player.pendingDeposit = False
-                        Player.save()
-                        messages.error(request, f"❌ rejected {amount} ETB to {user}.")
-                        print(f"❌ Rejected transaction: {user} - {amount} ETB. Rendering 'admin.html'.")
-                        return JsonResponse({"success":False, "message":"deposit request has been rejected"})
-                    else:    
-                        return JsonResponse({"success":False, "message":"the request is already on pending "})
-                except MyUser.DoesNotExist:
-                    print("❌ User does not exist!")
-                except Ballance.DoesNotExist:
-                    print("❌ User has no balance record!")
-
+            elif transactiontype == "reset":
+                amount=request.POST["amount"]
+                profit-=amount
+                profit.save()
+                return JsonResponse({"success":True,"message":"updated profit "})
+            
         print("Rendering 'admin.html' with current data.")
-        
-        return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin, "Adepo": Adepo, "Rdepo": Rdepo, "Pdepo": Pdepo})
+        print(profit["total"])
+        return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin,"profit":profit["total"]})
     else:
         print("❌ User is not staff in Monitering. Raising 404.")
         raise Http404
@@ -295,7 +261,6 @@ from django.http import JsonResponse
 
 def check_transaction(username: str, tx_id: str):
     tx_id = tx_id.upper()
-
     # Wrap the whole thing in an atomic block
     with transaction.atomic():
         try:

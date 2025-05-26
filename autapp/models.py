@@ -41,4 +41,8 @@ class InGame(models.Model):
     def __str__(self):
         return self.user.username
 
-
+class chiweProfit(models.Model):
+    gameType=models.CharField(max_length=10)
+    profit=models.DecimalField(max_digits=100,decimal_places=3, default=0.00)
+    def __str__(self):
+        return self.gameType

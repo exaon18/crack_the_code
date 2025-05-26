@@ -1,5 +1,5 @@
 from channels.generic.websocket import WebsocketConsumer
-from autapp.models import MyUser, Ballance, GameHistory, InGame
+from autapp.models import MyUser, Ballance, GameHistory, InGame,chiweProfit
 from asgiref.sync import async_to_sync
 import time
 import hashlib
@@ -229,9 +229,7 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
             loserid=Crack_the_CodeConsumer.game_states[self.room]["player1_id"]
 
         print(f"🏆 Winner: {winner} | ❌ Loser: {loser} | Jackpot: {self.jackpot} | Fee: {self.fee}")
-        admin=MyUser.objects.get(username="ADMIN_CTA")
-        adminb=Ballance.objects.get(user=admin)
-        adminb.ballance += self.fee
+        chiweProfit.objects.create(gameType="ctc", profit=self.fee)
         winner_obj = MyUser.objects.get(id=winnerid)
         loser_obj = MyUser.objects.get(id=loserid)
         winner_balance = Ballance.objects.get(user=winner_obj)
@@ -243,16 +241,13 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
         winner_history.TotalPlayed+=1
         losser_history.TotalPlayed+=1
         losser_history.Totaloss+=1
-        
         points = {25: 7, 50: 20, 100: 45}.get(amount, 0)
         winner_obj.points += points
         loser_obj.points = max(0, loser_obj.points - points)
-
         winner_balance.ballance += self.jackpot
         loser_balance.ballance -= Decimal(amount)
         winner_history.save()
         losser_history.save()
-        adminb.save()  
         winner_balance.save()
         loser_balance.save()
         winner_obj.save()
@@ -679,6 +674,7 @@ class BingoConsumer(WebsocketConsumer):
         self.fee = Decimal(amount) * Decimal(2.5) / Decimal(100)
         winnerid=0
         loserid=0
+        chiweProfit.objects.create(gameType="bingo", profit=self.fee)
         if winner == BingoConsumer.game_states[self.room]["player1"]:
             winnerid= BingoConsumer.game_states[self.room]["player1_id"]
             loserid=BingoConsumer.game_states[self.room]["player2_id"]
