@@ -1280,6 +1280,7 @@
             }
         }
     </style>
+    <meta name="monetag" content="a6b82af3066e740b84c51cc593d4de67">
 </head>
 <body>
     <!-- Background particles -->
@@ -1339,10 +1340,10 @@
                     <h2>Featured Games</h2>
                     <p>Discover our collection of skill-based games where you can compete head-to-head with other players and win real rewards.</p>
                 </div>
-                
+                {%load static%}
                 <div class="game-list">
                     <div class="game-item">
-                        <img src="/placeholder.svg?height=180&width=320" alt="Chess" class="game-image">
+                        <img src="{% static 'img/ctc.jpg' %}" alt="Crack the Code" class="game-image">
                         <div class="game-content">
                             <h3 class="game-title">Crack the code</h3>
                             <p class="game-description">Test your strategic thinking in this classic game of skill. Challenge opponents and win based on your cracking mastery.</p>
@@ -1363,9 +1364,9 @@
                     </div>
                     
                     <div class="game-item">
-                        <img src="/placeholder.svg?height=180&width=320" alt="Poker" class="game-image">
+                        <img src="{% static 'img/bingo.jpg' %}" alt="Bingo" class="game-image">
                         <div class="game-content">
-                            <h3 class="game-title">Poker</h3>
+                            <h3 class="game-title">Bingo</h3>
                             <p class="game-description">Bluff your way to victory in this strategic card game. Read your opponents and make calculated decisions.</p>
                             <div class="game-stats">
                                 <div class="game-stat">
@@ -1470,10 +1471,10 @@
                     </div>
                     <p class="footer-description">Chiwe is a skill-based gaming platform where players can compete 1v1 and win real rewards based on their performance.</p>
                     <div class="social-links">
-                        <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        <a href="https://www.tiktok.com/@chiwegames" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://twitter.com/chiwegames" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/chiwegames/" class="social-link"><i class="fab fa-instagram"></i></a>
+                        <a href="https://t.me/chiwegames" class="social-link"><i class="fab fa-telegram"></i></a>
                     </div>
                 </div>
                 
