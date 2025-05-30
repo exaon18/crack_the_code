@@ -1,11 +1,14 @@
 from django.shortcuts import render
-from autapp.models import MyUser,Ballance
+from autapp.models import MyUser,Ballance,Maintainance
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, JsonResponse
 from django.contrib import messages
 # Create your views here.
 @login_required
 def ctc(request):
+    maintenance = Maintainance.objects.first()
+    if maintenance and maintenance.enabled:
+        return render(request, 'maintenance.html')
     user=MyUser.objects.get(username=request.user.username)
     print(f"users id {user}")
     print(MyUser.objects.get(id=user.id).username)
@@ -39,6 +42,9 @@ def ctc(request):
         return render(request,'CTC/ctc.html',{"user":user,"ballance":ballance})
 @login_required
 def bingo(request):
+      maintenance = Maintainance.objects.first()
+      if maintenance and maintenance.enabled:
+          return render(request, 'maintenance.html')
       user=MyUser.objects.get(username=request.user.username)
       if not user.is_authenticated:
           raise Http404("User not authenticated")

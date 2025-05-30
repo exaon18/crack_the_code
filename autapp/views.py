@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render,redirect
 import hashlib
 import time
-from .models import MyUser,Ballance,GameHistory
+from .models import MyUser,Ballance,GameHistory,Maintainance
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -18,6 +18,8 @@ from django.views.decorators.http import require_POST
 import re
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 def get_csrf_token(request):
     """
@@ -65,12 +67,15 @@ def signup(request):
     if request.method == 'POST':
         username = request.POST['username'].upper()
         firstname = request.POST['first_name']
-        
         email = request.POST['email']
         password = request.POST['password1']
         password2 = request.POST['password2']
-        if "@" not in email:
-            return JsonResponse({"success": False, "message":"Invalid email."})
+        try:
+            validate_email('example@example.com')
+            print("Valid email")
+        except ValidationError:
+            return JsonResponse({"success": False, "message":"Invalid email address."})
+
         
         if password != password2:
             return JsonResponse({"success": False, "message":"Passwords do not match."})

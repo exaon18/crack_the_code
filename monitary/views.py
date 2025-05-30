@@ -1,4 +1,5 @@
 from decimal import Decimal
+import decimal
 import string
 from django.conf import settings
 from django.shortcuts import render, redirect
@@ -10,7 +11,7 @@ from django.core.mail import EmailMessage
 from django.urls import reverse
 from autapp.models import MyUser, Ballance
 from .models import WithdrawalRequest,DepositRequest,TelebirrReq
-from autapp.models import chiweProfit
+from autapp.models import chiweProfit,Maintainance
 from django.db.models import Sum
 import random
 from django.contrib.auth import authenticate, login
@@ -88,9 +89,13 @@ def send_welcome_email(user, email, token, subjectE):
 
 @login_required
 def withdraw(request, invalidOtp=invalidOtp):
+    maintenance = Maintainance.objects.first()
+    if maintenance and maintenance.enabled:
+        return render(request, 'maintenance.html')
     
     user = request.user
     user_balance = Ballance.objects.get(user=user).ballance
+
 
     if request.method == 'POST':
         try:
@@ -196,12 +201,9 @@ def Monitering(request, admin):
         raise Http404("Admin not found")
 
     if admin_user.is_staff:
-        Pdata = WithdrawalRequest.objects.filter(status="Pending")
-        Adata = WithdrawalRequest.objects.filter(status="Approved")
-        Rdata = WithdrawalRequest.objects.filter(status="Rejected")
-        profit=chiweProfit.objects.all().aggregate(total=Sum("profit"))
-        print(f"📊 Admin: {admin} - Pending: {Pdata.count()}, Approved: {Adata.count()}, Rejected: {Rdata.count()}")
+        
         if request.method == "POST":
+            print(request.POST)
             transactiontype=request.POST["transaction_type"]
             print(transactiontype)
             if transactiontype == "withdrawal":
@@ -243,15 +245,48 @@ def Monitering(request, admin):
                     print("❌ User does not exist!")
                 except Ballance.DoesNotExist:
                     print("❌ User has no balance record!")
-            elif transactiontype == "reset":
+            elif transactiontype == "profit":
+                profit=chiweProfit.objects.all().aggregate(total=Sum("profit"))
+                print(profit)
                 amount=request.POST["amount"]
-                profit-=amount
-                profit.save()
-                return JsonResponse({"success":True,"message":"updated profit "})
+                if Decimal(amount)>profit["total"]:
+                    return JsonResponse({"success":False,"message":"insufficient balance"})
+                count = chiweProfit.objects.count()
+                if count == 0:
+                    JsonResponse({"success":False,"message":"the amount is not enough"})
+                else:
+                    chiweProfit.objects.all().delete()
+                    return JsonResponse({"success":True,"message":"updated profit "})
+            elif transactiontype == "men":
+                maintenance = Maintainance.objects.get(pk=5)
+                print(maintenance.enabled)
+                enabled=request.POST["enabled"]
+                if enabled == "false":
+                    enabled=False
+                    msg="Server is now live to all players"
+                else:
+                    enabled=True
+                    msg="Server is now in maintenance mode"
+                if maintenance.enabled == enabled:
+                    return JsonResponse({"success":True,"message":"the server is already in this mode"})
+                maintenance.enabled=enabled
+                maintenance.save()
+                return JsonResponse({"success":True,"message":msg})
+            else:
+                return JsonResponse({"success":False,"message":"invalid message"})
+        Pdata = WithdrawalRequest.objects.filter(status="Pending")
+        Adata = WithdrawalRequest.objects.filter(status="Approved")
+        Rdata = WithdrawalRequest.objects.filter(status="Rejected")
+        profit=chiweProfit.objects.all().aggregate(total=Sum("profit"))
+        
+        
             
+        print(f"📊 Admin: {admin} - Pending: {Pdata.count()}, Approved: {Adata.count()}, Rejected: {Rdata.count()}")
         print("Rendering 'admin.html' with current data.")
         print(profit["total"])
-        return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin,"profit":profit["total"]})
+        totalp=profit["total"] or Decimal(0.00)
+        maintenance = Maintainance.objects.get(pk=5)
+        return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin,"profit":totalp ,"maintenance":maintenance})
     else:
         print("❌ User is not staff in Monitering. Raising 404.")
         raise Http404
@@ -304,6 +339,9 @@ def check_transaction(username: str, tx_id: str):
         })
 @login_required
 def deposit(request):
+    maintenance = Maintainance.objects.first()
+    if maintenance and maintenance.enabled:
+        return render(request, 'maintenance.html')
     if request.method == "POST":
         user = MyUser.objects.get(username=request.user.username)
         if user.pendingDeposit:

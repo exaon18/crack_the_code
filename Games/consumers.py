@@ -1,5 +1,5 @@
 from channels.generic.websocket import WebsocketConsumer
-from autapp.models import MyUser, Ballance, GameHistory, InGame,chiweProfit
+from autapp.models import MyUser, Ballance, GameHistory, InGame,chiweProfit,Maintainance
 from asgiref.sync import async_to_sync
 import time
 import hashlib
@@ -40,6 +40,10 @@ class Crack_the_CodeConsumer(WebsocketConsumer):
     
 
     def connect(self):
+        maintenance = Maintainance.objects.first()
+        if maintenance and maintenance.enabled:
+            self.send(json.dumps({"proceed": False, "message": "Maintainance underway please try again later"}))
+            self.close()
         self.username = self.scope['user'].username
         self.id=self.scope['user'].id
         amount = int(self.scope['url_route']['kwargs']['amount'])
@@ -394,6 +398,11 @@ class BingoConsumer(WebsocketConsumer):
     bingo_lock=threading.Lock()
     
     def connect(self):
+        maintenance = Maintainance.objects.first()
+        if maintenance and maintenance.enabled:
+            self.send(json.dumps({"proceed": False, "message": "Maintainance underway please try again later"}))
+            self.close()
+
         self.username = self.scope['user'].username
         self.id=self.scope['user'].id
         self.amount = int(self.scope['url_route']['kwargs']['amount'])

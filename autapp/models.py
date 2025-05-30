@@ -1,5 +1,11 @@
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
+class Maintainance(models.Model):
+    enabled = models.BooleanField(default=True)
+    message = models.TextField(blank=True, default='We are under maintenance. Please check back later.')
+
+    def __str__(self):
+        return f"Maintenance Mode: {'ON' if self.enabled else 'OFF'}"
 
 class MyUser(AbstractUser):
     token = models.CharField(max_length=200,null=True)
@@ -44,5 +50,6 @@ class InGame(models.Model):
 class chiweProfit(models.Model):
     gameType=models.CharField(max_length=10)
     profit=models.DecimalField(max_digits=100,decimal_places=3, default=0.00)
+    sum=models.DecimalField(max_digits=100,decimal_places=3, default=0.00)
     def __str__(self):
         return self.gameType

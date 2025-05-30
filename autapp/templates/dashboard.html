@@ -472,7 +472,7 @@
         /* Game grid */
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 2rem;
         }
 
@@ -496,16 +496,49 @@
             border-color: var(--primary);
         }
 
+        /* ENHANCED: Optimized game image container for better visual impact */
+        .game-image-container {
+            position: relative;
+            width: 100%;
+            height: 280px; /* Increased from 200px for better image showcase */
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(46, 213, 115, 0.1), rgba(46, 213, 115, 0.05));
+        }
+
         .game-image {
             width: 100%;
-            height: 200px;
+            height: 100%;
             object-fit: cover;
-            border-bottom: 1px solid rgba(46, 213, 115, 0.1);
-            transition: all 0.5s ease;
+            object-position: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: brightness(0.95) contrast(1.05);
         }
 
         .game-card:hover .game-image {
-            transform: scale(1.05);
+            transform: scale(1.08);
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        /* ENHANCED: Image overlay for better text readability on badges */
+        .game-image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 0, 0, 0.1) 0%,
+                transparent 30%,
+                transparent 70%,
+                rgba(0, 0, 0, 0.2) 100%
+            );
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .game-card:hover .game-image-overlay {
+            opacity: 0.7;
         }
 
         .game-content {
@@ -527,6 +560,7 @@
             margin-bottom: 1rem;
             font-size: 0.9rem;
             flex-grow: 1;
+            line-height: 1.5;
         }
 
         .game-stats {
@@ -553,17 +587,27 @@
             color: var(--text-secondary);
         }
 
+        /* ENHANCED: Improved badge positioning and styling */
         .game-badge {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background: var(--primary);
+            background: rgba(46, 213, 115, 0.95);
             color: var(--background);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+            padding: 0.4rem 0.9rem;
+            border-radius: 25px;
             font-size: 0.8rem;
-            font-weight: 600;
-            box-shadow: 0 2px 10px rgba(46, 213, 115, 0.3);
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(46, 213, 115, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .game-badge {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(46, 213, 115, 0.6);
         }
 
         .play-btn {
@@ -770,7 +814,7 @@
             transform: translateY(-2px);
         }
 
-        /* Responsive styles - Improved for mobile */
+        /* ENHANCED: Responsive optimizations for larger images */
         @media (max-width: 768px) {
             .header-content {
                 padding: 0.75rem 1rem;
@@ -831,6 +875,11 @@
                 max-width: 400px;
                 margin: 0 auto;
                 gap: 1.5rem;
+            }
+
+            /* ENHANCED: Mobile image optimization */
+            .game-image-container {
+                height: 240px; /* Slightly smaller on mobile but still larger than original */
             }
 
             .stats-grid {
@@ -903,7 +952,12 @@
 
             .game-badge {
                 font-size: 0.7rem;
-                padding: 0.2rem 0.6rem;
+                padding: 0.3rem 0.7rem;
+            }
+
+            /* ENHANCED: Small mobile image optimization */
+            .game-image-container {
+                height: 220px; /* Optimized for small screens */
             }
 
             .modal-content {
@@ -918,6 +972,17 @@
 
             .modal-btn {
                 width: 100%;
+            }
+        }
+
+        /* ENHANCED: Large screen optimizations */
+        @media (min-width: 1200px) {
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .game-image-container {
+                height: 320px; /* Even larger on big screens for premium feel */
             }
         }
 
@@ -1032,7 +1097,7 @@
 
     <!-- OVERLAY -->
     <div class="nav-overlay" id="navOverlay"></div>
-
+    {%load static %}
     <!-- Main content -->
     <main class="container">
         <!-- Games section -->
@@ -1041,10 +1106,13 @@
             <div class="game-grid">
                 <!-- Crack the Code game card -->
                 <div class="game-card" data-game="ctc">
-                    <span class="game-badge">Popular</span>
-                    <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image%20(1)-EscSq5TCqEGuYEcP4KhjyHLVgmZ5cs.png" 
-                         alt="Crack the Code" 
-                         class="game-image">
+                    <div class="game-image-container">
+                        <img src="{% static 'img/ctc.jpg' %}" 
+                             alt="Crack the Code" 
+                             class="game-image">
+                        <div class="game-image-overlay"></div>
+                        <span class="game-badge">Popular</span>
+                    </div>
                     <div class="game-content">
                         <h3 class="game-title">Crack the Code</h3>
                         <p class="game-description">
@@ -1068,12 +1136,15 @@
                         <button class="play-btn" data-game="ctc">Play Now</button>
                     </div>
                 </div>
-
-                <!-- Roolet game card -->
+                {%load static%}
+                <!-- Bingo game card -->
                 <div class="game-card" data-game="roolet">
-                    <img src="/placeholder.svg?height=200&width=200" 
-                         alt="Roolet" 
-                         class="game-image">
+                    <div class="game-image-container">
+                        <img src="{% static 'img/bingo.jpg' %}" 
+                             alt="Bingo" 
+                             class="game-image">
+                        <div class="game-image-overlay"></div>
+                    </div>
                     <div class="game-content">
                         <h3 class="game-title">Bingo</h3>
                         <p class="game-description">
@@ -1100,10 +1171,13 @@
 
                 <!-- Coming soon game card -->
                 <div class="game-card">
-                    <span class="game-badge">Coming Soon</span>
-                    <img src="/placeholder.svg?height=200&width=200" 
-                         alt="Mystery Game" 
-                         class="game-image">
+                    <div class="game-image-container">
+                        <img src="/placeholder.svg?height=280&width=400" 
+                             alt="Mystery Game" 
+                             class="game-image">
+                        <div class="game-image-overlay"></div>
+                        <span class="game-badge">Coming Soon</span>
+                    </div>
                     <div class="game-content">
                         <h3 class="game-title">Mystery Game</h3>
                         <p class="game-description">
@@ -1199,11 +1273,28 @@
         
         // SIMPLIFIED NAVIGATION TOGGLE
         document.addEventListener('DOMContentLoaded', function() {
-            // Reset any buttons that might still be in loading state when returning to the dashboard
-            document.querySelectorAll('.play-btn.loading').forEach(button => {
-                button.classList.remove('loading');
-                button.disabled = false;
+            // ENHANCED: Reset loading states more thoroughly
+            function resetAllLoadingStates() {
+                document.querySelectorAll('.play-btn.loading').forEach(button => {
+                    button.classList.remove('loading');
+                    button.disabled = false;
+                    button.style.pointerEvents = 'auto';
+                    button.style.cursor = 'pointer';
+                });
+            }
+
+            // Reset on page load
+            resetAllLoadingStates();
+
+            // Reset when page becomes visible (handles back navigation)
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    resetAllLoadingStates();
+                }
             });
+
+            // Reset when window gains focus
+            window.addEventListener('focus', resetAllLoadingStates);
 
             const navToggle = document.getElementById('navToggle');
             const navMenu = document.getElementById('navMenu');
@@ -1262,11 +1353,11 @@
                 window.location.href = '/logout';
             });
             
-            // REFACTORED: Play Now button functionality
+            // ENHANCED: Play Now button functionality with better loading management
             const playButtons = document.querySelectorAll('.play-btn:not([disabled])');
             
-            // Function to handle game loading - direct redirect without fetch
-            function loadGame(gameType) {
+            // Function to handle game loading with timeout protection
+            function loadGame(gameType, button) {
                 // Determine game URL based on game type
                 let gameUrl = '';
                 if (gameType === 'ctc') {
@@ -1277,8 +1368,29 @@
                     return; // Exit if invalid game type
                 }
                 
-                // Redirect immediately to the game page
-                window.location.href = gameUrl;
+                // Set a timeout to reset loading state if navigation fails
+                const loadingTimeout = setTimeout(() => {
+                    button.classList.remove('loading');
+                    button.disabled = false;
+                    button.style.pointerEvents = 'auto';
+                    button.style.cursor = 'pointer';
+                }, 3000); // Reset after 3 seconds if navigation doesn't complete
+                
+                // Store timeout ID for cleanup
+                button.dataset.loadingTimeout = loadingTimeout;
+                
+                // Redirect to the game page
+                try {
+                    window.location.href = gameUrl;
+                } catch (error) {
+                    // If navigation fails, reset the button immediately
+                    clearTimeout(loadingTimeout);
+                    button.classList.remove('loading');
+                    button.disabled = false;
+                    button.style.pointerEvents = 'auto';
+                    button.style.cursor = 'pointer';
+                    console.error('Navigation failed:', error);
+                }
             }
 
             // Add click event listeners to all play buttons
@@ -1286,13 +1398,19 @@
                 button.addEventListener('click', function(e) {
                     e.stopPropagation(); // Prevent card click from triggering
                     
+                    // Prevent multiple clicks
+                    if (this.classList.contains('loading')) {
+                        return;
+                    }
+                    
                     // Add loading state to button
                     this.classList.add('loading');
                     this.disabled = true;
+                    this.style.pointerEvents = 'none';
                     
                     const gameType = this.getAttribute('data-game');
                     
-                    // Load the game
+                    // Load the game with enhanced error handling
                     loadGame(gameType, this);
                 });
             });
@@ -1309,7 +1427,7 @@
                     
                     // Find and click the play button in this card
                     const playButton = this.querySelector('.play-btn:not([disabled])');
-                    if (playButton) {
+                    if (playButton && !playButton.classList.contains('loading')) {
                         playButton.click();
                     }
                 });
@@ -1322,6 +1440,16 @@
                 el.style.cursor = 'pointer';
                 el.addEventListener('click', function(e) {
                     e.stopPropagation();
+                });
+            });
+
+            // ENHANCED: Handle page unload to clean up timeouts
+            window.addEventListener('beforeunload', function() {
+                document.querySelectorAll('.play-btn[data-loading-timeout]').forEach(button => {
+                    const timeoutId = button.dataset.loadingTimeout;
+                    if (timeoutId) {
+                        clearTimeout(parseInt(timeoutId));
+                    }
                 });
             });
         });

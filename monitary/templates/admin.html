@@ -58,6 +58,168 @@
             font-weight: 700;
         }
 
+        /* ENHANCED: Admin Controls Section */
+        .admin-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(46, 213, 115, 0.1);
+            transition: var(--transition);
+        }
+
+        .control-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.2);
+            border-color: var(--primary);
+        }
+
+        /* ENHANCED: Profit Display */
+        .profit-section {
+            text-align: center;
+        }
+
+        .profit-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .profit-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(46, 213, 115, 0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .profit-currency {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-left: 0.5rem;
+        }
+
+        .withdraw-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .withdraw-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.4);
+        }
+
+        .withdraw-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ENHANCED: Maintenance Toggle */
+        .maintenance-section {
+            text-align: center;
+        }
+
+        .maintenance-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .maintenance-status {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .maintenance-status.active {
+            color: var(--warning);
+        }
+
+        .maintenance-status.inactive {
+            color: var(--success);
+        }
+
+        .maintenance-toggle {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 40px;
+        }
+
+        .maintenance-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--card-bg-hover);
+            border: 2px solid rgba(46, 213, 115, 0.3);
+            transition: var(--transition);
+            border-radius: 40px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 28px;
+            width: 28px;
+            left: 4px;
+            bottom: 4px;
+            background: linear-gradient(135deg, #fff, #f0f0f0);
+            transition: var(--transition);
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        input:checked + .toggle-slider {
+            background: linear-gradient(135deg, var(--warning), #ff6b35);
+            border-color: var(--warning);
+            box-shadow: 0 0 20px rgba(255, 165, 2, 0.4);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(40px);
+            background: linear-gradient(135deg, #fff, #ffe0b3);
+        }
+
+        .toggle-slider:hover {
+            box-shadow: 0 0 15px rgba(46, 213, 115, 0.3);
+        }
+
         /* Main tabs */
         .main-tabs {
             display: flex;
@@ -161,6 +323,11 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(46, 213, 115, 0.3); }
+            to { text-shadow: 0 0 30px rgba(46, 213, 115, 0.6); }
         }
 
         /* Table styles */
@@ -593,6 +760,11 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            .admin-controls {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
             .tabs, .main-tabs {
                 flex-direction: column;
             }
@@ -613,6 +785,10 @@
             .form-row {
                 flex-direction: column;
                 gap: 0;
+            }
+
+            .profit-amount {
+                font-size: 2rem;
             }
         }
 
@@ -685,296 +861,236 @@
         .screenshot-preview-details .view-full:hover {
             text-decoration: underline;
         }
+
+        /* ENHANCED: Maintenance confirmation modal */
+        .maintenance-confirm-modal {
+            z-index: 1200;
+        }
+
+        .maintenance-confirm-modal .modal {
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .maintenance-confirm-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .maintenance-confirm-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .maintenance-confirm-message {
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .maintenance-confirm-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #ffb732;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 165, 2, 0.3);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 213, 115, 0.3);
+        }
+
+        .btn-cancel {
+            background-color: var(--card-bg-hover);
+            color: var(--text);
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
-        <h1>Chiwe Admin Dashboard    {{profit}}</h1>
+        <h1>Chiwe Admin Dashboard</h1>
     </div>
 
-    <!-- Main tabs for Withdrawals and Deposits -->
-    <div class="main-tabs">
-        <button class="main-tab-button active" data-main-tab="withdrawals">Withdrawals</button>
-        <button class="main-tab-button" data-main-tab="deposits">Deposits</button>
-    </div>
-
-    <!-- WITHDRAWALS SECTION -->
-    <div id="withdrawals" class="main-content active">
-        <div class="tabs withdrawal-tabs">
-            <button class="tab-button active" data-tab="pending-withdrawals">Pending</button>
-            <button class="tab-button" data-tab="approved-withdrawals">Approved</button>
-            <button class="tab-button" data-tab="rejected-withdrawals">Rejected</button>
+    <!-- ENHANCED: Admin Controls Section -->
+    <div class="admin-controls">
+        <!-- Profit Display & Withdrawal -->
+        <div class="control-card profit-section">
+            <div class="profit-label">Total Profit</div>
+            <div class="profit-amount">
+                ${{profit}}<span class="profit-currency">USD</span>
+            </div>
+            <button class="withdraw-btn" id="withdrawProfitBtn">
+                💰 Withdraw Profit
+            </button>
         </div>
 
-        <!-- Pending Withdrawals -->
-        <div id="pending-withdrawals" class="tab-content active">
-            <h2>Pending Withdrawal Requests</h2>
-            <div class="responsive-table">
-                <table class="transaction-table">
-                    <thead>
+        <!-- Maintenance Mode Toggle -->
+        <div class="control-card maintenance-section">
+            <div class="maintenance-label">Maintenance Mode</div>
+            <div class="maintenance-status {% if maintenance %}active{% else %}inactive{% endif %}" id="maintenanceStatus">
+                <span id="maintenanceIcon">{% if maintenance %}🔧{% else %}✅{% endif %}</span>
+                <span id="maintenanceText">{% if maintenance %}Under Maintenance{% else %}System Online{% endif %}</span>
+            </div>
+            <label class="maintenance-toggle">
+                <input type="checkbox" id="maintenanceToggle" {% if maintenance %}checked{% endif %}>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Withdrawals Section (Deposits removed as requested) -->
+    <div class="tabs">
+        <button class="tab-button active" data-tab="pending-withdrawals">Pending</button>
+        <button class="tab-button" data-tab="approved-withdrawals">Approved</button>
+        <button class="tab-button" data-tab="rejected-withdrawals">Rejected</button>
+    </div>
+
+    <!-- Pending Withdrawals -->
+    <div id="pending-withdrawals" class="tab-content active">
+        <h2>Pending Withdrawal Requests</h2>
+        <div class="responsive-table">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Phone Number</th>
+                        <th>Amount</th>
+                        <th>Requested Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingWithdrawalsTable">
+                    {% for data in Pdata %}
+                    <tr data-username="{{ data.user.username }}" data-phone="{{ data.phone_number }}" data-amount="{{ data.amount }}" data-date="{{ data.requestedAt|date:'Y-m-d H:i' }}" data-id="{{ data.id }}" data-type="withdrawal">
+                        <td>{{ data.user.username }}</td>
+                        <td>{{ data.phone_number }}</td>
+                        <td>${{ data.amount }}</td>
+                        <td>{{ data.requestedAt|date:'Y-m-d H:i' }}</td>
+                        <td><span class="status status-pending">{{ data.status }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i>📭</i>
+                                <p>No pending withdrawals found</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Approved Withdrawals -->
+    <div id="approved-withdrawals" class="tab-content">
+        <h2>Approved Withdrawals</h2>
+        <div class="responsive-table">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Phone Number</th>
+                        <th>Amount</th>
+                        <th>Requested Date</th>
+                        <th>Approved Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if Adata %}
+                        {% for transaction in Adata %}
                         <tr>
-                            <th>Username</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Requested Date</th>
-                            <th>Status</th>
+                            <td>{{ transaction.user.username }}</td>
+                            <td>{{ transaction.phone_number }}</td>
+                            <td>${{ transaction.amount }}</td>
+                            <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
+                            <td>{{ transaction.approvedAt|date:'Y-m-d H:i' }}</td>
                         </tr>
-                    </thead>
-                    <tbody id="pendingWithdrawalsTable">
-                        {% for data in Pdata %}
-                        <tr data-username="{{ data.user.username }}" data-phone="{{ data.phone_number }}" data-amount="{{ data.amount }}" data-date="{{ data.requestedAt|date:'Y-m-d H:i' }}" data-id="{{ data.id }}" data-type="withdrawal">
-                            <td>{{ data.user.username }}</td>
-                            <td>{{ data.phone_number }}</td>
-                            <td>${{ data.amount }}</td>
-                            <td>{{ data.requestedAt|date:'Y-m-d H:i' }}</td>
-                            <td><span class="status status-pending">{{ data.status }}</span></td>
-                        </tr>
-                        {% empty %}
+                        {% endfor %}
+                    {% else %}
                         <tr>
                             <td colspan="5">
                                 <div class="empty-state">
-                                    <i>📭</i>
-                                    <p>No pending withdrawals found</p>
+                                    <i>✅</i>
+                                    <p>No approved withdrawals found</p>
                                 </div>
                             </td>
                         </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Approved Withdrawals -->
-        <div id="approved-withdrawals" class="tab-content">
-            <h2>Approved Withdrawals</h2>
-            <div class="responsive-table">
-                <table class="transaction-table">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Requested Date</th>
-                            <th>Approved Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if Adata %}
-                            {% for transaction in Adata %}
-                            <tr>
-                                <td>{{ transaction.user.username }}</td>
-                                <td>{{ transaction.phone_number }}</td>
-                                <td>${{ transaction.amount }}</td>
-                                <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
-                                <td>{{ transaction.approvedAt|date:'Y-m-d H:i' }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="5">
-                                    <div class="empty-state">
-                                        <i>✅</i>
-                                        <p>No approved withdrawals found</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Rejected Withdrawals -->
-        <div id="rejected-withdrawals" class="tab-content">
-            <h2>Rejected Withdrawals</h2>
-            <div class="responsive-table">
-                <table class="transaction-table">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Requested Date</th>
-                            <th>Rejected Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if Rdata %}
-                            {% for transaction in Rdata %}
-                            <tr>
-                                <td>{{ transaction.user.username }}</td>
-                                <td>{{ transaction.phone_number }}</td>
-                                <td>${{ transaction.amount }}</td>
-                                <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
-                                <td>{{ transaction.rejectedAt|date:'Y-m-d H:i' }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="5">
-                                    <div class="empty-state">
-                                        <i>❌</i>
-                                        <p>No rejected withdrawals found</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- DEPOSITS SECTION -->
-    <div id="deposits" class="main-content">
-        <div class="tabs deposit-tabs">
-            <button class="tab-button active" data-tab="pending-deposits">Pending</button>
-            <button class="tab-button" data-tab="approved-deposits">Approved</button>
-            <button class="tab-button" data-tab="rejected-deposits">Rejected</button>
-        </div>
-
-        <!-- Pending Deposits -->
-        <div id="pending-deposits" class="tab-content active">
-            <h2>Pending Deposit Requests</h2>
-            <div class="responsive-table">
-                <table class="transaction-table">
-                    <thead>
+    <!-- Rejected Withdrawals -->
+    <div id="rejected-withdrawals" class="tab-content">
+        <h2>Rejected Withdrawals</h2>
+        <div class="responsive-table">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Phone Number</th>
+                        <th>Amount</th>
+                        <th>Requested Date</th>
+                        <th>Rejected Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if Rdata %}
+                        {% for transaction in Rdata %}
                         <tr>
-                            <th>Username</th>
-                            <th>Sender's Name</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Screenshot</th>
-                            <th>Requested Date</th>
-                            <th>Status</th>
+                            <td>{{ transaction.user.username }}</td>
+                            <td>{{ transaction.phone_number }}</td>
+                            <td>${{ transaction.amount }}</td>
+                            <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
+                            <td>{{ transaction.rejectedAt|date:'Y-m-d H:i' }}</td>
                         </tr>
-                    </thead>
-                    <tbody id="pendingDepositsTable">
-                        {% for data in Pdepo %}
-                        <tr data-username="{{ data.user.username }}" data-phone="{{ data.phone_number }}" data-amount="{{ data.amount }}" data-date="{{ data.requestedAt|date:'Y-m-d H:i' }}" data-id="{{ data.id }}" data-type="deposit" data-sender="{{ data.SendersName }}" data-screenshot="{{ data.ScreenShot.url }}">
-                            <td>{{ data.user.username }}</td>
-                            <td>{{ data.SendersName }}</td>
-                            <td>{{ data.phone_number }}</td>
-                            <td>${{ data.amount }}</td>
-                            <td>
-                                <img src="{{ data.ScreenShot.url }}" alt="Payment Screenshot" class="screenshot-thumbnail">
-                            </td>
-                            <td>{{ data.requestedAt|date:'Y-m-d H:i' }}</td>
-                            <td><span class="status status-pending">{{ data.status }}</span></td>
-                        </tr>
-                        {% empty %}
+                        {% endfor %}
+                    {% else %}
                         <tr>
-                            <td colspan="7">
+                            <td colspan="5">
                                 <div class="empty-state">
-                                    <i>📭</i>
-                                    <p>No pending deposits found</p>
+                                    <i>❌</i>
+                                    <p>No rejected withdrawals found</p>
                                 </div>
                             </td>
                         </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Approved Deposits -->
-        <div id="approved-deposits" class="tab-content">
-            <h2>Approved Deposits</h2>
-            <div class="responsive-table">
-                <table class="transaction-table">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Sender's Name</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Screenshot</th>
-                            <th>Requested Date</th>
-                            <th>Approved Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if Adepo %}
-                            {% for transaction in Adepo %}
-                            <tr>
-                                <td>{{ transaction.user.username }}</td>
-                                <td>{{ transaction.SendersName }}</td>
-                                <td>{{ transaction.phone_number }}</td>
-                                <td>${{ transaction.amount }}</td>
-                                <td>
-                                    <img src="{{ transaction.ScreenShot.url }}" alt="Payment Screenshot" class="screenshot-thumbnail">
-                                </td>
-                                <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
-                                <td>{{ transaction.approvedAt|date:'Y-m-d H:i' }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <i>✅</i>
-                                        <p>No approved deposits found</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Rejected Deposits -->
-        <div id="rejected-deposits" class="tab-content">
-            <h2>Rejected Deposits</h2>
-            <div class="responsive-table">
-                <table class="transaction-table">
-                    <thead>
-                        <tr>
-                            <th>Username</th>
-                            <th>Sender's Name</th>
-                            <th>Phone Number</th>
-                            <th>Amount</th>
-                            <th>Screenshot</th>
-                            <th>Requested Date</th>
-                            <th>Rejected Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if Rdepo %}
-                            {% for transaction in Rdepo %}
-                            <tr>
-                                <td>{{ transaction.user.username }}</td>
-                                <td>{{ transaction.SendersName }}</td>
-                                <td>{{ transaction.phone_number }}</td>
-                                <td>${{ transaction.amount }}</td>
-                                <td>
-                                    <img src="{{ transaction.ScreenShot.url }}" alt="Payment Screenshot" class="screenshot-thumbnail">
-                                </td>
-                                <td>{{ transaction.requestedAt|date:'Y-m-d H:i' }}</td>
-                                <td>{{ transaction.rejectedAt|date:'Y-m-d H:i' }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <i>❌</i>
-                                        <p>No rejected deposits found</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <!-- Transaction Modal -->
 <div class="modal-overlay" id="transactionModal">
-    <div class="modal glass-effect">
+    <div class="modal">
         <div class="modal-header">
             <h2 id="modalTitle">Process Transaction</h2>
             <button class="close-modal" id="closeModal">&times;</button>
@@ -1003,30 +1119,9 @@
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="amount">Amount</label>
-                            <input type="text" id="amount" name="amount" class="form-control" readonly>
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div id="senderNameGroup" class="form-group" style="display: none;">
-                            <label for="senderName">Sender's Name</label>
-                            <input type="text" id="senderName" name="sender_name" class="form-control" readonly>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="screenshotGroup" class="form-group" style="display: none;">
-                    <label>Payment Screenshot</label>
-                    <div class="screenshot-preview-container">
-                        <img id="screenshotPreview" src="/placeholder.svg" alt="Payment Screenshot" class="screenshot-preview-img">
-                        <div class="screenshot-preview-details">
-                            <p>Payment proof submitted by user</p>
-                            <span class="view-full" id="viewFullScreenshot">View full image</span>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="text" id="amount" name="amount" class="form-control" readonly>
                 </div>
                 
                 <div class="form-group">
@@ -1046,26 +1141,71 @@
     </div>
 </div>
 
-<!-- Image Modal -->
-<div class="modal-overlay" id="imageModal">
-    <div class="modal glass-effect">
+<!-- ENHANCED: Profit Withdrawal Modal -->
+<div class="modal-overlay" id="profitWithdrawModal">
+    <div class="modal">
         <div class="modal-header">
-            <h2>Payment Screenshot</h2>
-            <button class="close-modal" id="closeImageModal">&times;</button>
+            <h2>Withdraw Profit</h2>
+            <button class="close-modal" id="closeProfitModal">&times;</button>
         </div>
-        <div class="image-container">
-            <img id="fullImage" src="/placeholder.svg" alt="Full Payment Screenshot" class="full-image">
+        <div id="profitErrorContainer" class="error-message">
+            <p id="profitErrorMessage"></p>
         </div>
+        <form id="profitWithdrawForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="transaction_type" value="profit">
+            
+            <div class="form-content">
+                <div class="form-group">
+                    <label for="withdrawAmount">Withdrawal Amount</label>
+                    <input type="number" id="withdrawAmount" name="amount" class="form-control" 
+                           placeholder="Enter amount to withdraw" 
+                           min="1" 
+                           max="{{profit}}" 
+                           step="0.01" 
+                           required>
+                    <small style="color: var(--text-secondary); font-size: 0.8rem;">
+                        Maximum available: ${{profit}}
+                    </small>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="submit" id="profitSubmitBtn" class="btn btn-primary">
+                    💰 Withdraw Funds
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- Confirmation Popup -->
-<div class="confirm-popup glass-effect" id="confirmPopup">
-    <h3>Confirm Action</h3>
-    <p id="confirmMessage">Are you sure you want to approve this transaction?</p>
-    <div class="confirm-actions">
-        <button id="cancelAction" class="btn btn-outline">Cancel</button>
-        <button id="confirmAction" class="btn btn-primary">Yes, Proceed</button>
+<!-- ENHANCED: Maintenance Form (Hidden) -->
+<form id="maintenanceForm" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="transaction_type" value="men">
+    <input type="hidden" id="maintenanceEnabled" name="enabled" value="false">
+</form>
+
+<!-- NEW: Maintenance Confirmation Modal -->
+<div class="modal-overlay maintenance-confirm-modal" id="maintenanceConfirmModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Confirm Maintenance Mode Change</h2>
+            <button class="close-modal" id="closeMaintenanceConfirmModal">&times;</button>
+        </div>
+        
+        <div class="form-content text-center">
+            <span class="maintenance-confirm-icon" id="maintenanceConfirmIcon">🔧</span>
+            <h3 class="maintenance-confirm-title" id="maintenanceConfirmTitle">Enable Maintenance Mode?</h3>
+            <p class="maintenance-confirm-message" id="maintenanceConfirmMessage">
+                Are you sure you want to enable maintenance mode? This will make the site unavailable to all users.
+            </p>
+            
+            <div class="maintenance-confirm-buttons">
+                <button id="cancelMaintenanceChange" class="btn btn-cancel">Cancel</button>
+                <button id="confirmMaintenanceChange" class="btn btn-warning">Yes, Enable Maintenance</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1075,67 +1215,56 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // DOM Elements
-        const mainTabButtons = document.querySelectorAll('.main-tab-button');
-        const mainContents = document.querySelectorAll('.main-content');
-        const withdrawalTabButtons = document.querySelectorAll('.withdrawal-tabs .tab-button');
-        const withdrawalTabContents = document.querySelectorAll('#withdrawals .tab-content');
-        const depositTabButtons = document.querySelectorAll('.deposit-tabs .tab-button');
-        const depositTabContents = document.querySelectorAll('#deposits .tab-content');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
         const transactionModal = document.getElementById('transactionModal');
         const modalTitle = document.getElementById('modalTitle');
         const closeModalBtn = document.getElementById('closeModal');
         const transactionForm = document.getElementById('transactionForm');
-        const transactionIdInput = document.getElementById('transactionId');
-        const transactionTypeInput = document.getElementById('transactionType');
-        const usernameInput = document.getElementById('username');
-        const senderNameInput = document.getElementById('senderName');
-        const senderNameGroup = document.getElementById('senderNameGroup');
-        const phoneNumberInput = document.getElementById('phoneNumber');
-        const amountInput = document.getElementById('amount');
-        const screenshotGroup = document.getElementById('screenshotGroup');
-        const screenshotPreview = document.getElementById('screenshotPreview');
-        const viewFullScreenshotBtn = document.getElementById('viewFullScreenshot');
-        const statusSelect = document.getElementById('status');
-        const submitBtn = document.getElementById('submitBtn');
-        const confirmPopup = document.getElementById('confirmPopup');
-        const confirmMessage = document.getElementById('confirmMessage');
-        const confirmActionBtn = document.getElementById('confirmAction');
-        const cancelActionBtn = document.getElementById('cancelAction');
         const pendingWithdrawalsTable = document.getElementById('pendingWithdrawalsTable');
-        const pendingDepositsTable = document.getElementById('pendingDepositsTable');
         const toastContainer = document.getElementById('toastContainer');
-        const imageModal = document.getElementById('imageModal');
-        const closeImageModalBtn = document.getElementById('closeImageModal');
-        const fullImage = document.getElementById('fullImage');
         const errorContainer = document.getElementById('errorContainer');
         const errorMessage = document.getElementById('errorMessage');
         
-        // Store the current transaction data
-        let currentTransaction = null;
+        // ENHANCED: Profit withdrawal elements
+        const withdrawProfitBtn = document.getElementById('withdrawProfitBtn');
+        const profitWithdrawModal = document.getElementById('profitWithdrawModal');
+        const closeProfitModal = document.getElementById('closeProfitModal');
+        const profitWithdrawForm = document.getElementById('profitWithdrawForm');
+        const profitSubmitBtn = document.getElementById('profitSubmitBtn');
+        const profitErrorContainer = document.getElementById('profitErrorContainer');
+        const profitErrorMessage = document.getElementById('profitErrorMessage');
+        
+        // ENHANCED: Maintenance toggle elements
+        const maintenanceToggle = document.getElementById('maintenanceToggle');
+        const maintenanceForm = document.getElementById('maintenanceForm');
+        const maintenanceEnabled = document.getElementById('maintenanceEnabled');
+        const maintenanceStatus = document.getElementById('maintenanceStatus');
+        const maintenanceIcon = document.getElementById('maintenanceIcon');
+        const maintenanceText = document.getElementById('maintenanceText');
+        
+        // NEW: Maintenance confirmation modal elements
+        const maintenanceConfirmModal = document.getElementById('maintenanceConfirmModal');
+        const closeMaintenanceConfirmModal = document.getElementById('closeMaintenanceConfirmModal');
+        const maintenanceConfirmIcon = document.getElementById('maintenanceConfirmIcon');
+        const maintenanceConfirmTitle = document.getElementById('maintenanceConfirmTitle');
+        const maintenanceConfirmMessage = document.getElementById('maintenanceConfirmMessage');
+        const cancelMaintenanceChange = document.getElementById('cancelMaintenanceChange');
+        const confirmMaintenanceChange = document.getElementById('confirmMaintenanceChange');
 
-        // Main tab switching functionality
-        mainTabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const mainTabId = button.getAttribute('data-main-tab');
-                
-                // Remove active class from all buttons and contents
-                mainTabButtons.forEach(btn => btn.classList.remove('active'));
-                mainContents.forEach(content => content.classList.remove('active'));
-                
-                // Add active class to current button and content
-                button.classList.add('active');
-                document.getElementById(mainTabId).classList.add('active');
-            });
-        });
+        // 🚀 PERFECT SOLUTION: Store the actual current state from server
+        let currentMaintenanceState = maintenanceToggle.checked;
+        
+        console.log('🎯 Initial maintenance state:', currentMaintenanceState);
 
-        // Withdrawal tab switching functionality
-        withdrawalTabButtons.forEach(button => {
+        // Tab switching functionality
+        tabButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const tabId = button.getAttribute('data-tab');
                 
                 // Remove active class from all buttons and contents
-                withdrawalTabButtons.forEach(btn => btn.classList.remove('active'));
-                withdrawalTabContents.forEach(content => content.classList.remove('active'));
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
                 
                 // Add active class to current button and content
                 button.classList.add('active');
@@ -1143,22 +1272,7 @@
             });
         });
 
-        // Deposit tab switching functionality
-        depositTabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const tabId = button.getAttribute('data-tab');
-                
-                // Remove active class from all buttons and contents
-                depositTabButtons.forEach(btn => btn.classList.remove('active'));
-                depositTabContents.forEach(content => content.classList.remove('active'));
-                
-                // Add active class to current button and content
-                button.classList.add('active');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-
-        // Open modal when clicking on a pending withdrawal
+        // Open transaction modal
         if (pendingWithdrawalsTable) {
             pendingWithdrawalsTable.addEventListener('click', (e) => {
                 const row = e.target.closest('tr');
@@ -1170,146 +1284,258 @@
                 const id = row.getAttribute('data-id');
                 const type = row.getAttribute('data-type');
                 
-                // Store current transaction data
-                currentTransaction = { id, username, phone, amount, type };
-                
-                // Update modal title
-                modalTitle.textContent = 'Process Withdrawal';
+                // Fill form fields
+                document.getElementById('username').value = username;
+                document.getElementById('phoneNumber').value = phone;
+                document.getElementById('amount').value = amount;
+                document.getElementById('transactionId').value = id;
+                document.getElementById('transactionType').value = type;
+                document.getElementById('status').value = 'Pending';
                 
                 // Reset error message
                 errorContainer.classList.remove('show');
-                
-                // Fill form fields
-                usernameInput.value = username;
-                phoneNumberInput.value = phone;
-                amountInput.value = amount;
-                transactionIdInput.value = id;
-                transactionTypeInput.value = type;
-                statusSelect.value = 'Pending';
-                
-                // Hide deposit-specific fields
-                senderNameGroup.style.display = 'none';
-                screenshotGroup.style.display = 'none';
                 
                 // Show modal
                 transactionModal.classList.add('active');
             });
         }
 
-        // Open modal when clicking on a pending deposit
-        if (pendingDepositsTable) {
-            pendingDepositsTable.addEventListener('click', (e) => {
-                const row = e.target.closest('tr');
-                if (!row) return;
-                
-                const username = row.getAttribute('data-username');
-                const phone = row.getAttribute('data-phone');
-                const amount = row.getAttribute('data-amount');
-                const id = row.getAttribute('data-id');
-                const type = row.getAttribute('data-type');
-                const sender = row.getAttribute('data-sender');
-                const screenshot = row.getAttribute('data-screenshot');
-                
-                // Store current transaction data
-                currentTransaction = { id, username, phone, amount, type, sender, screenshot };
-                
-                // Update modal title
-                modalTitle.textContent = 'Process Deposit';
-                
-                // Reset error message
-                errorContainer.classList.remove('show');
-                
-                // Fill form fields
-                usernameInput.value = username;
-                phoneNumberInput.value = phone;
-                amountInput.value = amount;
-                transactionIdInput.value = id;
-                transactionTypeInput.value = type;
-                statusSelect.value = 'Pending';
-                
-                // Show and fill deposit-specific fields
-                senderNameGroup.style.display = 'block';
-                screenshotGroup.style.display = 'block';
-                senderNameInput.value = sender;
-                screenshotPreview.src = screenshot;
-                
-                // Show modal
-                transactionModal.classList.add('active');
-            });
-        }
+        // ENHANCED: Profit withdrawal functionality
+        withdrawProfitBtn.addEventListener('click', () => {
+            profitErrorContainer.classList.remove('show');
+            profitWithdrawModal.classList.add('active');
+        });
 
-        // View screenshot in full size
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('screenshot-thumbnail')) {
-                const src = e.target.src;
-                fullImage.src = src;
-                imageModal.classList.add('active');
+        closeProfitModal.addEventListener('click', () => {
+            profitWithdrawModal.classList.remove('active');
+        });
+
+        profitWithdrawModal.addEventListener('click', (e) => {
+            if (e.target === profitWithdrawModal) {
+                profitWithdrawModal.classList.remove('active');
             }
         });
 
-        // View full screenshot from transaction modal
-        viewFullScreenshotBtn.addEventListener('click', function() {
-            if (!currentTransaction) return;
+        profitWithdrawForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            fullImage.src = currentTransaction.screenshot;
-            imageModal.classList.add('active');
+            // Add loading state
+            profitSubmitBtn.disabled = true;
+            profitSubmitBtn.classList.add('btn-loading');
+            
+            // Hide previous errors
+            profitErrorContainer.classList.remove('show');
+            
+            // Get form data
+            const formData = new FormData(profitWithdrawForm);
+            
+            // Submit via AJAX
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    createToast(data.message, 'success');
+                    profitWithdrawModal.classList.remove('active');
+                    
+                    // Reload page after delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    profitErrorMessage.textContent = data.message || 'An error occurred. Please try again.';
+                    profitErrorContainer.classList.add('show');
+                    createToast(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                profitErrorMessage.textContent = 'An error occurred. Please try again.';
+                profitErrorContainer.classList.add('show');
+                createToast('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                profitSubmitBtn.disabled = false;
+                profitSubmitBtn.classList.remove('btn-loading');
+            });
         });
 
-        // Close image modal
-        closeImageModalBtn.addEventListener('click', () => {
-            imageModal.classList.remove('active');
+        // 🚀 PERFECT MAINTENANCE TOGGLE: Clean and intuitive
+        maintenanceToggle.addEventListener('change', function(e) {
+            // Get the intended new state
+            const intendedState = this.checked;
+            
+            console.log('🎯 Toggle clicked:', {
+                current: currentMaintenanceState,
+                intended: intendedState
+            });
+            
+            // Immediately revert to current state (visual only)
+            this.checked = currentMaintenanceState;
+            
+            // Update confirmation modal based on intended state
+            if (intendedState) {
+                // User wants to ENABLE maintenance
+                maintenanceConfirmIcon.textContent = '🔧';
+                maintenanceConfirmTitle.textContent = 'Enable Maintenance Mode?';
+                maintenanceConfirmMessage.textContent = 'This will make the site unavailable to all users. Are you sure?';
+                confirmMaintenanceChange.textContent = 'Yes, Enable Maintenance';
+                confirmMaintenanceChange.className = 'btn btn-warning';
+            } else {
+                // User wants to DISABLE maintenance
+                maintenanceConfirmIcon.textContent = '✅';
+                maintenanceConfirmTitle.textContent = 'Disable Maintenance Mode?';
+                maintenanceConfirmMessage.textContent = 'This will make the site available to all users. Are you sure?';
+                confirmMaintenanceChange.textContent = 'Yes, Disable Maintenance';
+                confirmMaintenanceChange.className = 'btn btn-success';
+            }
+            
+            // Store intended state and show confirmation
+            confirmMaintenanceChange.dataset.intendedState = intendedState;
+            maintenanceConfirmModal.classList.add('active');
         });
-
-        // Close image modal when clicking outside
-        imageModal.addEventListener('click', (e) => {
-            if (e.target === imageModal) {
-                imageModal.classList.remove('active');
+        
+        // Close maintenance confirmation modal
+        function closeMaintenanceConfirm() {
+            maintenanceConfirmModal.classList.remove('active');
+            // Reset any loading states
+            confirmMaintenanceChange.disabled = false;
+            confirmMaintenanceChange.classList.remove('btn-loading');
+            cancelMaintenanceChange.disabled = false;
+        }
+        
+        closeMaintenanceConfirmModal.addEventListener('click', closeMaintenanceConfirm);
+        cancelMaintenanceChange.addEventListener('click', closeMaintenanceConfirm);
+        
+        // Click outside to cancel
+        maintenanceConfirmModal.addEventListener('click', (e) => {
+            if (e.target === maintenanceConfirmModal) {
+                closeMaintenanceConfirm();
             }
         });
+        
+        // Confirm maintenance change
+        confirmMaintenanceChange.addEventListener('click', function() {
+            const intendedState = this.dataset.intendedState === 'true';
+            
+            console.log('✅ Confirmed maintenance change to:', intendedState);
+            
+            // Show loading state
+            this.disabled = true;
+            this.classList.add('btn-loading');
+            cancelMaintenanceChange.disabled = true;
+            
+            // Update form data
+            maintenanceEnabled.value = intendedState ? 'true' : 'false';
+            
+            // Submit via AJAX
+            const formData = new FormData(maintenanceForm);
+            
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    // SUCCESS: Update everything
+                    currentMaintenanceState = intendedState;
+                    maintenanceToggle.checked = intendedState;
+                    updateMaintenanceUI(intendedState);
+                    createToast(data.message, 'success');
+                    closeMaintenanceConfirm();
+                } else {
+                    // ERROR: Keep current state
+                    createToast(data.message || 'Failed to update maintenance mode', 'error');
+                    closeMaintenanceConfirm();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                createToast('An error occurred. Please try again.', 'error');
+                closeMaintenanceConfirm();
+            });
+        });
+
+        function updateMaintenanceUI(isEnabled) {
+            if (isEnabled) {
+                maintenanceStatus.className = 'maintenance-status active';
+                maintenanceIcon.textContent = '🔧';
+                maintenanceText.textContent = 'Under Maintenance';
+            } else {
+                maintenanceStatus.className = 'maintenance-status inactive';
+                maintenanceIcon.textContent = '✅';
+                maintenanceText.textContent = 'System Online';
+            }
+        }
 
         // Close transaction modal
         closeModalBtn.addEventListener('click', () => {
             transactionModal.classList.remove('active');
-            // Clear current transaction when modal is closed
-            currentTransaction = null;
         });
 
-        // Close transaction modal when clicking outside
         transactionModal.addEventListener('click', (e) => {
             if (e.target === transactionModal) {
                 transactionModal.classList.remove('active');
-                // Clear current transaction when modal is closed
-                currentTransaction = null;
             }
         });
 
-        // Handle form submission
+        // Handle transaction form submission
         transactionForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const status = statusSelect.value;
-            const username = usernameInput.value;
-            const transactionType = currentTransaction?.type || 'transaction';
+            // Add loading state
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').classList.add('btn-loading');
             
-            if (status === 'Approved' || status === 'Rejected') {
-                // Show confirmation popup
-                confirmMessage.textContent = `Are you sure you want to ${status.toUpperCase()} this ${transactionType} for ${username}?`;
-                confirmPopup.classList.add('active');
-            } else {
-                // If keeping as pending, just submit the form
-                submitForm();
-            }
-        });
-
-        // Confirm action
-        confirmActionBtn.addEventListener('click', () => {
-            confirmPopup.classList.remove('active');
-            submitForm();
-        });
-
-        // Cancel action
-        cancelActionBtn.addEventListener('click', () => {
-            confirmPopup.classList.remove('active');
+            // Hide previous errors
+            errorContainer.classList.remove('show');
+            
+            // Get form data
+            const formData = new FormData(transactionForm);
+            
+            // Submit via AJAX
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success === true) {
+                    createToast(data.message, 'success');
+                    transactionModal.classList.remove('active');
+                    
+                    // Reload page after delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    errorMessage.textContent = data.message || 'An error occurred. Please try again.';
+                    errorContainer.classList.add('show');
+                    createToast(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorContainer.classList.add('show');
+                createToast('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtn').classList.remove('btn-loading');
+            });
         });
 
         // Create toast notification
@@ -1323,9 +1549,6 @@
             if (type === 'error') {
                 icon = '❌';
                 title = 'Error';
-            } else if (type === 'warning') {
-                icon = '⚠️';
-                title = 'Warning';
             }
             
             toast.innerHTML = `
@@ -1334,7 +1557,6 @@
                     <div class="toast-title">${title}</div>
                     <div class="toast-message">${message}</div>
                 </div>
-                <div class="toast-progress"></div>
             `;
             
             toastContainer.appendChild(toast);
@@ -1352,75 +1574,6 @@
                 }, 300);
             }, 5000);
         }
-
-        // Submit form
-        function submitForm() {
-            // Only proceed if we have a current transaction
-            if (!currentTransaction) return;
-            
-            // Add loading state to button
-            submitBtn.disabled = true;
-            submitBtn.classList.add('btn-loading');
-            
-            // Hide any previous error messages
-            errorContainer.classList.remove('show');
-            
-            // Get form data
-            const formData = new FormData(transactionForm);
-            
-            // Submit the form using standard form submission
-            fetch(window.location.href, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Handle response
-                if (data.success === true) {
-                    // Success case
-                    createToast(data.message, 'success');
-                    
-                    // Close modal
-                    transactionModal.classList.remove('active');
-                    
-                    // Reload the page after a short delay
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    // Error case
-                    errorMessage.textContent = data.message || 'An error occurred. Please try again.';
-                    errorContainer.classList.add('show');
-                    createToast(data.message, 'error');
-                    submitBtn.disabled = false;
-                    submitBtn.classList.remove('btn-loading');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorMessage.textContent = 'An error occurred. Please try again.';
-                errorContainer.classList.add('show');
-                createToast('An error occurred. Please try again.', 'error');
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('btn-loading');
-            });
-        }
-
-        // Prevent accidental page leave
-        window.addEventListener('beforeunload', (e) => {
-            if (transactionModal.classList.contains('active')) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
     });
 </script>
 </body>
