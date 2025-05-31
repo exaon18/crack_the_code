@@ -315,7 +315,7 @@
             box-shadow: 0 8px 25px rgba(46, 213, 115, 0.5);
         }
 
-        /* Loading state for auth buttons - Unique Animation */
+        /* FIXED: Loading state for auth buttons - Improved Animation */
         .auth-btn.loading {
             pointer-events: none;
             position: relative;
@@ -375,58 +375,10 @@
             }
         }
 
-        .menu-toggle {
-            display: block;
-            background: none;
-            border: none;
-            padding: var(--space-2);
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        .menu-toggle span {
-            display: block;
-            width: 28px;
-            height: 2px;
-            background-color: var(--text);
-            margin: 6px 0;
-            transition: all var(--transition-normal) ease;
-            border-radius: 1px;
-        }
-
-        .menu-toggle.active span:nth-child(1) {
-            transform: rotate(45deg) translate(6px, 6px);
-        }
-
-        .menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(6px, -6px);
-        }
-
+        /* REMOVED: Mobile menu toggle and nav-links mobile styles */
         .nav-links {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--background);
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: var(--space-6);
-            padding: var(--space-6);
-            z-index: 1000;
-            transform: translateY(-100%);
-            transition: transform var(--transition-normal) cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .nav-links.active {
             display: flex;
-            transform: translateY(0);
+            gap: var(--space-5);
         }
 
         .nav-link {
@@ -434,7 +386,7 @@
             color: var(--text);
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1rem;
             transition: all var(--transition-normal) ease;
             position: relative;
             overflow: hidden;
@@ -1204,24 +1156,6 @@
                 display: block;
             }
 
-            .menu-toggle {
-                display: none;
-            }
-
-            .nav-links {
-                display: flex;
-                position: static;
-                transform: none;
-                flex-direction: row;
-                background-color: transparent;
-                padding: 0;
-                gap: var(--space-5);
-            }
-
-            .nav-link {
-                font-size: 1rem;
-            }
-
             .auth-btn {
                 font-size: 1rem;
                 padding: var(--space-2) var(--space-5);
@@ -1281,7 +1215,6 @@
         }
     </style>
     <meta name="monetag" content="a6b82af3066e740b84c51cc593d4de67">
-
 </head>
 <body>
     <!-- Background particles -->
@@ -1300,12 +1233,6 @@
                     <a href="{% url 'signup' %}" class="auth-btn signup" id="signupBtn">Sign Up</a>
                 </div>
             </div>
-            
-            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
             
             <nav class="nav-links" id="navLinks">
                 <a href="{% url 'index' %}" class="nav-link">Home</a>
@@ -1326,8 +1253,6 @@
                     <p class="hero-description">Challenge players 1v1. Winner takes all. Are you ready to prove your skills and earn rewards in real-time competitive gaming?</p>
                     <a href="#games" class="cta-btn">Start Playing Now <i class="fas fa-arrow-right"></i></a>
                 </div>
-                
-                
             </div>
             <div class="scroll-indicator" id="scrollIndicator">
                 <span>Scroll to explore</span>
@@ -1341,10 +1266,10 @@
                     <h2>Featured Games</h2>
                     <p>Discover our collection of skill-based games where you can compete head-to-head with other players and win real rewards.</p>
                 </div>
-                {%load static%}
+                
                 <div class="game-list">
                     <div class="game-item">
-                        <img src="{% static 'img/ctc.jpg' %}" alt="Crack the Code" class="game-image">
+                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/ctc.jpg-MjCvQhlHB5t3g4kWv12B3cuoUD72Co.jpeg" alt="Crack the Code" class="game-image">
                         <div class="game-content">
                             <h3 class="game-title">Crack the code</h3>
                             <p class="game-description">Test your strategic thinking in this classic game of skill. Challenge opponents and win based on your cracking mastery.</p>
@@ -1365,7 +1290,7 @@
                     </div>
                     
                     <div class="game-item">
-                        <img src="{% static 'img/bingo.jpg' %}" alt="Bingo" class="game-image">
+                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/photo_2025-05-29_13-20-52.jpg-ZxKeFERZ8rzsiH919GbKt99Wm8zgHy.jpeg" alt="Bingo" class="game-image">
                         <div class="game-content">
                             <h3 class="game-title">Bingo</h3>
                             <p class="game-description">Bluff your way to victory in this strategic card game. Read your opponents and make calculated decisions.</p>
@@ -1502,7 +1427,6 @@
                             <a href="#" class="dropdown-toggle" data-dropdown="faq"><i class="fas fa-chevron-right"></i> FAQ</a>
                         </li>
                         <li><a href="https://t.me/Exaon"><i class="fas fa-chevron-right"></i> Contact Us</a></li>
-                        
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Help Center</a></li>
                     </ul>
                 </div>
@@ -1512,7 +1436,6 @@
                     <ul class="footer-links">
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Crack The Code</a></li>
                         <li><a href="#"><i class="fas fa-chevron-right"></i> Bingo</a></li>
-                        
                     </ul>
                 </div>
             </div>
@@ -1588,25 +1511,6 @@
                 } else {
                     header.classList.remove('scrolled');
                 }
-            });
-
-            // Mobile menu toggle
-            const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
-            
-            menuToggle.addEventListener('click', () => {
-                menuToggle.classList.toggle('active');
-                navLinks.classList.toggle('active');
-                document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
-            });
-            
-            // Close mobile menu when clicking on a link
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    menuToggle.classList.remove('active');
-                    navLinks.classList.remove('active');
-                    document.body.style.overflow = '';
-                });
             });
 
             // Typewriter effect
@@ -1705,28 +1609,49 @@
 
             statsObserver.observe(document.querySelector('.community-section'));
 
-            // Login and Signup button loading animations with unique effects
+            // FIXED: Login and Signup button handling - No delay, proper loading state management
             const loginBtn = document.getElementById('loginBtn');
             const signupBtn = document.getElementById('signupBtn');
 
+            // Function to handle button click with immediate response
+            function handleAuthButtonClick(button) {
+                // Add loading state immediately
+                button.classList.add('loading');
+                
+                // Navigate immediately (no delay)
+                window.location.href = button.getAttribute('href');
+            }
+
+            // FIXED: Remove loading state when page becomes visible again (back button fix)
+            function resetButtonStates() {
+                loginBtn.classList.remove('loading');
+                signupBtn.classList.remove('loading');
+            }
+
+            // Reset button states on page load and when page becomes visible
+            resetButtonStates();
+            
+            // Handle page visibility change (when user comes back from another page)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    resetButtonStates();
+                }
+            });
+
+            // Handle page focus (when user comes back to the tab)
+            window.addEventListener('focus', resetButtonStates);
+
+            // Handle page show event (when user uses back button)
+            window.addEventListener('pageshow', resetButtonStates);
+
             loginBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                this.classList.add('loading');
-                
-                // Simulate loading (remove this in production and use actual form submission)
-                setTimeout(() => {
-                    window.location.href = this.getAttribute('href');
-                }, 1500);
+                handleAuthButtonClick(this);
             });
 
             signupBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                this.classList.add('loading');
-                
-                // Simulate loading (remove this in production and use actual form submission)
-                setTimeout(() => {
-                    window.location.href = this.getAttribute('href');
-                }, 1500);
+                handleAuthButtonClick(this);
             });
 
             // Smooth scrolling for anchor links

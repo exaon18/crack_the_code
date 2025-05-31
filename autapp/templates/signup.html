@@ -459,11 +459,7 @@ body {
         const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
         const loginLink = document.getElementById('loginLink');
         
-        // CSRF token handling - Use the Django template rendered token
-        // The token is already set in the HTML via Django's template system: value="{{ csrf_token }}"
-        // This ensures the token is available even in incognito mode
         
-        // If for some reason the token wasn't set via template, try to get it from cookie as fallback
         if (!csrfTokenInput.value) {
             csrfTokenInput.value = getCookie('csrftoken');
             

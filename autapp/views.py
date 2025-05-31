@@ -325,9 +325,10 @@ def resend_otp_signup(request, userobj):
         return JsonResponse({"success": False, "message": "User not found."})
 @csrf_exempt
 @require_POST
-def resend_otp_token_fp(request, username):
+def resend_otp_token_fp(request):
     try:
-        user = MyUser.objects.get(username=username)
+        email=request.POST["email"]
+        user = MyUser.objects.get(email=email)
         
         if not user.is_active:
             return JsonResponse({"Success": False, "message": "User is not actived, please signup again."})
