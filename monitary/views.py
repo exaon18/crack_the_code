@@ -105,19 +105,19 @@ def withdraw(request, invalidOtp=invalidOtp):
             print("Redirecting to 'withdraw' after invalid amount input.")
             return redirect("withdraw")
         
-        token = request.POST["token"].strip()
+        
         phone_number = request.POST["phone_number"].strip()
 
         if user.pendingWithdrwal:
             print("⏳ User already has a pending withdrawal. Rendering 'withdraw.html'.")
-            messages.error(request, "You already have a pending withdrawal. Please wait for it to be completed.")
-            return render(request, "dashboard")
+            
+            return JsonResponse(request,{"success":False,"message":"You already have a pending withdrawal."})
         
         # Compare after converting token from the form to int
-        if user.withdrawalToken == int(token) and user_balance >= amount:
+        if  user_balance >= amount:
             if amount < 25:
                 print("❌ Withdrawal amount too low. Rendering 'withdraw.html'.")
-                invalidOtp = True
+                
                 messages.error(request, "Withdrawal amount must be at least 25 birr.")
                 return JsonResponse(request,{"success":False,"message":"Withdrawal amount must be at least 25 birr."})
             
@@ -128,43 +128,16 @@ def withdraw(request, invalidOtp=invalidOtp):
                 status="Pending"
             )
             user.pendingWithdrwal = True
-            user.withdrawalToken = None  # Reset OTP after use
+             # Reset OTP after use
             user.save()
-
-            print(f"✅ Withdrawal request submitted: {amount} ETB. Redirecting to 'withdraw'.")
-            messages.success(request, f"Your withdrawal request for {amount} ETB has been submitted successfully.")
             return JsonResponse({"success":True,"message":f"Your withdrawal request for {amount} ETB has been submitted successfully."})
         else:
-            invalidOtp = True
-            print("❌ Invalid OTP or insufficient balance. Redirecting to 'withdraw'.")
-            messages.error(request, "Invalid OTP or insufficient balance.")
-            return JsonResponse({"success":False, "message":"Invalid OTP or Insufficinet balance"})
-    else:
-        if user.pendingWithdrwal==True:
-            print(f"🔹 Pending Withdrawal: {user.pendingWithdrwal} and wihdrawaal token {user.withdrawalToken}")
-            return redirect("dashboard")
-        if user.pendingWithdrwal==False and user.withdrawalToken != None and invalidOtp==False:
-            print("1st")
-            generated_token=generate_unique_number()
-            user.pendingWithdrwal = False   
-            user.withdrawalToken = generated_token
-            user.save()
-            print(f"🔹 Generated OTP: {generated_token}")
-            print(f"🔹 Pending Withdrawal: {user.pendingWithdrwal} and wihdrawaal token {user.withdrawalToken}")
-            send_welcome_email(user=user, email=user.email, token=generated_token, subjectE="Your Withdrawal OTP")
-            print("⏳ User didnt requested a withdrwal. Rendering 'withdraw.html'.")
-            messages.error(request, "You already have a pending withdrawal. Please wait for it to be completed.")
-            return render(request,"withdraw.html")
-        elif  user.withdrawalToken==None and user.pendingWithdrwal == False:
-            generated_token = generate_unique_number()
-            user.withdrawalToken = generated_token
-            user.save()
-            print(f"🔹 Pending Withdrawal: {user.pendingWithdrwal} and wihdrawaal token {user.withdrawalToken}")
-            print(f"🔹 Generated OTP: {generated_token}")
-            send_welcome_email(user=user, email=user.email, token=generated_token, subjectE="Your Withdrawal OTP")
-        print("Rendering 'withdraw.html'.")
-        print(f"with token {user.withdrawalToken} , pending {user.pendingWithdrwal}")
-
+            
+            print("❌insufficient balance. Redirecting to 'withdraw'.")
+            
+            return JsonResponse({"success":False, "message":" Insufficinet balance"})
+    else: 
+        
         return render(request, "withdraw.html")
 
 def ChiweA(request, username):
@@ -198,7 +171,7 @@ def Monitering(request, admin):
         admin_user = MyUser.objects.get(username=admin)
     except MyUser.DoesNotExist:
         print("❌ Admin not found in Monitering. Raising 404.")
-        raise Http404("Admin not found")
+        raise Http404("page not found")
 
     if admin_user.is_staff:
         
@@ -285,7 +258,7 @@ def Monitering(request, admin):
         print("Rendering 'admin.html' with current data.")
         print(profit["total"])
         totalp=profit["total"] or Decimal(0.00)
-        maintenance = Maintainance.objects.get(pk=5)
+        maintenance = Maintainance.objects.get(pk=1)
         return render(request, "admin.html", {"Adata": Adata, "Pdata": Pdata, "Rdata": Rdata, "admin": admin,"profit":totalp ,"maintenance":maintenance})
     else:
         print("❌ User is not staff in Monitering. Raising 404.")

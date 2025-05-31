@@ -18,9 +18,9 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
-
+SECRET_KEY='Plgp2y8yuVbghty56'
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(f'admin/{SECRET_KEY}', admin.site.urls),
     path('', include('autapp.urls')),
     path('games/', include('Games.urls')),
     path('monitary/',include('monitary.urls'))

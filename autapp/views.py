@@ -84,7 +84,7 @@ def signup(request):
             return JsonResponse({"success": False, "message":"Password must be at least 6 characters."})
         
         # Check for active user conflicts
-        if " " in username:
+        if " " and "@" and "#" and "$" and "&" and "*"  and ">" and "<" in username:
             return JsonResponse({"success": False, "message":"Username must not contain spaces."})
         if MyUser.objects.filter(username=username, is_active=True).exists():
             return JsonResponse({"success": False, "message":"Username already exists, try another one."})

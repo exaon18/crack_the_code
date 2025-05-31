@@ -630,6 +630,18 @@
         }
     }
 </style>
+  <link
+    rel="icon"
+    href="https://i.postimg.cc/FzgPtp2v/photo-2025-05-31-05-36-51.jpg"
+    type="image/jpeg"
+  />
+
+  <!-- 2) For older browsers, you can also include “shortcut icon” -->
+  <link
+    rel="shortcut icon"
+    href="https://i.postimg.cc/FzgPtp2v/photo-2025-05-31-05-36-51.jpg"
+    type="image/jpeg"
+  />
 </head>
 <body>
 <div class="backdrop"></div>
@@ -653,11 +665,11 @@
             </div>
             
             <div class="otp-info">
-                <strong>OTP Sent!</strong> A 6-digit verification code has been sent to your email. Please check your inbox and enter the code below.
+                <strong>Important!</strong> Double check your phone number before submitting withdrawal request.
             </div>
 
             <div class="payment-method">
-                <img src="https://play-lh.googleusercontent.com/Qr_v5YlQKGXXAOlUrMVRTitGGEj8VF7iyROWs2Ov7zZKgYGwOzbWtxDkR5_cPgO72w" alt="Telebirr Logo" class="payment-method-logo">
+                <img src="https://i.postimg.cc/wTX9jRCb/photo-2025-05-31-06-49-59.jpg" alt="Telebirr Logo" class="payment-method-logo">
                 <div class="payment-method-info">
                     <div class="payment-method-name">Telebirr</div>
                     <div class="payment-method-description">Currently the only available withdrawal method</div>
@@ -678,21 +690,7 @@
                     <div class="form-hint">Enter your Telebirr registered phone number (e.g., 9xxxxxxxx)</div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Enter 6-Digit OTP Code</label>
-                    <div class="otp-container">
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                        <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
-                    </div>
-                    <input type="hidden" id="token" name="token" value="">
-                    <div class="otp-action">
-                        <a href="/withdraw" class="otp-link">Resend OTP</a>
-                    </div>
-                </div>
+                
 
                 <button type="submit" class="btn" id="withdraw-btn">Withdraw Funds</button>
             </form>
@@ -733,64 +731,12 @@
         const withdrawBtn = document.getElementById('withdraw-btn');
 
         // Handle OTP input navigation
-        otpInputs.forEach((input, index) => {
-            // Auto-focus first input on page load
-            if (index === 0) {
-                setTimeout(() => input.focus(), 500);
-            }
+        
 
-            input.addEventListener('input', (e) => {
-                if (e.target.value.length === 1) {
-                    if (index < otpInputs.length - 1) {
-                        otpInputs[index + 1].focus();
-                    } else {
-                        input.blur(); // Remove focus from the last input
-                        // Combine OTP values into the hidden token field
-                        updateTokenValue();
-                    }
-                }
-            });
-
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !e.target.value && index > 0) {
-                    otpInputs[index - 1].focus();
-                }
-            });
-
-            // Add paste functionality for the entire code
-            input.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const pastedData = e.clipboardData.getData('text').trim();
+            
                 
-                if (/^\d+$/.test(pastedData) && pastedData.length <= otpInputs.length) {
-                    // Clear all inputs first
-                    otpInputs.forEach(input => input.value = '');
-                    
-                    // Fill inputs with pasted data
-                    for (let i = 0; i < pastedData.length; i++) {
-                        if (i < otpInputs.length) {
-                            otpInputs[i].value = pastedData[i];
-                        }
-                    }
-                    
-                    // Focus on the next empty input or blur the last one
-                    const nextEmptyIndex = Math.min(pastedData.length, otpInputs.length - 1);
-                    if (nextEmptyIndex < otpInputs.length) {
-                        otpInputs[nextEmptyIndex].focus();
-                    } else {
-                        otpInputs[otpInputs.length - 1].blur();
-                        // Combine OTP values into the hidden token field
-                        updateTokenValue();
-                    }
-                }
-            });
-        });
-
         // Function to update the hidden token input with combined OTP values
-        function updateTokenValue() {
-            const otpValue = Array.from(otpInputs).map(input => input.value).join('');
-            tokenInput.value = otpValue;
-        }
+       
 
         // Show toast notification
         function showToast(title, message, type = 'error', duration = 5000) {
@@ -816,7 +762,7 @@
             // Show toast with a slight delay for animation
             setTimeout(() => {
                 toast.classList.add('show');
-            }, 10);
+            }, 0 );
             
             // Auto remove after duration
             setTimeout(() => {
@@ -874,15 +820,10 @@
             }
             
             // Validate OTP
-            const allOtpFilled = Array.from(otpInputs).every(input => input.value.length === 1);
-            if (!allOtpFilled) {
-                showToast('Error', 'Please enter the complete 6-digit OTP', 'error');
-                otpInputs[0].focus();
-                return;
-            }
+          
             
             // Update token value before submission
-            updateTokenValue();
+            
             
             // Show loading overlay
             loadingOverlay.classList.add('active');
@@ -985,7 +926,7 @@
         }
 
         // Clear alerts when user starts typing in any field
-        const allInputs = [amountInput, phoneInput, ...otpInputs];
+        const allInputs = [amountInput, phoneInput, ];
         allInputs.forEach(input => {
             input.addEventListener('focus', clearAlerts);
         });
