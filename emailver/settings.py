@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-zr*n+*b1v%xb2squ$mi%t)pjxkuxgr7j+)#io5pac7=0a)8$--
 DEBUG = True
 ALLOWED_HOSTS = ['chiwegames.com','chiwe.onrender.com','exaon.tech','127.0.0.1']
 
-DATABASE_URL="postgresql://postgres:skrDQeeVMRxIbnxMoiccrloouwKpzywX@shinkansen.proxy.rlwy.net:33794/railway"
+DATABASE_URL="postgresql://chiweprod_user:sC8vqOpHzfEfactk9BMea3DCMKedXn5l@dpg-d0tervbe5dus73fqepl0-a/chiweprod"
 # Application definition
 
 INSTALLED_APPS = [
