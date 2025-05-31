@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-zr*n+*b1v%xb2squ$mi%t)pjxkuxgr7j+)#io5pac7=0a)8$--
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['chiwegames.com','chiwe.onrender.com','exaon.tech',]
+ALLOWED_HOSTS = ['chiwegames.com','chiwe.onrender.com','exaon.tech','127.0.0.1']
 
 DATABASE_URL="postgresql://postgres:skrDQeeVMRxIbnxMoiccrloouwKpzywX@shinkansen.proxy.rlwy.net:33794/railway"
 # Application definition
@@ -51,7 +51,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
-CSRF_TRUSTED_ORIGINS = ['https://chiwe.onrender.com','https://vhlz5hd3-8000.uks1.devtunnels.ms/',"https://exaon.tech","https://chiwegames.com"]
+CSRF_TRUSTED_ORIGINS = ['https://chiwe.onrender.com','https://vhlz5hd3-8000.uks1.devtunnels.ms/',"https://exaon.tech","https://chiwegames.com","http://127.0.0.1:8000"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
