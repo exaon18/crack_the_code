@@ -231,7 +231,7 @@ def Monitering(request, admin):
                     chiweProfit.objects.all().delete()
                     return JsonResponse({"success":True,"message":"updated profit "})
             elif transactiontype == "men":
-                maintenance = Maintainance.objects.get(pk=5)
+                maintenance = Maintainance.objects.get(pk=1)
                 print(maintenance.enabled)
                 enabled=request.POST["enabled"]
                 if enabled == "false":
