@@ -51,7 +51,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
-CSRF_TRUSTED_ORIGINS = ['chiwe.onrender.com','vhlz5hd3-8000.uks1.devtunnels.ms/',"exaon.tech","chiwegames.com"]
+CSRF_TRUSTED_ORIGINS = ['https://chiwe.onrender.com','https://vhlz5hd3-8000.uks1.devtunnels.ms/',"https://exaon.tech","https://chiwegames.com"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
